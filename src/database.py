@@ -146,6 +146,7 @@ class Engine(object):
         keys_on = 'PRAGMA foreign_keys = ON'
         stmnt = 'CREATE TABLE Blood_Types( bloodTypeId INTEGER PRIMARY KEY AUTOINCREMENT,\
                     name TEXT NOT NULL UNIQUE)'
+                
         con = sqlite3.connect(self.db_path)
         with con:
             # Get the cursor object.
@@ -591,44 +592,10 @@ class Connection(object):
     
 
 
+   
+   
     # API ITSELF
     # Blood_Banks Table API.
-
-    def get_blood_bank(self, bloodBankId):
-        '''
-        Extracts a blood bank record from the database.
-
-        :param bloodBankId: The id of the Blood Bank. Note that bloodBankId is a
-            string with format ``bbank-\d{1,3}``.
-        :return: A dictionary with the format provided in
-            :py:meth:`_create_blood_bank_object` or None if the Blood Bank with provided 
-            id does not exist.
-        :raises ValueError: when ``bloodBankId`` is not well formed
-
-        '''
-        # Extracts the int which is the id for a message in the database
-        match = re.match(r'bbank-(\d{1,3})', bloodBankId)
-        if match is None:
-            raise ValueError("The bloodBankId is malformed")
-        bloodBankId = int(match.group(1))
-
-        # Activate foreign key support
-        self.set_foreign_keys_support()
-        # Create the SQL Query
-        query = 'SELECT * FROM Blood_Banks WHERE bloodBankId = ?'
-        # Cursor and row initialization
-        self.con.row_factory = sqlite3.Row
-        cur = self.con.cursor()
-        # Execute main SQL Statement
-        pvalue = (bloodBankId,)
-        cur.execute(query, pvalue)
-        # Process the response.
-        # Just one row is expected
-        row = cur.fetchone()
-        if row is None:
-            return None
-        # Build the return object
-        return self._create_blood_bank_object(row)
 
     def get_blood_banks(self):
         '''
@@ -672,6 +639,43 @@ class Connection(object):
             bloodBank = self._create_blood_bank_object(row)
             bloodBanks.append(bloodBank)
         return bloodBanks
+    def get_blood_bank(self, bloodBankId):
+        '''
+        Extracts a blood bank record from the database.
+
+        :param bloodBankId: The id of the Blood Bank. Note that bloodBankId is a
+            string with format ``bbank-\d{1,3}``.
+        :return: A dictionary with the format provided in
+            :py:meth:`_create_blood_bank_object` or None if the Blood Bank with provided 
+            id does not exist.
+        :raises ValueError: when ``bloodBankId`` is not well formed
+
+        '''
+        # Extracts the int which is the id for a message in the database
+        match = re.match(r'bbank-(\d{1,3})', bloodBankId)
+        if match is None:
+            raise ValueError("The bloodBankId is malformed")
+        bloodBankId = int(match.group(1))
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Create the SQL Query
+        query = 'SELECT * FROM Blood_Banks WHERE bloodBankId = ?'
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        pvalue = (bloodBankId,)
+        cur.execute(query, pvalue)
+        # Process the response.
+        # Just one row is expected
+        row = cur.fetchone()
+        if row is None:
+            return None
+        # Build the return object
+        return self._create_blood_bank_object(row)
+
+   
 
     def delete_blood_bank(self, bloodBankId):
         '''
@@ -731,8 +735,8 @@ class Connection(object):
         messageid = int(match.group(1))
       
         # Create the SQL statment
-        basic= 'UPDATE messages SET '
-        stmnt = 'UPDATE messages SET '
+        basic= 'UPDATE Blood_Banks SET '
+        stmnt = 'UPDATE Blood_Banks SET '
         stmnt=stmnt+ " name=? , " if name is not None else stmnt
         stmnt=stmnt+ " address=? , " if address is not None else stmnt
         stmnt=stmnt+ " city=? , " if city is not None else stmnt
@@ -746,8 +750,6 @@ class Connection(object):
             stmnt=stmnt+" WHERE bloodBankId=?"
         else:
             return None
-
-
 
         # Activate foreign key support
         self.set_foreign_keys_support()
@@ -776,7 +778,7 @@ class Connection(object):
     def create_blood_bank(self, name,city, telephone,email,threshold, address="-",latitude=None,
                        longitude=None):
         '''
-        Create a new message with the data provided as arguments.
+        Create a new BB with the data provided as arguments.
 
         :param str name: the message's title
         :param str city: the message's title
@@ -859,3 +861,193 @@ class Connection(object):
         :return: True if the user is in the database. False otherwise
         '''
         return self.get_user_id(nickname) is not None
+    
+    
+    
+    
+    
+    
+    # Blood Types API
+    def get_blood_types(self):
+        '''
+        Return a list of all the Blood types in the database
+
+        :return: A list of Blood_Types. or None of no Blood Types exists.
+            Each entry is a dictionary containing the following keys:
+
+            * ``bloodTypeId``: string with format btypeid-\d{1,3}. Id of Blood Tyoe
+            * ``name``: Blood Type's name
+
+            Note that all values in the returned dictionary are string unless
+            otherwise stated.
+
+        '''
+        # Create the SQL Statement 
+        
+        query = 'SELECT * FROM Blood_Types'
+        
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        cur.execute(query)
+        # Get results
+        rows = cur.fetchall()
+        if rows is None:
+            return None
+        # Build the return object
+        bloodTypes = []
+        for row in rows:
+            bloodType = self._create_blood_type_object(row)
+            bloodTypes.append(bloodType)
+        return bloodTypes
+       
+    def get_blood_type(self,bloodTypeId):
+        '''
+        Extracts a blood type record from the database.
+
+        :param bloodTypeId: The id of the Blood Type. Note that bloodTypeId is a
+            string with format ``btype-\d{1,3}``.
+        :return: A dictionary with the format provided in
+            :py:meth:`_create_blood_type_object` or None if the Blood Type with provided 
+            id does not exist.
+        :raises ValueError: when ``bloodTypeId`` is not well formed
+
+        '''
+        # Extracts the int which is the id for a message in the database
+        match = re.match(r'btype-(\d{1,3})', bloodTypeId)
+        if match is None:
+            raise ValueError("The bloodTypeId is malformed")
+        bloodTypeId = int(match.group(1))
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Create the SQL Query
+        query = 'SELECT * FROM Blood_Types WHERE bloodTypeId = ?'
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        pvalue = (bloodTypeId,)
+        cur.execute(query, pvalue)
+        # Process the response.
+        # Just one row is expected
+        row = cur.fetchone()
+        if row is None:
+            return None
+        # Build the return object
+        return self._create_blood_type_object(row)
+
+    def create_blood_type(self,name):
+        '''
+        Create a new blood type.
+        :param str name: the blood type's name
+        :return: the id of the created Blood Type or None if the Blood type could not
+            be created, Note that 
+            the returned value is a string with the format btype-\d{1,3}.
+        :raises DatabaseError: if the database could not create or some Blood Type with same name exists.
+        :raises ValueError: if the replyto has a wrong format.
+        '''
+        
+        # Create the SQL statment
+      
+       
+        stmnt = 'INSERT INTO Blood_Type (name) \
+                 VALUES(?)'
+        # Variables for the statement.
+      
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+       
+        # Execute SQL Statement
+        pvalue = (name,)
+       
+        cur.execute(stmnt, pvalue)
+        self.con.commit()
+        # Extract the id of the added message
+        lid = cur.lastrowid
+        # Return the id in
+        return 'btype-' + str(lid) if lid is not None else None
+
+
+    def modify_blood_type(self, bloodTypeId, name=None):
+        '''
+        Modifies a Blood type based  ``bloodTypeId`` on any of the Blood attributes
+     
+
+        :param str bloodTypeId: The id of the Blood Bank to remove. Note that
+            bloodBankId is a string with format btype-\d{1,3}
+        :param str name: the blood type's name
+       
+        :return: the id of the edited blood stype or None if the blood type was
+              not found. The id of the blood type has the format ``btype-\d{1,3}``,
+              where \d{1,3} is the id of the blood type in the database.
+        :raises ValueError: if the bloodTypeId has a wrong format.
+
+        '''
+        #TODO update documenation , 
+
+        # Extracts the int which is the id for a blood type in the database
+        match = re.match(r'btype-(\d{1,3})', bloodTypeId)
+        if match is None:
+            raise ValueError("The blood type is malformed")
+        bloodTypeId = int(match.group(1))
+      
+        # Create the SQL statment
+       
+        stmnt = 'UPDATE Blood_Types SET name=? WHERE bloodTypeId=?'
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+
+        pvalue=(name,bloodTypeId)
+      
+        
+        cur.execute(stmnt, pvalue)
+        self.con.commit()
+        if cur.rowcount < 1:
+            return None
+        return 'btype-' + str(bloodTypeId)
+
+
+    def delete_blood_type(self,bloodTypeId): 
+        '''
+        Delete the Blood type with id given as parameter.
+
+        :param str bloodTypeId: id of the Blood Type to remove. Note that bloodTypeId
+            is a string with format ``btype-\d{1,3}``
+        :return: True if the Blood Type has been deleted, False otherwise
+        :raises ValueError: if the bloodTypeId has a wrong format.
+
+        '''
+        # Extracts the int which is the id for a message in the database
+        match = re.match(r'btype-(\d{1,3})', bloodTypeId)
+        if match is None:
+            raise ValueError("The bloodTypeId is malformed")
+        bloodTypeId = int(match.group(1))
+        
+        # Create the SQL statment
+        stmnt = 'DELETE FROM Blood_Types WHERE bloodTypeId = ?'
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        pvalue = (bloodTypeId,)
+        cur.execute(stmnt, pvalue)
+        # Commit the message
+        self.con.commit()
+        # Check that the message has been deleted
+        if cur.rowcount < 1:
+            return False
+        # Return true if message is deleted.
+        return True

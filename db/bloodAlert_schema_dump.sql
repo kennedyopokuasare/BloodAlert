@@ -3,7 +3,7 @@ PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS Blood_Banks(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bloodBankId INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE ,
   address TEXT,
   city TEXT NOT NULL,
@@ -15,44 +15,44 @@ CREATE TABLE IF NOT EXISTS Blood_Banks(
 );
 
 CREATE TABLE IF NOT EXISTS Blood_Donors (
-  id  INTEGER PRIMARY KEY AUTOINCREMENT,
+  donorId  INTEGER PRIMARY KEY AUTOINCREMENT,
   firstname TEXT NOT NULL,
   familyName TEXT NOT NULL,
-  birthDay TEXT,
+  birthDate TEXT,
   gender  TEXT,
-  bloodType_Id INTEGER,
-  telephone TEXT,
+  bloodTypeId INTEGER ,
+  telephone TEXT NOT NULL,
   city TEXT,
   address TEXT,
-  email TEXT,
-  FOREIGN KEY(bloodType_Id) REFERENCES BloodType(id) ON DELETE SET NULL
+  email TEXT NOT NULL,
+  FOREIGN KEY(bloodTypeId) REFERENCES BloodTypes(bloodTypeId) ON DELETE SET NULL
   );
 
 CREATE TABLE IF NOT EXISTS History(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    donor_id  INTEGER,
-    bloodType_Id INTEGER,
-    bbank_Id INTEGER,
-    amount INTEGER,
-    timeStamp REAL, 
-    FOREIGN KEY(donor_id) REFERENCES Blood_Donors(id) ON DELETE CASCADE,
-    FOREIGN KEY(bloodType_Id) REFERENCES BloodType(id) ON DELETE SET NULL,
-    FOREIGN KEY(bbank_Id) REFERENCES Blood_Banks(id) ON DELETE SET NULL
+    historyId INTEGER PRIMARY KEY AUTOINCREMENT,
+    donorId  INTEGER NOT NULL,
+    bloodTypeId INTEGER ,
+    bloodBankId INTEGER ,
+    amount INTEGER NOT NULL,
+    timeStamp REAL NOT NULL, 
+    FOREIGN KEY(donorId) REFERENCES Blood_Donors(donorId) ON DELETE CASCADE,
+    FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL,
+    FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankIdd) ON DELETE SET NULL
 );
     
-CREATE TABLE IF NOT EXISTS Blood_Type(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS Blood_Types(
+  bloodTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS Current_Blood_State(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  bbank_Id INTEGER,
-  bloodType_Id INTEGER,
+  bloodStateId INTEGER PRIMARY KEY AUTOINCREMENT,
+  bloodBankId INTEGER,
+  bloodTypeId INTEGER,
   amount INTEGER ,
   timeStamp REAL,
-  FOREIGN KEY(bbank_Id) REFERENCES Blood_Banks(id) ON DELETE SET NULL,
-  FOREIGN KEY(bloodType_Id) REFERENCES BloodType(id) ON DELETE SET NULL
+  FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankId) ON DELETE SET NULL,
+  FOREIGN KEY(bloodTypeId) REFERENCES BloodType(bloodTypeId) ON DELETE SET NULL
 );
 
 COMMIT;
