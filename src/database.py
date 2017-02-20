@@ -144,7 +144,7 @@ class Engine(object):
 
         '''
         keys_on = 'PRAGMA foreign_keys = ON'
-        stmnt = 'CREATE TABLE Blood_Types( bloodTyeId INTEGER PRIMARY KEY AUTOINCREMENT,\
+        stmnt = 'CREATE TABLE Blood_Types( bloodTypeId INTEGER PRIMARY KEY AUTOINCREMENT,\
                     name TEXT NOT NULL UNIQUE)'
         con = sqlite3.connect(self.db_path)
         with con:
