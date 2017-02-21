@@ -466,6 +466,7 @@ class Connection(object):
             bloodBank = self._create_blood_bank_object(row)
             bloodBanks.append(bloodBank)
         return bloodBanks
+        
     def get_blood_bank(self, bloodBankId):
         '''
         Extracts a blood bank record from the database.
@@ -501,8 +502,6 @@ class Connection(object):
             return None
         # Build the return object
         return self._create_blood_bank_object(row)
-
-   
 
     def delete_blood_bank(self, bloodBankId):
         '''
@@ -649,9 +648,6 @@ class Connection(object):
         # Return the id in
         return 'bbank-' + str(lid) if lid is not None else None
 
-    
-  
-
     def contains_user(self, nickname):
         '''
         :return: True if the user is in the database. False otherwise
@@ -660,10 +656,7 @@ class Connection(object):
     
     
     
-    
-    
-    
-    # Blood Types API
+    # Blood_Types API
     def get_blood_types(self):
         '''
         Return a list of all the Blood types in the database
@@ -773,7 +766,6 @@ class Connection(object):
         # Return the id in
         return 'btype-' + str(lid) if lid is not None else None
 
-
     def modify_blood_type(self, bloodTypeId, name=None):
         '''
         Modifies a Blood type based  ``bloodTypeId`` on any of the Blood attributes
@@ -817,7 +809,6 @@ class Connection(object):
             return None
         return 'btype-' + str(bloodTypeId)
 
-
     def delete_blood_type(self,bloodTypeId): 
         '''
         Delete the Blood type with id given as parameter.
@@ -850,3 +841,38 @@ class Connection(object):
             return False
         # Return true if message is deleted.
         return True
+
+        
+        
+        
+    # Blood_Donors Table API.  
+    def get_blood_donors(self):
+        '''
+        Return a list of all the Blood donors in the database
+
+        :return: A list of Blood_Donors. or None of no Blood Donors exists.
+            Each entry is a dictionary containing the following keys:
+
+            * ``bloodDonorId``: string with format bdonorid-\d{1,3}. Id of Blood Donor
+            * ``firstname``: First name of the Blood Donor
+            * ``familyName``:  FamilyName of the Blood Donor
+            * ``birthDate``:  Date of birth of the Blood Donor
+            * ``gender``:  Gender of te Blood Donor
+            * ``bloodTypeId``:  The ID of the Blood type of the Blood Donor
+            * ``telephone``:  Blood Donor's telephone
+            * ``city``:  Blood Donor's city
+            * ``address``: Blood Donor's address
+            * ``email``: Blood Donor's e-mail
+            
+            Note that all values in the returned dictionary are string unless
+            otherwise stated.
+
+        '''
+    def get_blood_donor(self,bloodDonorId):
+    
+    def create_blood_donor(self,name):
+    
+    def modify_blood_donor(self, bloodTypeId, name=None):
+    
+    def delete_blood_type(self,bloodTypeId): 
+    
