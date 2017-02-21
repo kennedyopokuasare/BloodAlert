@@ -521,7 +521,7 @@ class Connection(object):
         bloodBankId = int(match.group(1))
         
         # Create the SQL statment
-        stmnt = 'DELETE FROM Blood:Banks WHERE bloodBankId = ?'
+        stmnt = 'DELETE FROM Blood_Banks WHERE bloodBankId = ?'
         # Activate foreign key support
         self.set_foreign_keys_support()
         # Cursor and row initialization
@@ -628,6 +628,7 @@ class Connection(object):
             be created, Note that the returned value is a string with the format bbank-\d{1,3}.
 
         :raises sqlite3.DatabaseError: if the database could not be modified.
+        :raises sqlite3.IntegrityError: if an entry with same name, email could not be modified.
 
         '''
         # Create the SQL statment

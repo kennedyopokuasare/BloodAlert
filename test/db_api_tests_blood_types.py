@@ -102,7 +102,7 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
         print '\n(' + self.test_create_same_bloodType_exists.__name__ + ')', \
             self.test_create_same_bloodType_exists.__doc__
 
-        print '\tCreating Blood Type with empty (string) name '
+        print '\tCreating Blood Type with existing name '
         with self.assertRaises(sqlite3.IntegrityError):
             print '\tCreating new Blood Type with existing name ' + EXISTING_BLOOD_TYPE_NAME
             print '\tAsserting that Database throws an error about UNIQUE constraints'
