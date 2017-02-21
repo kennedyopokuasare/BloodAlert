@@ -79,3 +79,6 @@ class BloodBanksDBAPITestCase(unittest.TestCase):
             
 
 
+if __name__ == '__main__':
+    print 'Start running message tests'
+    unittest.main()
