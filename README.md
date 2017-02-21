@@ -4,7 +4,7 @@ There are two options to setup ( create and populate) the databse. We recommend 
 
 ##  Option 1
 
-* Ensure that you have python 2.7.x installed 
+* Ensure that you have python 2.7.x installed , and python path added to your environment variables
 * open the command prompt at the root application (codes) folder
 * run the command python -m setupdb
 
@@ -19,7 +19,7 @@ There are two options to setup ( create and populate) the databse. We recommend 
 
 # Running Test Cases
 
-* Ensure that you have python 2.7.x installed 
+* Ensure that you have python 2.7.x installed and python path added to your environment variables
 * open the command prompt at the root application (codes) folder
 * run the command python -m test.<name_of_test_file_without_.py_extension>
     * example python -m test.db_api_tests_blood_types
@@ -36,5 +36,6 @@ There are two options to setup ( create and populate) the databse. We recommend 
 ## Feb 21, 2017
 *  Added Test Cases for Blood Type Database API
 *  Added setupdb.py , a script to create and populate the database
+* Added Instructions to setup database
 
 

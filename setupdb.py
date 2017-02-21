@@ -13,7 +13,7 @@ from src import database
 DB_PATH = 'db/bloodAlert.db'
 ENGINE = database.Engine(DB_PATH)
 
-print '\tRemoving old database of any'
+print '\tRemoving old database if any'
 ENGINE.remove_database()
 
 print '\tCreating database'
