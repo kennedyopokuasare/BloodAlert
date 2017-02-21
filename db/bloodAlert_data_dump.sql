@@ -7,3 +7,4 @@ INSERT INTO `Blood_Types` VALUES (5,'B+');
 INSERT INTO `Blood_Types` VALUES (6,'B-');
 INSERT INTO `Blood_Types` VALUES (7,'AB+');
 INSERT INTO `Blood_Types` VALUES (8,'AB-');
+

@@ -478,7 +478,7 @@ class Connection(object):
         :raises ValueError: when ``bloodBankId`` is not well formed
 
         '''
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int which is the id for a Blood bank in the database
         match = re.match(r'bbank-(\d{1,3})', bloodBankId)
         if match is None:
             raise ValueError("The bloodBankId is malformed")
@@ -539,26 +539,33 @@ class Connection(object):
 
     def modify_blood_bank(self, bloodBankId, name=None, address=None,city=None, email=None,telephone=None, latitude=None, longitude=None,threshold=None):
         '''
-        Modifies a Blood Bank based  ``bloodBankId`` on any of the Blood attributes
-     
+        Modifies a Blood Bank based  ``bloodBankId`` and any of the Blood attributes
+        
 
-        :param str bloodBankId: The id of the Blood Bank to remove. Note that
+        :param str bloodBankId: The id of the Blood Bank to modify. Note that
             bloodBankId is a string with format bbank-\d{1,3}
-        :param str title: the message's title
-        :param str body: the message's content
-       
-        :return: the id of the edited message or None if the message was
-              not found. The id of the message has the format ``msg-\d{1,3}``,
-              where \d{1,3} is the id of the message in the database.
-        :raises ValueError: if the messageid has a wrong format.
+        :param str name: the blood bank's name
+        :param str city: the blood bank's city
+        :param str telephone: the blood bank's telephone
+        :param str address: the blood bank's address
+        :param str email: the blood bank's email
+        :param str threshold: the blood bank's threshold(int)
+        :param str latitude: the blood bank's latitude (REAL or decimal)
+        :param str longitude: the blood bank's longitude(int)
 
+        :return: the id of the edited blood bank or None if the blood bank was
+              not found of column(s) to modify were not found. The id of the blood bank has the format ``msg-\d{1,3}``,
+              where \d{1,3} is the id of the blood bank in the database.
+        :raises ValueError: if the bloodBankId has a wrong format.
+         
+         Note that by the implementation of this method, any of the parameters can be None
         '''
-        #TODO update documenation , 
+       
 
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int which is the id for a Blood bank in the database
         match = re.match(r'bbank-(\d{1,3})', bloodBankId)
         if match is None:
-            raise ValueError("The messageid is malformed")
+            raise ValueError("The bloodBankId is malformed")
         messageid = int(match.group(1))
       
         # Create the SQL statment
@@ -605,80 +612,41 @@ class Connection(object):
     def create_blood_bank(self, name,city, telephone,email,threshold, address="-",latitude=None,
                        longitude=None):
         '''
-        Create a new BB with the data provided as arguments.
+        Create a new Blood Bank with the data provided as arguments.
 
-        :param str name: the message's title
-        :param str city: the message's title
-        :param str telephone: the message's title
-        :param str email: the message's title
-        :param str threshold: the message's content
-        :param str address: the nickname of the person who is editing this
-            message. If it is not provided "-" will be stored in db.
-        :param str latitude: The ip address from which the message was created.
-            It is a string with format "xxx.xxx.xxx.xxx". If no ipaddress is
-            provided then database will store "0.0.0.0"
-        :param str longitude: Only provided if this message is an answer to a
-            previous message (parent). Otherwise, Null will be stored in the
-            database. The id of the message has the format msg-\d{1,3}
+        :param str name: the blood bank's name
+        :param str city: the blood bank's city
+        :param str telephone: the blood bank's telephone
+        :param str email: the blood bank's email
+        :param str threshold: the blood bank's content
+        :param str address: the blood bank's address. can be None         
+        :param str latitude: the blood bank's latitude ( REAL or decimal) . can be None              
+        :param str longitude: the blood bank's longitude ( REAL or decimal)  . Can be None 
+        
 
         :return: the id of the created Blood Bank or None if the Blood bank could not
-            be created, Note that 
-            the returned value is a string with the format bbank-\d{1,3}.
+            be created, Note that the returned value is a string with the format bbank-\d{1,3}.
 
-        :raises ForumDatabaseError: if the database could not be modified.
-        :raises ValueError: if the replyto has a wrong format.
+        :raises sqlite3.DatabaseError: if the database could not be modified.
 
         '''
-        # Extracts the int which is the id for a message in the database
-        if replyto is not None:
-            match = re.match('msg-(\d{1,3})', replyto)
-            if match is None:
-                raise ValueError("The replyto is malformed")
-            replyto = int(match.group(1))
-       
         # Create the SQL statment
-        # SQL to test that the message which I am answering does exist
-        query1 = 'SELECT * from messages WHERE message_id = ?'
-        # SQL Statement for getting the user id given a nickname
-        query2 = 'SELECT user_id from users WHERE nickname = ?'
-        # SQL Statement for inserting the data
-        stmnt = 'INSERT INTO messages (title,body,timestamp,ip, \
-                 timesviewed,reply_to,user_nickname,user_id) \
-                 VALUES(?,?,?,?,?,?,?,?)'
-        # Variables for the statement.
-        # user_id is obtained from first statement.
-        user_id = None
-        timestamp = time.mktime(datetime.now().timetuple())
+        query= 'INSERT INTO Blood_Banks VALUES (?,?,?,?,?,?,?,?,?)'
+       
         # Activate foreign key support
         self.set_foreign_keys_support()
         # Cursor and row initialization
         self.con.row_factory = sqlite3.Row
         cur = self.con.cursor()
-        # If exists the replyto argument, check that the message exists in
-        # the database table
-        if replyto is not None:
-            pvalue = (replyto,)
-            cur.execute(query1, pvalue)
-            messages = cur.fetchall()
-            if len(messages) < 1:
-                return None
+        
         # Execute SQL Statement to get userid given nickname
-        pvalue = (sender,)
-        cur.execute(query2, pvalue)
-        # Extract user id
-        row = cur.fetchone()
-        if row is not None:
-            user_id = row["user_id"]
-        # Generate the values for SQL statement
-        pvalue = (title, body, timestamp, ipaddress, 0, replyto, sender,
-                  user_id)
-        # Execute the statement
-        cur.execute(stmnt, pvalue)
+        pvalue = (name,address,city,telephone,email,latitude,longitude,threshold,)
+        cur.execute(query, pvalue)
         self.con.commit()
         # Extract the id of the added message
         lid = cur.lastrowid
         # Return the id in
-        return 'msg-' + str(lid) if lid is not None else None
+        return 'bbank-' + str(lid) if lid is not None else None
 
     
   
