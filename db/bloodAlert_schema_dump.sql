@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Blood_Donors (
   city TEXT,
   address TEXT,
   email TEXT NOT NULL,
-  FOREIGN KEY(bloodTypeId) REFERENCES BloodTypes(bloodTypeId) ON DELETE SET NULL
+  FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL
   );
 
 CREATE TABLE IF NOT EXISTS History(
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS History(
     timeStamp REAL NOT NULL, 
     FOREIGN KEY(donorId) REFERENCES Blood_Donors(donorId) ON DELETE CASCADE,
     FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL,
-    FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankIdd) ON DELETE SET NULL
+    FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankId) ON DELETE SET NULL
 );
     
 CREATE TABLE IF NOT EXISTS Blood_Types(
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS Current_Blood_State(
   amount INTEGER ,
   timeStamp REAL,
   FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankId) ON DELETE SET NULL,
-  FOREIGN KEY(bloodTypeId) REFERENCES BloodType(bloodTypeId) ON DELETE SET NULL
+  FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL
 );
 
 COMMIT;

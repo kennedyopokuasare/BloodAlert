@@ -23,7 +23,7 @@ A messages' list has the following format:
 
 import sqlite3, unittest
 
-from src import database
+from bloodAlert import database
 
 #Path to the database file, different from the deployment db
 DB_PATH = 'db/forum_test.db'

@@ -84,12 +84,12 @@ class Engine(object):
         cur.execute(keys_on)
         with con:
             cur = con.cursor()
+            cur.execute("DELETE FROM History")
             cur.execute("DELETE FROM Blood_Donors")
             cur.execute("DELETE FROM Blood_Banks")
             cur.execute("DELETE FROM Blood_Types")
             cur.execute("DELETE FROM Current_Blood_State")
-            # NOTE since we have ON DELETE CASCADE  IN History
-            # , WE DO NOT HAVE TO WORRY TO CLEAR THAT TABLE.
+            
 
     # METHODS TO CREATE AND POPULATE A DATABASE USING DIFFERENT SCRIPTS
     def create_tables(self, schema=None):
@@ -875,7 +875,7 @@ class Connection(object):
         :return: A list of Blood_Types. or None of no Blood Types exists.
             Each entry is a dictionary containing the following keys:
 
-            * ``bloodTypeId``: string with format btypeid-\d{1,3}. Id of Blood Tyoe
+            * ``bloodTypeId``: string with format btypeid-\d{1,3}. Id of Blood Typoe
             * ``name``: Blood Type's name
 
             Note that all values in the returned dictionary are string unless
@@ -947,14 +947,17 @@ class Connection(object):
         :return: the id of the created Blood Type or None if the Blood type could not
             be created, Note that 
             the returned value is a string with the format btype-\d{1,3}.
-        :raises DatabaseError: if the database could not create or some Blood Type with same name exists.
-        :raises ValueError: if the replyto has a wrong format.
+        :raises DatabaseError: if the database could not be create.
+        :raises IntegrityError: if Blood type with same name exists
+        :raises ValueError: if the name is empty
         '''
         
         # Create the SQL statment
-      
+        if not name:
+            raise ValueError("Name cannot be empty")
+
        
-        stmnt = 'INSERT INTO Blood_Type (name) \
+        stmnt = 'INSERT INTO Blood_Types (name) \
                  VALUES(?)'
         # Variables for the statement.
       

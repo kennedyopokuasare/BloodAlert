@@ -1,7 +1,12 @@
-#Change logs
+# Change logs
 
-##Feb 20, 2017
+## Feb 20, 2017
 * CRUD for Blood Banks, Blood Types
 * Adapted Engine and Connection class from Exercise to work for our project
 * Create the sql schema for the bloodAlert database
 * Created the database
+
+## Feb 21, 2017
+*  Added Test Cases for Blood Type Database API
+
+
