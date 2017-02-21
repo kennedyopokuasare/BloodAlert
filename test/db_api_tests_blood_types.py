@@ -64,7 +64,7 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
         '''
         Checks that the blood_types table is created and populated contains 8 Blood Types. 
         '''
-        print '('+self.test_blood_Types_table_created.__name__+')', \
+        print '\n('+self.test_blood_Types_table_created.__name__+')', \
                   self.test_blood_Types_table_created.__doc__
 
         keys_on = 'PRAGMA foreign_keys = ON'
@@ -76,38 +76,38 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
             con.row_factory = sqlite3.Row
             cur = con.cursor()
             cur.execute(keys_on)
-            print('Querying the database with: '+query)
+            print('\tQuerying the database with: '+query)
           
             cur.execute(query)
-            print('Getting results from query')
+            print('\tGetting results from query')
             bloodTypes = cur.fetchall()
             #Assert
-            print('Asserting that Blood_Type table has '+str(NUMBER_OF_ENTRIES)+' entries: ')
+            print('\tAsserting that Blood_Type table has '+str(NUMBER_OF_ENTRIES)+' entries: ')
             self.assertEquals(len(bloodTypes), NUMBER_OF_ENTRIES)
     
     def test_create_same_bloodType_exists(self):
         '''
             Test that the Blood_Type table ensures UNIQUE blood_type name
         '''
-        print '('+self.test_create_same_bloodType_exists.__name__+')', \
+        print '\n('+self.test_create_same_bloodType_exists.__name__+')', \
                   self.test_create_same_bloodType_exists.__doc__
         
-        print 'Creating Blood Type with empty (string) name '
+        print '\tCreating Blood Type with empty (string) name '
         with self.assertRaises(sqlite3.IntegrityError):
-            print 'Creating new Blood Type with existing name '+EXISTING_BLOOD_TYPE_NAME
-            print 'Asserting that Database throws an error about UNIQUE constraints'
+            print '\tCreating new Blood Type with existing name '+EXISTING_BLOOD_TYPE_NAME
+            print '\tAsserting that Database throws an error about UNIQUE constraints'
             self.connection.create_blood_type(EXISTING_BLOOD_TYPE_NAME)
 
     def test_create_blood_type_name_empty(self):
         '''
             Test that an empty Blood Type name is not entered into database
         '''  
-        print '('+self.test_create_blood_type_name_empty.__name__+')', \
+        print '\n('+self.test_create_blood_type_name_empty.__name__+')', \
                   self.test_create_blood_type_name_empty.__doc__
     
         with self.assertRaises(ValueError):
-            print 'Creating new Blood Type with emoty name '
-            print 'Asserting that create_blood_type method raises ValueError Exception (Name cannot be empty)'
+            print '\tCreating new Blood Type with emoty name '
+            print '\tAsserting that create_blood_type method raises ValueError Exception (Name cannot be empty)'
             self.connection.create_blood_type(BLOOD_TYPE_EMPTY)
         
     

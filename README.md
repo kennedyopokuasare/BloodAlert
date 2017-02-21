@@ -1,3 +1,12 @@
+
+# Running Test Cases
+
+* Ensure that you have python 2-7.x installed 
+* open the command line at the root applicaition (codes) folder
+* run the command python -m test.<name_of_test_file_without_.py_extension
+    * example python -m test.db_api_tests_blood_types
+
+
 # Change logs
 
 ## Feb 20, 2017
