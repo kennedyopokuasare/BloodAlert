@@ -38,5 +38,5 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * Added setupdb.py , a script to create and populate the database
 * Added Instructions to setup database
 * Added Instructions to run test Cases
-
+* Populated the 'Blood_Donors', 'Blood_Banks' and 'History' tables
 
