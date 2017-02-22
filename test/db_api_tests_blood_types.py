@@ -148,13 +148,13 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
             self.connection.delete_blood_type('1')
 
 
-    # Test cases for themselves
-    def test_get_blood_methods_loaded(self):
+    # Test cases for CRUD
+    def test_get_blood_methods_load_data(self):
         '''
         Test that all get methods loads blood type(s) from database successfully
         '''
-        print '\n(' + self.test_get_blood_methods_loaded.__name__ + ')', \
-            self.test_get_blood_methods_loaded.__doc__
+        print '\n(' + self.test_get_blood_methods_load_data.__name__ + ')', \
+            self.test_get_blood_methods_load_data.__doc__
         
         print '\ttesting get_blood_type method'
         bloodType=self.connection.get_blood_type(BLOOD_TYPE_ID)

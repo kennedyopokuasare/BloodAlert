@@ -22,7 +22,8 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * Ensure that you have python 2.7.x installed and python path added to your environment variables
 * open the command prompt at the root application (codes) folder
 * run the command **python -m test.<name_of_test_file_without_.py_extension>**
-    * example **python -m test.db_api_tests_blood_types**
+    * example 1 **python -m test.db_api_tests_blood_types**
+    * example 2 **python -m test.db_api_tests_blood_banks**
 
 
 # Change logs
@@ -38,5 +39,9 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * Added setupdb.py , a script to create and populate the database
 * Added Instructions to setup database
 * Added Instructions to run test Cases
-* Populated the 'Blood_Donors', 'Blood_Banks' and 'History' tables
+* Populated the **Blood_Donors**, **Blood_Banks** and **History**tables
+* Added Test Cases fpr Blood_Banks Database API
+
+## Feb 22, 2017
+* Added Test cases for Blood Banks
 

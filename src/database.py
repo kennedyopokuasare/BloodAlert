@@ -417,7 +417,8 @@ class Connection(object):
     
     
     
-
+    def replace_right(source, target, replacement, replacements=None):
+        return replacement.join(source.rsplit(target, replacements))
 
    
    
@@ -565,7 +566,7 @@ class Connection(object):
         match = re.match(r'bbank-(\d{1,3})', bloodBankId)
         if match is None:
             raise ValueError("The bloodBankId is malformed")
-        messageid = int(match.group(1))
+        bloodBankId = int(match.group(1))
       
         # Create the SQL statment
         basic= 'UPDATE Blood_Banks SET '
@@ -583,6 +584,9 @@ class Connection(object):
             stmnt=stmnt+" WHERE bloodBankId=?"
         else:
             return None
+        # try removing the last comma before WWHERE clause in the query
+        stmnt= ' '.join(stmnt.rsplit(',', 1))
+        #replace_right(stmnt,',',' ',1)
 
         # Activate foreign key support
         self.set_foreign_keys_support()
@@ -600,8 +604,10 @@ class Connection(object):
         pvalue = pvalue+(latitude,) if latitude is not None else pvalue
         pvalue = pvalue+(longitude,) if longitude is not None else pvalue
         pvalue = pvalue+(threshold,) if threshold is not None else pvalue
-        pvalue+pvalue+(bloodBankId,)
+        pvalue=pvalue+(bloodBankId,)
         
+    
+
         cur.execute(stmnt, pvalue)
         self.con.commit()
         if cur.rowcount < 1:
@@ -631,7 +637,8 @@ class Connection(object):
 
         '''
         # Create the SQL statment
-        query= 'INSERT INTO Blood_Banks VALUES (?,?,?,?,?,?,?,?,?)'
+        query= 'INSERT INTO Blood_Banks(name,address,city,telephone,email,\
+                    latitude,longitude,threshold) VALUES (?,?,?,?,?,?,?,?)'
        
         # Activate foreign key support
         self.set_foreign_keys_support()
@@ -648,11 +655,6 @@ class Connection(object):
         # Return the id in
         return 'bbank-' + str(lid) if lid is not None else None
 
-    def contains_user(self, nickname):
-        '''
-        :return: True if the user is in the database. False otherwise
-        '''
-        return self.get_user_id(nickname) is not None
     
     
     
@@ -868,11 +870,11 @@ class Connection(object):
             otherwise stated.
 
         '''
-    def get_blood_donor(self,bloodDonorId):
+    #def get_blood_donor(self,bloodDonorId):
     
-    def create_blood_donor(self,name):
+    #def create_blood_donor(self,name):
     
-    def modify_blood_donor(self, bloodTypeId, name=None):
+   # def modify_blood_donor(self, bloodTypeId, name=None):
     
-    def delete_blood_type(self,bloodTypeId): 
+   # def delete_blood_type(self,bloodTypeId): 
     
