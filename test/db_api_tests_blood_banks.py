@@ -43,7 +43,7 @@ class BloodBanksDBAPITestCase(unittest.TestCase):
     # Unittest setup methods.. imported from Exercese codes
 
     '''
-    Test cases for the Blood Types related methods.
+    Test cases for the Blood Banks related methods.
     '''
     @classmethod
     def setUpClass(cls):
@@ -111,19 +111,19 @@ class BloodBanksDBAPITestCase(unittest.TestCase):
         print '\tTesting get_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueException with malformed blood bank id argument'
             self.connection.get_blood_bank('1')
 
         print '\tTesting delete_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueException with malformed blood bank id argument'
             self.connection.delete_blood_bank('1')
 
         print '\tTesting modify_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueException with malformed Blood Bank id argument'
             self.connection.modify_blood_bank('1')
 
     def test_blood_banks_ensures_unique_names_and_emails(self):

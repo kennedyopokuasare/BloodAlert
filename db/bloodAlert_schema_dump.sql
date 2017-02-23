@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Blood_Donors (
   telephone TEXT NOT NULL,
   city TEXT,
   address TEXT,
-  email TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
   FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL
   );
 

@@ -216,5 +216,5 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print 'Start running message tests'
+    print 'Start running Blood Types tests'
     unittest.main()
