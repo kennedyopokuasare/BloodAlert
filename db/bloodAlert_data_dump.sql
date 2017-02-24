@@ -9,14 +9,14 @@ INSERT INTO `Blood_Types` VALUES (7,'AB+');
 INSERT INTO `Blood_Types` VALUES (8,'AB-');
 
 
-INSERT INTO `Blood_Donors` VALUES (1,'Anna','Bord','1986-12-30','Female','1','+348416754234','Oulu','Linnanmaa','AnB@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (2,'Marcela','Storm','1996-10-20','Female','2','+348417856964','Oulu','Linnanmaa','MS@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (3,'Tony','Stark','1990-09-30','Male','3','+348415617345','Oulu','Linnanmaa','TonyS@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (4,'Victor','Gugo','1990-12-08','Male','4','+348419869056','Oulu','Linnanmaa','VicGugo@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (5,'Demetrii','Olim','1989-07-24','Male','5','+348410987669','Oulu','Linnanmaa','Demolim@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (6,'Antti','Salo','1988-05-12','Male','6','+348411223764','Oulu','Linnanmaa','AnttiS@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (7,'Elia','Martell','1993-07-16','Female','7','+348417890065','Oulu','Linnanmaa','EliaElia@oulu.fi');
-INSERT INTO `Blood_Donors` VALUES (8,'Helena','Carter','1995-04-17','Female','8','+348417860054','Oulu','Linnanmaa','HelenaCarter@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (1,'Anna','Bord','30-12-1986','Female','1','+348416754234','Oulu','Linnanmaa','AnB@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (2,'Marcela','Storm','20-10-1996','Female','2','+348417856964','Oulu','Linnanmaa','MS@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (3,'Tony','Stark','30-09-1990','Male','3','+348415617345','Oulu','Linnanmaa','TonyS@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (4,'Victor','Gugo','08-12-1990','Male','4','+348419869056','Oulu','Linnanmaa','VicGugo@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (5,'Demetrii','Olim','24-07-1989','Male','5','+348410987669','Oulu','Linnanmaa','Demolim@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (6,'Antti','Salo','12-05-1988','Male','6','+348411223764','Oulu','Linnanmaa','AnttiS@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (7,'Elia','Martell','16-07-1993','Female','7','+348417890065','Oulu','Linnanmaa','EliaElia@oulu.fi');
+INSERT INTO `Blood_Donors` VALUES (8,'Helena','Carter','17-04-1995','Female','8','+348417860054','Oulu','Linnanmaa','HelenaCarter@oulu.fi');
 
 
 INSERT INTO `Blood_Banks` VALUES (1,'Terveystalo','Yliopistokatu 1A','Oulu','+348417860673','Terveystalo@oulu.fi','65.057774','25.471287','20');

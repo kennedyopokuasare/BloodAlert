@@ -32,13 +32,13 @@ There are two options to setup ( create and populate) the databse. We recommend 
 
 # Change logs
 
-## Feb 20, 2017
+### Feb 20, 2017
 * Added CRUD for Blood Banks, Blood Types
 * Adapted Engine and Connection class from Exercise to work for our project
 * Create the sql schema for the bloodAlert database
 * Created the database
 
-## Feb 21, 2017
+### Feb 21, 2017
 * Added Test Cases for Blood Type Database API
 * Added setupdb.py , a script to create and populate the database
 * Added Instructions to setup database
@@ -47,9 +47,9 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * Populated the **Blood_Donors**, **Blood_Banks** and **History** tables
 * Added Test Cases for Blood_Banks Database API
 
-## Feb 22, 2017
+### Feb 22, 2017
 * Added CRUD for Blood_Donors Table
-## Feb 23, 2017
+### Feb 23, 2017
 * Added test Cases for Blood Donors
 
 

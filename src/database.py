@@ -324,9 +324,9 @@ class Connection(object):
         familyName = row['familyName']
         birthDate = row['birthDate'] if row['birthDate'] is not None else None
         gender = row['gender'] if row['gender'] is not None else None
-        bloodTypeId = row['bloodTypeId'] if row[
+        bloodTypeId ='btype-'+str(row['bloodTypeId']) if row[
             'bloodTypeId'] is not None else None
-        telephone = row['telephone']
+        telephone =str(row['telephone'])
         city = row['city'] if row['city'] is not None else None
         address = row['address'] if row['address'] is not None else None
         email = row['email']
@@ -893,7 +893,7 @@ class Connection(object):
         # Activate foreign key support
         self.set_foreign_keys_support()
         # Create the SQL Query
-        query = 'SELECT * FROM Blood_Donors WHERE bloodDonorId = ?'
+        query = 'SELECT * FROM Blood_Donors WHERE donorId = ?'
         # Cursor and row initialization
         self.con.row_factory = sqlite3.Row
         cur = self.con.cursor()
@@ -1086,7 +1086,7 @@ class Connection(object):
         bloodDonorId = int(match.group(1))
 
         # Create the SQL statment
-        stmnt = 'DELETE FROM Blood_Donors WHERE bloodDonorId = ?'
+        stmnt = 'DELETE FROM Blood_Donors WHERE donorId = ?'
         # Activate foreign key support
         self.set_foreign_keys_support()
         # Cursor and row initialization
