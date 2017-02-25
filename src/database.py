@@ -360,21 +360,22 @@ class Connection(object):
             otherwise stated.
 
         '''
-        historyId = 'bdonor-' + str(row['historyId'])
-        donorId = row['donorId']
-        bloodTypeId = row['bloodTypeId'] if row[
+        historyId = 'history-' + str(row['historyId'])
+        donorId =  'bdonor-' + str( row['donorId']) if row['donorId'] is not None else None
+        bloodTypeId = 'btype-' + str(row['bloodTypeId']) if row[
             'bloodTypeId'] is not None else None
-        bloodBankId = row['bloodBankId'] if row[
+        bloodBankId ='bbank-' + str( row['bloodBankId']) if row[
             'bloodBankId'] is not None else None
         amount = row['amount']
         timeStamp = row['timeStamp']
-
+    
+        tag=row['tag']
         history = {
             'historyId': historyId, 'donorId': donorId,
             'bloodTypeId': bloodTypeId, 'bloodBankId': bloodBankId,
-            'amount': amount, 'timeStamp': timeStamp
+            'amount': amount, 'timeStamp': timeStamp,'tag':tag
         }
-
+       
         return history
 
     def _create_current_blood_state_object(self, row):
@@ -506,7 +507,7 @@ class Connection(object):
         :raises ValueError: if the bloodBankId has a wrong format.
 
         '''
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int portion of the passed Id
         match = re.match(r'bbank-(\d{1,3})', bloodBankId)
         if match is None:
             raise ValueError("The bloodBankId is malformed")
@@ -521,27 +522,28 @@ class Connection(object):
         cur = self.con.cursor()
         pvalue = (bloodBankId,)
         cur.execute(stmnt, pvalue)
-        # Commit the message
+        # Commit the blood bank
         self.con.commit()
-        # Check that the message has been deleted
+        # Check that the blood bank has been deleted
         if cur.rowcount < 1:
             return False
-        # Return true if message is deleted.
+        # Return true if Blood bank is deleted.
         return True
 
-    def modify_blood_bank(self, bloodBankId, name=None, address=None, city=None, email=None, telephone=None, latitude=None, longitude=None, threshold=None):
+    def modify_blood_bank(self, bloodBankId, name=None, address=None, city=None,
+                 email=None, telephone=None, latitude=None, longitude=None, threshold=None):
         '''
         Modifies a Blood Bank based  ``bloodBankId`` and any of the Blood attributes
         :param str bloodBankId: The id of the Blood Bank to modify. Note that
             bloodBankId is a string with format bbank-\d{1,3}
-        :param str name: the blood bank's name
-        :param str city: the blood bank's city
-        :param str telephone: the blood bank's telephone
-        :param str address: the blood bank's address
-        :param str email: the blood bank's email
-        :param str threshold: the blood bank's threshold(int)
-        :param str latitude: the blood bank's latitude (REAL or decimal)
-        :param str longitude: the blood bank's longitude(int)
+        :param str name: the blood bank's name (optional)
+        :param str city: the blood bank's city (optional)
+        :param str telephone: the blood bank's telephone (optional)
+        :param str address: the blood bank's address (optional)
+        :param str email: the blood bank's email (optional)
+        :param str threshold: the blood bank's threshold(int) (optional)
+        :param str latitude: the blood bank's latitude (REAL or decimal) (optional)
+        :param str longitude: the blood bank's longitude(int) (optional)
 
         :return: the id of the edited blood bank or None if the blood bank 
              column(s) to modify were not found. The id of the blood bank has the format ``bbank-\d{1,3}``,
@@ -638,7 +640,7 @@ class Connection(object):
                   latitude, longitude, threshold,)
         cur.execute(query, pvalue)
         self.con.commit()
-        # Extract the id of the added message
+        # Extract the id of the added blood bank
         lid = cur.lastrowid
         # Return the id in
         return 'bbank-' + str(lid) if lid is not None else None
@@ -692,7 +694,7 @@ class Connection(object):
         :raises ValueError: when ``bloodTypeId`` is not well formed
 
         '''
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int portion of the passed Id
         match = re.match(r'btype-(\d{1,3})', bloodTypeId)
         if match is None:
             raise ValueError("The bloodTypeId is malformed")
@@ -747,19 +749,19 @@ class Connection(object):
 
         cur.execute(stmnt, pvalue)
         self.con.commit()
-        # Extract the id of the added message
+        # Extract the id of the added blood type
         lid = cur.lastrowid
         # Return the id in
         return 'btype-' + str(lid) if lid is not None else None
 
-    def modify_blood_type(self, bloodTypeId, name=None):
+    def modify_blood_type(self, bloodTypeId, name):
         '''
         Modifies a Blood type based  ``bloodTypeId`` on any of the Blood attributes
 
 
         :param str bloodTypeId: The id of the Blood Bank to remove. Note that
             bloodBankId is a string with format btype-\d{1,3}
-        :param str name: the blood type's name
+        :param str name: the blood type's name 
 
         :return: the id of the edited blood stype or None if the blood type was
               not found. The id of the blood type has the format ``btype-\d{1,3}``,
@@ -804,7 +806,7 @@ class Connection(object):
         :raises ValueError: if the bloodTypeId has a wrong format.
 
         '''
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int portion of the passed Id
         match = re.match(r'btype-(\d{1,3})', bloodTypeId)
         if match is None:
             raise ValueError("The bloodTypeId is malformed")
@@ -819,12 +821,12 @@ class Connection(object):
         cur = self.con.cursor()
         pvalue = (bloodTypeId,)
         cur.execute(stmnt, pvalue)
-        # Commit the message
+        # Commit the blood type
         self.con.commit()
-        # Check that the message has been deleted
+        # Check that the blood type has been deleted
         if cur.rowcount < 1:
             return False
-        # Return true if message is deleted.
+        # Return true if blood type is deleted.
         return True
 
     # Blood_Donors Table API.
@@ -908,7 +910,8 @@ class Connection(object):
         # Build the return object
         return self._create_blood_donor_object(row)
 
-    def create_blood_donor(self, firstname, familyName, telephone, email, bloodTypeId, birthDate, gender, address="-",city=None):
+    def create_blood_donor(self, firstname, familyName, telephone, email, 
+        bloodTypeId, birthDate, gender, address="-",city=None):
         '''
         Create a new Blood Donor with the data provided as arguments.
 
@@ -965,7 +968,7 @@ class Connection(object):
 
         cur.execute(stmnt, pvalue)
         self.con.commit()
-        # Extract the id of the added message
+        # Extract the id of the added blood donor
         lid = cur.lastrowid
         # Return the id in
         return 'bdonor-' + str(lid) if lid is not None else None
@@ -979,15 +982,15 @@ class Connection(object):
 
         :param str bloodDonorId: The id of the Blood Donor to modify. Note that
             bloodDonorId is a string with format bdonor-\d{1,3}
-        :param str firstname: the Blood Donor's firstname
-        :param str familyName: the blood donor's familyName
-        :param str telephone: the blood donor's telephone
-        :param str email: the blood donor's email
-        :param str bloodTypeId: the blood donor's bloodTypeId in the form btype-\d{1,3}
-        :param str birthDate: the blood donor's birthDate, in the format dd-mm-YYYY example 12-08-2015        
-        :param str gender: the blood donor's gender, MALE or FEMALE         
-        :param str address: the blood donor's address
-        :param str city: the blood donor's city
+        :param str firstname: the Blood Donor's firstname (optional)
+        :param str familyName: the blood donor's familyName (optional)
+        :param str telephone: the blood donor's telephone (optional)
+        :param str email: the blood donor's email (optional)
+        :param str bloodTypeId: the blood donor's bloodTypeId in the form btype-\d{1,3} (optional)
+        :param str birthDate: the blood donor's birthDate, in the format dd-mm-YYYY example 12-08-2015 (optional)       
+        :param str gender: the blood donor's gender, MALE or FEMALE   (optional)      
+        :param str address: the blood donor's address (optional)
+        :param str city: the blood donor's city (optional)
 
         :return: the id of the edited Blood Donor or None if the Blood Donor
              column(s) to modify were not found. The id of the Blood Donor has the format ``bdonor-\d{1,3}``,
@@ -1070,6 +1073,7 @@ class Connection(object):
             return None
         return 'bdonor-' + str(bloodDonorId)
     def delete_blood_donor(self, bloodDonorId):
+
         '''
         Delete the Blood Donor with id given as parameter.
         :param str bloodDonorId: id of the Blood Donor to remove.Note that bloodDonorId
@@ -1078,7 +1082,7 @@ class Connection(object):
         :raises ValueError: if the bloodDonorId has a wrong format.
 
         '''
-        # Extracts the int which is the id for a message in the database
+        # Extracts the int portion of the passed Id
 
         match = re.match(r'bdonor-(\d{1,3})', bloodDonorId)
         if match is None:
@@ -1094,10 +1098,348 @@ class Connection(object):
         cur = self.con.cursor()
         pvalue = (bloodDonorId,)
         cur.execute(stmnt, pvalue)
-        # Commit the message
+        # Commit the Blood donor
         self.con.commit()
-        # Check that the message has been deleted
+        # Check that the Blood donor has been deleted
         if cur.rowcount < 1:
             return False
-        # Return true if message is deleted.
+        # Return true if Blood donor is deleted.
         return True
+
+
+    # History Table API
+    
+    
+    def get_blood_bank_histories(self,bloodBankId):
+        '''
+        Returns a list of all Blood bank transaction  History ( Donation, and other blood in/out activities) in the database
+        :return: A list of Blood bank transaction  History or None if no history exists 
+        :param str bloodBankId: bloodBankId  in the format bbank-\d{1,3}
+        :raises ValueError: when ``bloodBankId`` is not well formed
+        
+         Each entry is a dictionary containing the following keys:
+
+            * ``historyId``: string with format history-\d{1,3}. Id of the History
+            * ``bloodBankId``:  Id of blood bank related to the history entry in bbank-\d{1,3} format 
+            * ``donorId``: the Id of the blood donor in the format bdonor-\d{1,3} or 
+                None if entry is not a related to blood donor but blood in/out transaction of the related blood bank 
+            * ``bloodTypeId``: Id of blood type in the format btype-\d{1,3}
+            * ``amount``: amount of blood. this value can be negative or positive Integer. Positive when the entry 
+                represent an added amount of blood and negative otherwise
+            * ``timeStamp``:  UNIX timestamp when the event ( blood donation / other Blood bank blood in/out transaction) 
+                happened(long integer)
+            * ``tag``:  tag on entry indicating whether its a donation from blood donor or other Blood bank blood in/out transaction
+
+            Note that all values in the returned dictionary are string unless
+            otherwise stated.
+
+        '''
+        # Extracts the int which is the id for a Blood bank in the database
+        match = re.match(r'bbank-(\d{1,3})', bloodBankId)
+        if match is None:
+            raise ValueError("The bloodBankId is malformed")
+        bloodBankId = int(match.group(1))
+        # Create the SQL Statement
+
+        query = 'SELECT * FROM History where bloodBankId= ?'
+        parameter=(bloodBankId,)
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        cur.execute(query,parameter)
+        # Get results
+        rows = cur.fetchall()
+        if rows is None:
+            return None
+        # Build the return object
+        history = []
+        for row in rows:
+            entry = self._create_history_object(row)
+            history.append(entry)
+        return history
+
+    def get_blood_donor_histories(self,donorId):
+        '''
+        Returns a list of all Blood donor donation  History from database
+        :return: A list of Blood donor donation  History or None if no history exists 
+        :param str donorId: donorId in the format bdonor-\d{1,3}
+        :raises ValueError: when ``donorId`` is not well formed
+        
+         Each entry is a dictionary containing the following keys:
+
+            * ``historyId``: string with format history-\d{1,3}. Id of the History
+            * ``bloodBankId``:  Id of blood bank related to the history entry in bbank-\d{1,3} format 
+            * ``donorId``: the Id of the blood donor in the format bdonor-\d{1,3}
+            * ``bloodTypeId``: Id of blood type in the format btype-\d{1,3}
+            * ``amount``: amount of blood.                
+            * ``timeStamp``:  UNIX timestamp when the blood was donated (long integer)
+            * ``tag``: a tag on the record. defaults to DONATION
+           
+            Note that all values in the returned dictionary are string unless
+            otherwise stated.
+
+        '''
+        # Extracts the int which is the id for a Blood bank in the database
+        match = re.match(r'bdonor-(\d{1,3})', donorId)
+        if match is None:
+            raise ValueError("The donorId is malformed")
+        donorId = int(match.group(1))
+        # Create the SQL Statement
+
+        query = 'SELECT * FROM History where donorId= ?'
+        parameter=(donorId,)
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        cur.execute(query,parameter)
+        # Get results
+        rows = cur.fetchall()
+        if rows is None:
+            return None
+        # Build the return object
+        history = []
+        for row in rows:
+            entry = self._create_history_object(row)
+            history.append(entry)
+        return history
+
+    def get_history(self,historyId):
+        '''
+        Extracts blood donation history and and other blood in/out activities 
+        transaction history based on ``historyId``
+        :param str historyId:historyId in the  format history-\d{1,3}
+        :return: A dictionary with the format provided in
+            :py:meth:`_create_history_object` or None if the History with provided 
+            id does not exist.
+        :raises ValueError: when ``historyId`` is not well formed
+        '''
+        match = re.match(r'history-(\d{1,3})',str(historyId))
+        if match is None:
+            raise ValueError("The historyId is malformed")
+        historyId = int(match.group(1))
+
+        #Activate foreign key support
+        self.set_foreign_keys_support()
+        # Create the SQL Query
+        query = 'SELECT * FROM History WHERE historyId = ?'
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        pvalue = (historyId,)
+        cur.execute(query, pvalue)
+        # Process the response.
+        # Just one row is expected
+        row = cur.fetchone()
+        if row is None:
+            return None
+        # Build the return object
+        return self._create_history_objects(row)
+    def create_history(self,bloodTypeId,bloodBankId,amount,timeStamp=None,donorId=None,tag='DONATION'):
+        '''
+        Creates a new blood donation history or other blood bank blood in/out activities 
+
+        :param str bloodTypeId:  bloodTypeId of the blood type of this entry in the form btype-\d{1,3}
+        :param str bloodBankId: Id of blood bank related to the history entry in bbank-\d{1,3} format
+        :param str donorId: the Blood Donor's id in the format bdonor-\d{1,3}. Optional if history is 
+            a blood bank in/out activity not related to a blood donor
+       
+        :param str amount: amount of blood ( integer) . Possitive or negative. 
+            Negative when blood is leaving the blood bank and possitive otherwise.    
+        :param str timeStamp: UNIX timestamp when the blood was donated (long integer). Optional but defaults to 
+             the current system datetime the entry was made      
+        :param str tag: the tag that identified the entry as blood donor donation or blood bank  blood in/out transaction 
+            Optional, defaults to 'DONATION'. User OTHER if entry is not blood donor donation 
+        
+
+        :return: the id of the created history or None if the history could not
+            be created, Note that the returned value is a string with the format history-\d{1,3}.
+
+        :raises ValueError: if the bloodTypeId, bloodBankId, amount, donorId, tag are in wrong formats
+        
+        '''
+        match = re.match(r'btype-(\d{1,3})',str(bloodTypeId))
+        if match is None:
+            raise ValueError("The bloodTypeId is malformed")
+        bloodTypeId = int(match.group(1))
+       
+        match2 = re.match(r'bbank-(\d{1,3})',str(bloodBankId))
+        if match2 is None:
+            raise ValueError("The bloodBankId is malformed")
+        bloodBankId = int(match2.group(1))
+        
+        if donorId:
+            match3 = re.match(r'donor-(\d{1,3})',str(donorId))
+            if match3 is None:
+                raise ValueError("The donorId is malformed")
+                bloodBankId = int(match3.group(1))
+        
+        tag=tag.lower()
+        
+        if(tag != "DONATION".lower() and tag!= "OTHER".lower()):
+            raise ValueError("The tag is not in the correct format")
+        if not timeStamp:
+            timeStamp=time.mktime(time.mktime(datetime.now().timetuple()))
+        
+        try:
+            value = int(amount)
+        except ValueError:
+            raise ValueError("The amount is malformed")
+
+        stmnt = 'INSERT INTO Blood_Donors \
+                        (donorId,bloodTypeId,bloodBankId,amount,\
+                            timeStamp,tag) \
+                 VALUES(?,?,?,?,?,?)'
+        # Variables for the statement.
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+
+        # Execute SQL Statement
+        pvalue = (donorId, bloodTypeId, bloodBankId, amount,
+                  timeStamp, tag)
+
+        cur.execute(stmnt, pvalue)
+        self.con.commit()
+        # Extract the id of the added blood donor
+        lid = cur.lastrowid
+        # Return the id in
+        return 'history-' + str(lid) if lid is not None else None
+    def modify_history(self,historyId,donorId=None,bloodTypeId=None,bloodBankId=None,amount=None,timeStamp=None,tag=None):
+        '''
+        Modifies blood donation history or other blood bank blood in/out activity entry
+
+        :param str historyId: The id of the history entry in the format history-\d{1,3}. 
+        :param str donorId: the Blood Donor's Id (optional)
+        :param str bloodTypeId: the id of the blood type associated with this entry in the format btype-\d{1,3}.
+        :param str bloodBankId: Id of blood bank related to the history entry in bbank-\d{1,3} format (optional)
+        :param str amount: amount of blood ( integer) (optional) . Possitive or negative. 
+            Negative when blood is leaving the blood bank and possitive otherwise.    
+        :param str timeStamp: UNIX timestamp when the blood was donated (long integer) (Optional). Optional but defaults to 
+             the current system datetime the entry was made      
+        :param str tag: the tag that identified the entry as blood donor donation or blood bank  blood in/out transaction 
+            Optional, defaults to 'DONATION'. User OTHER if entry is not blood donor donation 
+
+        :return: the id of the edited History or None if the History
+             column(s) to modify were not found. The id of the History has the format ``history-\d{1,3}``,
+              where \d{1,3} is the id of the History in the database.
+
+        :raises ValueError: if the historyId, bloodTypeId, bloodBankId, amount, donorId, tag are in wrong formats
+    
+        '''
+        match0 = re.match(r'history-(\d{1,3})',str(historyId))
+        if match0 is None:
+            raise ValueError("The historyId is malformed")
+        historyId = int(match0.group(1))
+
+        match = re.match(r'btype-(\d{1,3})',str(bloodTypeId))
+        if match is None:
+            raise ValueError("The bloodTypeId is malformed")
+        bloodTypeId = int(match.group(1))
+       
+        match2 = re.match(r'bbank-(\d{1,3})',str(bloodBankId))
+        if match2 is None:
+            raise ValueError("The bloodBankId is malformed")
+        bloodBankId = int(match2.group(1))
+        
+        if donorId:
+            match3 = re.match(r'donor-(\d{1,3})',str(donorId))
+            if match3 is None:
+                raise ValueError("The donorId is malformed")
+                bloodBankId = int(match3.group(1))
+        
+        tag=tag.lower()
+        
+        if(tag != "DONATION".lower() and tag!= "OTHER".lower()):
+            raise ValueError("The tag is not in the correct format")
+        if not timeStamp:
+            timeStamp=time.mktime(time.mktime(datetime.now().timetuple()))
+        
+        try:
+            value = int(amount)
+        except ValueError:
+            raise ValueError("The amount is malformed")
+        
+        # Create the SQL statment
+        basic = 'UPDATE History SET '
+        stmnt = 'UPDATE History SET '
+        stmnt = stmnt + " donorId=? , " if donorId is not None else stmnt
+        stmnt = stmnt + " bloodTypeId=? , " if bloodTypeId is not None else stmnt
+        stmnt = stmnt + " bloodBankId=? , " if bloodBankId is not None else stmnt
+        stmnt = stmnt + " amount=? , " if amount is not None else stmnt
+        stmnt = stmnt + " timeStamp=? , " if timeStamp is not None else stmnt
+        stmnt = stmnt + " tag=? , " if tag is not None else stmnt
+        
+
+        if basic <> stmnt:
+            stmnt = stmnt + " WHERE historyId=?"
+        else:
+            return None
+        # try removing the last comma before WWHERE clause in the query
+        stmnt = ' '.join(stmnt.rsplit(',', 1))
+        #replace_right(stmnt,',',' ',1)
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+
+        pvalue = ()
+        pvalue = pvalue + (donorId,) if donorId is not None else pvalue
+        pvalue = pvalue + (bloodTypeId,) if bloodTypeId is not None else pvalue
+        pvalue = pvalue + (bloodBankId,) if bloodBankId is not None else pvalue
+        pvalue = pvalue + (amount,) if amount is not None else pvalue
+        pvalue = pvalue + (timeStamp,) if timeStamp is not None else pvalue
+        pvalue = pvalue + (tag,) if tag is not None else pvalue
+        pvalue = pvalue + (historyId,)
+
+        cur.execute(stmnt, pvalue)
+        self.con.commit()
+        if cur.rowcount < 1:
+            return None
+        return 'history-' + str(historyId)
+
+    def delete_history(self,historyId):   
+        '''
+        Delete the Blood Donation History with id given as parameter.
+        :param str historyId: id of the Blood Donation history to remove.Note that historyId
+            is a string with format ``history-\d{1,3}``
+        :return: True if the Blood Donation history has been deleted, False otherwise
+        :raises ValueError: if the historyId has a wrong format.
+
+        '''
+        # Extracts the int portion of the passed Id
+
+        match = re.match(r'history-(\d{1,3})', historyId)
+        if match is None:
+            raise ValueError("The historyId is malformed")
+        historyId = int(match.group(1))
+
+        # Create the SQL statment
+        stmnt = 'DELETE FROM History WHERE historyId = ?'
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        pvalue = (historyId,)
+        cur.execute(stmnt, pvalue)
+        # Commit the Blood donation history
+        self.con.commit()
+        # Check that the Blood donation history has been deleted
+        if cur.rowcount < 1:
+            return False
+        # Return true if Blood donation history is deleted.
+        return True
+   

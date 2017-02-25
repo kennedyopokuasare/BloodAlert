@@ -51,6 +51,10 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * Added CRUD for Blood_Donors Table
 ### Feb 23, 2017
 * Added test Cases for Blood Donors
+### Feb 24, 2017
+* Added CRUD for History
+### Feb 25, 2017
+* Added Test cases for History
 
 
 

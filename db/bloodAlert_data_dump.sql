@@ -24,20 +24,20 @@ INSERT INTO `Blood_Banks` VALUES (2,'Oulu University Hospital','Kajaanintie 50',
 INSERT INTO `Blood_Banks` VALUES (3,'Terveystalo Oulu','Sepänkatu 17','Oulu','+358 3 06000','TerveystaloOulu@oulu.fi','65.008998','25.470176','20');
 INSERT INTO `Blood_Banks` VALUES (4,'Coronaria','Saaristonkatu 22','Oulu','+358 20 7806260','Coronaria@oulu.fi','65.009292','25.473419','15');
 
-INSERT INTO `History` VALUES (1,'1','1','1','250','2016-09-18 11:31:12');
-INSERT INTO `History` VALUES (2,'2','2','2','300','2016-10-08 13:54:12');
-INSERT INTO `History` VALUES (3,'3','3','2','310','2016-10-19 11:56:52');
-INSERT INTO `History` VALUES (4,'4','4','4','400','2016-10-22 10:31:00');
+INSERT INTO `History` VALUES (1,'1','1','1','250','2016-09-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (2,'2','2','2','300','2016-10-08 13:54:12','DONATION');
+INSERT INTO `History` VALUES (3,'3','3','2','310','2016-10-19 11:56:52','DONATION');
+INSERT INTO `History` VALUES (4,'4','4','4','400','2016-10-22 10:31:00','DONATION');
 
-INSERT INTO `History` VALUES (5,'5','5','1','250','2016-10-25 11:31:12');
-INSERT INTO `History` VALUES (6,'6','6','3','265','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (7,'7','7','4','350','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (8,'8','8','2','235','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (9,'1','1','2','250','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (10,'1','1','2','255','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (11,'7','7','3','275','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (12,'2','2','1','290','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (13,'8','8','1','350','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (14,'3','3','2','270','2016-10-18 11:31:12');
-INSERT INTO `History` VALUES (15,'1','1','1','260','2016-10-18 11:31:12');
+INSERT INTO `History` VALUES (5,'5','5','1','250','2016-10-25 11:31:12','DONATION');
+INSERT INTO `History` VALUES (6,'6','6','3','265','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (7,'7','7','4','350','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (8,'8','8','2','235','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (9,'1','1','2','250','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (10,'1','1','2','255','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (11,'7','7','3','275','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (12,'2','2','1','290','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (13,'8','8','1','350','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (14,'3','3','2','270','2016-10-18 11:31:12','DONATION');
+INSERT INTO `History` VALUES (15,'1','1','1','260','2016-10-18 11:31:12','DONATION');
 

@@ -132,19 +132,19 @@ class BloodTypesDBAPITestCase(unittest.TestCase):
         print '\tTesting get_blood_type method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueError with malformed blood type id argument'
             self.connection.get_blood_type('1')
 
         print '\tTesting modify_blood_type method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueError with malformed blood type id argument'
             self.connection.modify_blood_type('1')
 
         print '\tTesting delete_blood_type method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood type id argument'
+            print '\tAsserting that method throw ValueError with malformed blood type id argument'
             self.connection.delete_blood_type('1')
 
 

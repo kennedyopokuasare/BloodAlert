@@ -30,11 +30,12 @@ CREATE TABLE IF NOT EXISTS Blood_Donors (
 
 CREATE TABLE IF NOT EXISTS History(
     historyId INTEGER PRIMARY KEY AUTOINCREMENT,
-    donorId  INTEGER NOT NULL,
+    donorId  INTEGER ,
     bloodTypeId INTEGER ,
     bloodBankId INTEGER ,
     amount INTEGER NOT NULL,
-    timeStamp REAL NOT NULL, 
+    timeStamp REAL NOT NULL,
+    tag TEXT DEFAULT 'DONATION', 
     FOREIGN KEY(donorId) REFERENCES Blood_Donors(donorId) ON DELETE CASCADE,
     FOREIGN KEY(bloodTypeId) REFERENCES Blood_Types(bloodTypeId) ON DELETE SET NULL,
     FOREIGN KEY(bloodBankId) REFERENCES Blood_Banks(bloodBankId) ON DELETE SET NULL
