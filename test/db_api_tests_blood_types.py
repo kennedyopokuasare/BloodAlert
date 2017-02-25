@@ -1,7 +1,7 @@
 '''
 Created on 21.02.2017
 
-Unittest for testing the Database Blood Types Database API
+Unittest for testing the  Blood Types Database API
 
 @author: asare
 '''

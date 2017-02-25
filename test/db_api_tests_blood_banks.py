@@ -1,7 +1,7 @@
 '''
 Created on 21.02.2017
 
-Unittest for testing the Database Blood Banks Database API
+Unittest for testing the  Blood Banks Database API
 
 @author: asare, arash, anastasiia
 '''
@@ -111,19 +111,19 @@ class BloodBanksDBAPITestCase(unittest.TestCase):
         print '\tTesting get_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood bank id argument'
+            print '\tAsserting that method throw ValueError with malformed blood bank id argument'
             self.connection.get_blood_bank('1')
 
         print '\tTesting delete_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood bank id argument'
+            print '\tAsserting that method throw ValueError with malformed blood bank id argument'
             self.connection.delete_blood_bank('1')
 
         print '\tTesting modify_blood_bank method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed Blood Bank id argument'
+            print '\tAsserting that method throw ValueError with malformed Blood Bank id argument'
             self.connection.modify_blood_bank('1')
 
     def test_blood_banks_ensures_unique_names_and_emails(self):
@@ -140,7 +140,7 @@ class BloodBanksDBAPITestCase(unittest.TestCase):
             print '\tAsserting that creating blood Bank existing Blood bank email ' + EXISTING_EMAIL + ' throws sqlite3.IntegrityError'
             self.connection.create_blood_bank(
                 NEW_NAME, CITY, TELEPHONE, EXISTING_EMAIL, BLOOD_THRESHOLD)
-# Test cases for CRUD
+ # Test cases for CRUD
 
     def test_create_blood_bank(self):
         '''

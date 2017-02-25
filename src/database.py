@@ -754,7 +754,7 @@ class Connection(object):
         # Return the id in
         return 'btype-' + str(lid) if lid is not None else None
 
-    def modify_blood_type(self, bloodTypeId, name):
+    def modify_blood_type(self, bloodTypeId, name=None):
         '''
         Modifies a Blood type based  ``bloodTypeId`` on any of the Blood attributes
 
@@ -1107,9 +1107,10 @@ class Connection(object):
         return True
 
 
+    
+    
     # History Table API
-    
-    
+       
     def get_blood_bank_histories(self,bloodBankId):
         '''
         Returns a list of all Blood bank transaction  History ( Donation, and other blood in/out activities) in the database
@@ -1240,7 +1241,7 @@ class Connection(object):
         if row is None:
             return None
         # Build the return object
-        return self._create_history_objects(row)
+        return self._create_history_object(row)
     def create_history(self,bloodTypeId,bloodBankId,amount,timeStamp=None,donorId=None,tag='DONATION'):
         '''
         Creates a new blood donation history or other blood bank blood in/out activities 
@@ -1275,24 +1276,24 @@ class Connection(object):
         bloodBankId = int(match2.group(1))
         
         if donorId:
-            match3 = re.match(r'donor-(\d{1,3})',str(donorId))
+            match3 = re.match(r'bdonor-(\d{1,3})',str(donorId))
             if match3 is None:
                 raise ValueError("The donorId is malformed")
-                bloodBankId = int(match3.group(1))
+            bloodBankId = int(match3.group(1))
         
         tag=tag.lower()
         
         if(tag != "DONATION".lower() and tag!= "OTHER".lower()):
             raise ValueError("The tag is not in the correct format")
         if not timeStamp:
-            timeStamp=time.mktime(time.mktime(datetime.now().timetuple()))
+            timeStamp=time.mktime(datetime.datetime.now().timetuple())
         
         try:
             value = int(amount)
         except ValueError:
             raise ValueError("The amount is malformed")
 
-        stmnt = 'INSERT INTO Blood_Donors \
+        stmnt = 'INSERT INTO History \
                         (donorId,bloodTypeId,bloodBankId,amount,\
                             timeStamp,tag) \
                  VALUES(?,?,?,?,?,?)'
@@ -1336,39 +1337,45 @@ class Connection(object):
         :raises ValueError: if the historyId, bloodTypeId, bloodBankId, amount, donorId, tag are in wrong formats
     
         '''
-        match0 = re.match(r'history-(\d{1,3})',str(historyId))
-        if match0 is None:
-            raise ValueError("The historyId is malformed")
-        historyId = int(match0.group(1))
-
-        match = re.match(r'btype-(\d{1,3})',str(bloodTypeId))
-        if match is None:
-            raise ValueError("The bloodTypeId is malformed")
-        bloodTypeId = int(match.group(1))
+        if historyId:
+             match0 = re.match(r'history-(\d{1,3})',str(historyId))
+             if match0 is None:
+                 raise ValueError("The historyId is malformed")
+             historyId = int(match0.group(1))
+        
+        if bloodTypeId:
+             match = re.match(r'btype-(\d{1,3})',str(bloodTypeId))
+             if match is None:
+                 raise ValueError("The bloodTypeId is malformed")
+             bloodTypeId = int(match.group(1))
        
-        match2 = re.match(r'bbank-(\d{1,3})',str(bloodBankId))
-        if match2 is None:
-            raise ValueError("The bloodBankId is malformed")
-        bloodBankId = int(match2.group(1))
+        if bloodBankId:
+            match2 = re.match(r'bbank-(\d{1,3})',str(bloodBankId))
+            if match2 is None:
+                raise ValueError("The bloodBankId is malformed")
+            bloodBankId = int(match2.group(1))
         
         if donorId:
             match3 = re.match(r'donor-(\d{1,3})',str(donorId))
             if match3 is None:
                 raise ValueError("The donorId is malformed")
-                bloodBankId = int(match3.group(1))
+            donorId = int(match3.group(1))
         
-        tag=tag.lower()
-        
-        if(tag != "DONATION".lower() and tag!= "OTHER".lower()):
-            raise ValueError("The tag is not in the correct format")
+        if tag:
+
+            tag=tag.lower()
+            
+            if(tag != "DONATION".lower() and tag!= "OTHER".lower()):
+                raise ValueError("The tag is not in the correct format")
         if not timeStamp:
-            timeStamp=time.mktime(time.mktime(datetime.now().timetuple()))
-        
-        try:
-            value = int(amount)
-        except ValueError:
-            raise ValueError("The amount is malformed")
-        
+            timeStamp=time.mktime(datetime.datetime.now().timetuple())
+        if amount:
+
+            try:
+                value = int(amount)
+            except ValueError:
+                raise ValueError("The amount is malformed")
+            
         # Create the SQL statment
         basic = 'UPDATE History SET '
         stmnt = 'UPDATE History SET '
@@ -1379,11 +1386,12 @@ class Connection(object):
         stmnt = stmnt + " timeStamp=? , " if timeStamp is not None else stmnt
         stmnt = stmnt + " tag=? , " if tag is not None else stmnt
         
-
+       
         if basic <> stmnt:
             stmnt = stmnt + " WHERE historyId=?"
         else:
             return None
+        
         # try removing the last comma before WWHERE clause in the query
         stmnt = ' '.join(stmnt.rsplit(',', 1))
         #replace_right(stmnt,',',' ',1)
@@ -1404,6 +1412,7 @@ class Connection(object):
         pvalue = pvalue + (tag,) if tag is not None else pvalue
         pvalue = pvalue + (historyId,)
 
+        print pvalue
         cur.execute(stmnt, pvalue)
         self.con.commit()
         if cur.rowcount < 1:

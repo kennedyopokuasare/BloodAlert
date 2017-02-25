@@ -1,7 +1,7 @@
 '''
 Created on 23.02.2017
 
-Unittest for testing the Database Blood Donors Database API
+Unittest for testing the  Blood Donors Database API
 
 @author: asare, arash, anastasiia
 '''
@@ -111,19 +111,19 @@ class BloodDonorsDBAPITestCase(unittest.TestCase):
         print '\tTesting get_blood_donor method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood donor id argument'
+            print '\tAsserting that method throw ValueError with malformed blood donor id argument'
             self.connection.get_blood_donor('1')
 
         print '\tTesting delete_blood_donor method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood donor id argument'
+            print '\tAsserting that method throw ValueError with malformed blood donor id argument'
             self.connection.delete_blood_donor('1')
 
         print '\tTesting modify_blood_donor method'
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that method throw ValueException with malformed blood donor id argument'
+            print '\tAsserting that method throw ValueError with malformed blood donor id argument'
             self.connection.modify_blood_donor('1')
 
     def test_blood_donors_ensures_unique_emails(self):
@@ -139,43 +139,43 @@ class BloodDonorsDBAPITestCase(unittest.TestCase):
 
     def test_blood_donor_modify_parameters_malformed(self):
         '''
-        Test that  modify_blood_donor method checks for welformed birthDate, bloodTypeId, GENDER
+        Test that  modify_blood_donor method checks for well formed  birthDate, bloodTypeId, GENDER
         '''
         print '\n(' + self.test_blood_donor_modify_parameters_malformed.__name__ + ')', \
               self.test_blood_donor_modify_parameters_malformed.__doc__
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that modifying blood Donor wrongly formated date ' + DATE_WRONG_FORMAT + ' throws ValueError'
+            print '\tAsserting that modifying blood Donor with wrongly formated date ' + DATE_WRONG_FORMAT + ' throws ValueError'
             self.connection.modify_blood_donor(
                 BLOOD_Donor_Id, birthDate=DATE_WRONG_FORMAT)
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that creating blood Donor wrongly formated gender ' + Gender_WRONG_FORMAT + ' throws ValueError'
+            print '\tAsserting that modifying blood Donor with wrongly formated gender ' + Gender_WRONG_FORMAT + ' throws ValueError'
             self.connection.modify_blood_donor(
                 BLOOD_Donor_Id, gender=Gender_WRONG_FORMAT)
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that creating blood Donor wrongly formated bloodTypeId ' + str(1) + ' throws ValueError'
+            print '\tAsserting that modifying blood Donor with wrongly formated bloodTypeId ' + str(1) + ' throws ValueError'
             self.connection.modify_blood_donor(BLOOD_Donor_Id, bloodTypeId=1)
 
     def test_blood_donor_create_parameters_malformed(self):
         '''
-        Test that  create_blood_donor method checks for welformed birthDate, bloodTypeId, GENDER
+        Test that  create_blood_donor method checks for well formed  birthDate, bloodTypeId, GENDER
         '''
         print '\n(' + self.test_blood_donor_create_parameters_malformed.__name__ + ')', \
               self.test_blood_donor_create_parameters_malformed.__doc__
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that creating blood Donor wrongly formated date ' + DATE_WRONG_FORMAT + ' throws ValueError'
+            print '\tAsserting that creating blood Donor with wrongly formated date ' + DATE_WRONG_FORMAT + ' throws ValueError'
             self.connection.create_blood_donor(FIRSTNAME, FAMILY_NAME, TELEPHONE,
                                                EXISTING_EMAIL, BLOOD_TYPE_Id, DATE_WRONG_FORMAT, GENDER)
         with self.assertRaises(ValueError):
-            print '\tAsserting that creating blood Donor wrongly formated gender ' + Gender_WRONG_FORMAT + ' throws ValueError'
+            print '\tAsserting that creating blood Donor with wrongly formated gender ' + Gender_WRONG_FORMAT + ' throws ValueError'
             self.connection.create_blood_donor(FIRSTNAME, FAMILY_NAME, TELEPHONE,
                                                EXISTING_EMAIL, BLOOD_TYPE_Id, DATE, Gender_WRONG_FORMAT)
 
         with self.assertRaises(ValueError):
-            print '\tAsserting that creating blood Donor wrongly formated bloodTypeId ' + str(1) + ' throws ValueError'
+            print '\tAsserting that creating blood Donor with wrongly formated bloodTypeId ' + str(1) + ' throws ValueError'
             self.connection.create_blood_donor(FIRSTNAME, FAMILY_NAME, TELEPHONE,
                                                EXISTING_EMAIL, 1, DATE, GENDER)
 # Test cases for CRUD
