@@ -20,7 +20,8 @@ DEFAULT_DB_PATH = 'db/bloodAlert.db'
 DEFAULT_SCHEMA = "db/bloodAlert_schema_dump.sql"
 DEFAULT_DATA_DUMP = "db/bloodAlert_data_dump.sql"
 
-
+#This Engine class  was adapted from the Exercise 1
+# The portion modified was the clear method which is used to clear entries from the database
 class Engine(object):
     '''
     Abstraction of the database.
@@ -51,7 +52,7 @@ class Engine(object):
         else:
             self.db_path = DEFAULT_DB_PATH
 
-    def connect(self):
+    def     connect(self):
         '''
         Creates a connection to the database.
 
@@ -131,6 +132,8 @@ class Engine(object):
             cur = con.cursor()
             cur.executescript(sql)
 
+# Connection Class was adopted from Exercise 1, 
+# all methods are new except __init__, close, check_foreign_keys_status,set_foreign_keys_support, unset_foreign_keys_support
 
 class Connection(object):
     '''

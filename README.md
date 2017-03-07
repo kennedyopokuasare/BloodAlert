@@ -1,7 +1,7 @@
 
 # The Database
 The Blood Alert Database API uses
- SQLite(www.sqlite.org) hence no installation is need, but ensure you have sqlite3.exe in the root of the project folder
+ SQLite(www.sqlite.org) hence no installation is needed
 
 ## Setting up the database
 There are two options to setup ( create and populate) the databse. We recommend option 1 if you are not familiar with SQL
@@ -14,6 +14,7 @@ There are two options to setup ( create and populate) the databse. We recommend 
 
 ###  Option 2
 
+* Esure you have sqlite3.exe in the root of the project folder
 * open command promt from the root folder of the project
 * run the command sqlite3 db/bloodAlert.db   
 * The previous step will take you to a prompt sqlite>
