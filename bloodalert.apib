@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://localhost:5000/
 
 # BloodAlert
 
@@ -7,7 +7,104 @@ The Blood Alert Web API offers different functionalities for managing blood dona
 and to advertise and promote blood donation in blood banks. Blood Alert Web API will facilitate effective communication between a blood donor, and a blood bank,
 managing blood level information of all blood types in blood banks, tracking blood donation history of 
 donated individuals. 
-# Group Link Relations
+
+
+
+# Group Link Relations 
+
+This document uses IANA standard link relations (http://www.iana.org/assignments/link-relations/link-relations.xhtml). In addition the following link relations have been defined:
+
+## add-blood-bank [/link-relations/add-blood-bank]
+
+Creates a new Blood Bank. Use via POST.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## donors-all [/link-relations/donors-all]
+
+This action list all registered in the system blood donors. Each item is an instance of the type Blood Donord defined in the profile Donor Profile. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## blood-types-all [/link-relations/blood-types-all]
+
+This action list of all blood types. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## edit [/link-relations/edit]
+
+Edit the current context. Use via PUT.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## delete [/link-relations/delete]
+
+Deletes the current context. Use via DELETE.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## blood-bank-history-list [/link-relations/blood-bank-history-list]
+
+This action list all blood donations and transactions of the current blood bank. Each item is an instance of the type History defined in this profile. Can only be accessed through GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## blood-bank-blood-level [/link-relations/blood-bank-blood-level]
+
+This action shows blood levels of the current blood bank. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## blood-donor-history-list [/link-relations/blood-donor-history-list]
+
+This action list all blood donations of the current blood donor. Each item is an instance of the type History defined in this profile. Can only be accessed through GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## add-blood-donor [/link-relations/add-blood-donor]
+
+Creates a new Blood Donor. Use via POST.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+## blood-banks-all [/link-relations/blood-banks-all]
+
+This action list all registered in the system blood banks. Each item is an instance of the type Blood Bank defined in the profile Blood Bank Profile. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
+
 
 # Group Profiles
 
@@ -15,21 +112,140 @@ donated individuals.
 
 Profile definition for all Blood bank  related resources.
 
+### Dependencies
+
+This profile inherits:
+ * Some semantic descriptors from http://schema.org/Article
+ * Some link  relations from IANA Web linking [RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+
+### Link relations
+
+ * [donors-all](reference/link-relations/donors-all)
+ * [blood-types-all](reference/link-relations/blood-types-all)
+ * [edit](reference/link-relations/edit)
+ * [delete](reference/link-relations/edit)
+ * [blood-bank-history-list](reference/link-relations/blood-bank-history-list)
+ * [blood-bank-blood-level](reference/link-relations/blood-bank-blood-level)
+ 
+ Inherited from [IANA RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+ * `profile`: See [profile](https://tools.ietf.org/html/rfc6906). The link contains the location of the resource profile. 
+
+### Semantic Descriptors
+
+#### Data Type Message
+
+ * `bloodBankId` (string): ID of the Blood Bank. 
+ * `name`(string): Name of a Blood Bank. 
+ * `city`(string): Name of the city where the Blood Bank is located.
+ * `threshold`(object): Threshold for the Blood Level in the Bank. Is used to send the Alarm Messages to Blood Donors.
+ 
+ Inherited from [http://schema.org/](http://schema.org/)
+ * `address`(string): See [http://schema.org/address](https://schema.org/address)
+ * `telephone`(string): See [http://schema.org/telephone](http://schema.org/telephone)
+ * `email`(string): See [http://schema.org/email](http://schema.org/email)
+ * `latitude`(string): See [https://schema.org/latitude](https://schema.org/latitude)
+ * `longitude`(string): See [https://schema.org/longitude](https://schema.org/longitude)
+
+### GET
+
+Return Blood Bank Profile in HTML format
++ Response 200 (text/html)
+
 ## Blood Donor Profile [/profiles/blood-donors-profile]
 
 Profile definition for all Blood Donor related resources.
+
+### Dependencies
+
+This profile inherits:
+ * Some semantic descriptors from http://schema.org/Article
+ * Some link  relations from IANA Web linking [RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+
+### Link relations
+
+ * [blood-banks-all](reference/link-relations/blood-banks-all)
+ * [blood-types-all](reference/link-relations/blood-types-all)
+ * [edit](reference/link-relations/edit)
+ * [delete](reference/link-relations/edit)
+ * [blood-donor-history-list](reference/link-relations/blood-donor-history-list)
+ 
+ Inherited from [IANA RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+ * `profile`: See [profile](https://tools.ietf.org/html/rfc6906). The link contains the location of the resource profile. 
+
+### Semantic Descriptors
+
+#### Data Type Message
+
+ * `donorId` (string): ID of the Blood Donor in the system.
+ * `bloodTypeId` (string): ID of the Blood Type of the current Blood Donor.
+ * `city`(string): Name of the city where the Blood Donor is lives.
+ 
+ Inherited from [http://schema.org/](http://schema.org/)
+ * `firstname`(string): See [http://schema.org/givenName](http://schema.org/givenName)
+ * `familyName`(string): See [http://schema.org/familyName](http://schema.org/familyName)
+ * `birthday`(string): See [http://schema.org/birthDate](http://schema.org/birthDate)
+ * `gender`(string): See [http://schema.org/gender](http://schema.org/gender)
+ * `telephone`(string): See [http://schema.org/telephone](http://schema.org/telephone)
+ * `address`(string): See [http://schema.org/address](https://schema.org/address)
+ * `email`(string): See [http://schema.org/email](http://schema.org/email)
+
+### GET
+
+Return Blood Donor Profile in HTML format
++ Response 200 (text/html)
+
+
 ## Blood Types Profile [/profiles/blood-types-profile]
 
 Profile definition for all Blood Type related resources.
 
 ### Dependencies
 
+This profile inherits:
+ * Some semantic descriptors from http://schema.org/Article
+ * Some link  relations from IANA Web linking [RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+
+### Link relations
+
+ * [blood-banks-all](reference/link-relations/blood-banks-all)
+ * [donors-all](reference/link-relations/donors-all)
+ * [edit](reference/link-relations/edit)
+ * [delete](reference/link-relations/edit)
+ 
+ Inherited from [IANA RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
+ * `profile`: See [profile](https://tools.ietf.org/html/rfc6906). The link contains the location of the resource profile. 
+
+### Semantic Descriptors
+
+#### Data Type Message
+
+ * `bloodTypeId` (string): ID of the Blood Type.
+ * `name`(string): Name of a Blood Type. 
+
+### GET
+
+Return Blood Type Profile in HTML format
++ Response 200 (text/html)
+
+## Error Profile [/profiles/error_profile]
+
+Profile definition for all errors messages in the system
+
++ Attributes 
+    + resource_url (string, required) - A url of the resource generating the error
+
+### GET
+
+Return the Error Profile in HTML format
++ Response 200 (text/html)
+
+
 
 # Group Blood Banks
 
 All these resources use the [Blood Bank Profile](reference/profiles/blood-bank-profile).
 
-## Blood Bank List [/BloodAlert/bloodbank]
+## Blood Bank List [/bloodalert/bloodbanks]
 All Blood Banks in the database
 
 ### List All Blood Banks [GET]
@@ -37,28 +253,127 @@ All Blood Banks in the database
 Get a list of all Blood Banks in the system
 
 + Response 200 (application/vnd.mason+json)
-
-        [
+    
+    Blood Bank List loaded sucessfully
+    
+     
+    + Body 
+    
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
                     }
-                ]
+                },
+                "items": [
+                    {
+                        "bloodBankId": "bbank-1",
+                        "name": "Oulu University Hospital", 
+                        "address": "Kajaanintie 50",
+                        "city":"Oulu",
+                        "telephone":"+358 8 3152011",
+                        "email": "OuluUniHospital@oulu.fi",
+                        "latitude": 65.007406, 
+                        "longitude": 25.517786,
+                        "threshold": 30,
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodbanks/bbank-1/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-banks-profile/"
+                            }                            
+                        }
+                    },
+                    {
+                        "bloodBankId": "bbank-2",
+                        "name": "Tervestalo", 
+                        "address": "Yliopistokatu 1A",
+                        "city":"Oulu",
+                        "telephone":"+348 4 17860673",
+                        "email": "Terveystalo@oulu.fi",
+                        "latitude": 65.057774, 
+                        "longitude": 25.4712876,
+                        "threshold": 20,
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodbanks/bbank-2/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-banks-profile/"
+                            }                            
+                        }
+                    }
+                ],
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodbanks/"
+                    },
+                    "bloodalert:add-blood-bank": {
+                        "title": "Add Blood Bank",
+                        "href": "/bloodalert/bloodbanks/",
+                        "encoding": "json",
+                        "method": "POST",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "title": "Name",
+                                    "description": "The blood bank's name",
+                                    "type": "string"
+                                },
+                                "address": {
+                                    "title": "Address",
+                                    "description": "The blood bank's address",
+                                    "type": "string",
+                                    "default":"-"
+                                },
+                                "city": {
+                                    "title": "City",
+                                    "description": "The blood bank's city",
+                                    "type": "string"
+                                },
+                                "telephone": {
+                                    "title": "Telephone",
+                                    "description": "The blood bank's telephone",
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "title": "Email",
+                                    "description": "The blood bank's email",
+                                    "type": "string"
+                                },
+                                "latitude": {
+                                    "title": "Latitude",
+                                    "description": "The blood bank's latitude",
+                                    "type": "number"
+                                },
+                                "longitude": {
+                                    "title": "Longitude",
+                                    "description": "The blood bank's longitude",
+                                    "type": "number"
+                                },
+                                "threshold": {
+                                    "title": "Threshold",
+                                    "description": "The blood bank's threshold of blood level to alert",
+                                    "type": "number"
+                                }
+                            },
+                            "required": ["name","city","telephone","email", "threshold"]
+                        }
+                    },
+                    "bloodalert:donors-all": {
+                        "title": "List all blood donors", 
+                        "href": "/bloodalert/donors/"
+                    },
+                    
+                    "bloodalert:blood-types-all": {
+                        "title": "List all blood types", 
+                        "href": "/bloodalert/bloodtypes/"
+                    }
+                }
             }
-        ]
+
 
 ### Create a Blood Bank [POST]
 
@@ -101,10 +416,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Wrong request format"
                     "@messages": [
-                        "Be sure to include "
+                        "Be sure to include required body in correct format"
                     ]
                 }
-                "resource_url": "/bloodAlert/BloodBanks/"
+                "resource-url": "/bloodAlert/BloodBanks/"
             }
 
 
@@ -121,12 +436,12 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         "Use a JSON compatible format"
                     ]
                 }
-                "resource_url": "/bloodAlert/BloodBanks/"
+                "resource-url": "/bloodAlert/BloodBanks/"
             }
 
 + Response 500  (application/vnd.mason+json)
 
-    The server cannot store the message in the database.
+    The server cannot store the Blood bank in the database.
     
     + Body 
 
@@ -134,10 +449,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Blood bank could not be created"
                     "@messages": [
-                        "Cannot create a blood the blood bank in the database"
+                        "Cannot create the blood bank in the database"
                     ]
                 }
-                "resource_url": "/bloodAlert/BloodBanks/"
+                "resource-url": "/bloodAlert/BloodBanks/"
             }
 
 ## Blood Bank [/bloodalert/bloodbanks/{bloodBankId}]
@@ -162,12 +477,106 @@ Gets a blood bank information in the database
 
     Blood bank information loaded sucessfully
     
-    + Body
+    + Body 
     
             {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalert/link-relations/"
+                    }
+                 },
                 
-        
+                "bloodBankId": "bbank-1",
+                "name": "Oulu University Hospital", 
+                "address": "Kajaanintie 50",
+                "city":"Oulu",
+                "telephone":"+358 8 3152011",
+                "email": "OuluUniHospital@oulu.fi",
+                "latitude": 65.007406, 
+                "longitude": 25.517786,
+                "threshold": 30,
+                
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodbanks/bbank-1/"
+                    },
+                    "profile": {
+                        "href": "/profiles/blood-banks-profile/"
+                    },
+                    "collection": {
+                        "href": "/bloodalert/bloodbanks/"
+                    },
+                    "bloodalert:edit": {
+                        "title": "Edit this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/",
+                        "encoding": "json",
+                        "method": "PUT",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "title": "Name",
+                                    "description": "The blood bank's name",
+                                    "type": "string"
+                                },
+                                "address": {
+                                    "title": "Address",
+                                    "description": "The blood bank's address",
+                                    "type": "string",
+                                    "default":"-"
+                                },
+                                "city": {
+                                    "title": "City",
+                                    "description": "The blood bank's city",
+                                    "type": "string"
+                                },
+                                "telephone": {
+                                    "title": "Telephone",
+                                    "description": "The blood bank's telephone",
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "title": "Email",
+                                    "description": "The blood bank's email",
+                                    "type": "string"
+                                },
+                                "latitude": {
+                                    "title": "Latitude",
+                                    "description": "The blood bank's latitude",
+                                    "type": "number"
+                                },
+                                "longitude": {
+                                    "title": "Longitude",
+                                    "description": "The blood bank's longitude",
+                                    "type": "number"
+                                },
+                                "threshold": {
+                                    "title": "Threshold",
+                                    "description": "The blood bank's threshold of blood level to alert",
+                                    "type": "number"
+                                }
+                            },
+                            "required": []
+                        }
+                    },
+                    "bloodalert:delete": {
+                        "title":"Delete this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/",
+                        "method": "DELETE"
+                    },
+                    "bloodalert:blood-bank-history-list": {
+                        "title":"List History of this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/history/",
+                        "method":"GET"
+                    },
+                    "bloodalert:blood-bank-blood-level": {
+                        "title":"List blood levels of this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/bloodlevels/",
+                        "method":"GET"
+                    }
+                }
             }
+    
  
         
             
@@ -184,7 +593,7 @@ No such blood bank with specified Id
                         "No such blood bank with specified bbank-1"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
    
 ### Modify Blood Bank [PUT]
@@ -230,10 +639,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Wrong request format"
                     "@messages": [
-                        "Be sure to include all required parameters in the correct format "
+                        "Be sure to include required headersall required parameters in the correct format "
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
             
 + Response 415 (application/vnd.mason+json)
@@ -249,7 +658,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         "Use a JSON compatible format"
                     ]
                 }
-                "resource_url": "/bloodalert/donors/"
+                "resource-url": "/bloodalert/donors/"
             }
 
 + Response 404 (application/vnd.mason+json)
@@ -265,7 +674,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }    
 ### Delete Blood Bank [DELETE]
 Delete a message from the system
@@ -294,7 +703,7 @@ Delete a message from the system
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
             } 
 
 ## Blood Bank Blood levels [/bloodalert/bloddbanks/{bloodBankId}/bloodlevels/]
@@ -312,13 +721,44 @@ All blood levels (blood type and level of blood) of a particular blood bank
                 Accept: application/vnd.mason+json
                 
 + Response 201 (application/vnd.mason+json)
-Blood bank blood levels loaded sucessfully 
-    +   Body
-            
+
+     Blood bank blood levels loaded sucessfully 
+     + Body 
+    
             {
-            
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
+                    }
+                },
+                
+                "items": [
+                    {
+                        "bloodype": "O+",
+                        "amount": 50
+                    },
+                    {
+                        "bloodype": "A+",
+                        "amount": 150
+                    },
+                    {
+                        "bloodype": "B+",
+                        "amount": 33
+                    }
+                ],
+                
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodbanks/bbank-1/bloodlevels/"
+                    },
+                    "parent": {
+                        "title": "The related blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/",
+                        "method": "GET"
+                    }
+                }
             }
-            
+
 + Response 404 (application/vnd.mason+json)
 
     No such blood bank with id `bbank-1` exists in the database
@@ -332,8 +772,9 @@ Blood bank blood levels loaded sucessfully
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
+            
 ## Blood Bank History List [/bloodalert/bloddbanks/{bloodBankId}/history/]
 All blood bank blood transaction (donation , others) history
 + Parameters
@@ -352,11 +793,80 @@ Get all blood transactions of target blood bank (donation, etc)
 
     Blood bank history List loaded sucessfully
     
-    + Body
+    + Body 
     
             {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
+                    }
+                },
                 
-        
+                "items": [
+                    {
+                        "historyId":"history-2",
+                        "donorId":"bdonor-2",
+                        "bloodTypeId":"btype-2",
+                        "bloodBankId":"bbank-2",
+                        "amount":300,
+                        "timeStamp":"2016-10-08 13:54:12",
+                        "tag":"DONATION",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodbanks/bbank-2/history/history-2/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-banks-profile/"
+                            },
+                            "donor":{
+                                "href": "/bloodalert/donors/bdonor-2/"
+                            },
+                            "bloodbank":{
+                                "href": "/bloodalert/bloodbanks/bbank-2/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-2/"
+                            }
+                        }
+                    },
+                    {
+                        "historyId":"history-2",
+                        "donorId":"bdonor-2",
+                        "bloodTypeId":"btype-2",
+                        "bloodBankId":"bbank-2",
+                        "amount":300,
+                        "timeStamp":"2016-10-08 13:54:12",
+                        "tag":"DONATION",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodbanks/bbank-2/history/history-2/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-banks-profile/"
+                            },
+                            "donor":{
+                                "href": "/bloodalert/donors/bdonor-2/"
+                            },
+                            "bloodbank":{
+                                "href": "/bloodalert/bloodbanks/bbank-2/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-2/"
+                            }                         
+                        }
+                    }
+                ],
+                
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloddbanks/bbank-2/history/"
+                    },
+                    "bloodalert:blood-bank-blood-level": {
+                        "title":"List blood levels of this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/bloodlevels/",
+                        "method":"GET"
+                    }
+                }
             }
  
         
@@ -374,7 +884,7 @@ No such blood bank with specified Id
                         "No such blood bank with specified bbank-1"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1/history"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history"
             }
 ## Blood Bank History [/bloodalert/bloddbanks/{bloodBankId}/history/{historyId}/]
 All blood bank blood transaction (donation , others) history
@@ -398,8 +908,88 @@ Get a single blood bank history entry of target historyId
     + Body
     
             {
-                
-        
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalert/link-relations/"
+                    }
+                 },
+                "historyId":"history-2",
+                "donorId":"bdonor-2",
+                "bloodTypeId":"btype-2",
+                "bloodBankId":"bbank-2",
+                "amount":300,
+                "timeStamp":"2016-10-08 13:54:12",
+                "tag":"DONATION",
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodbanks/bbank-2/history/history-2/"
+                            },
+                    "profile": {
+                        "href": "/profiles/blood-banks-profile/"
+                    },
+                    "donor":{
+                        "href": "/bloodalert/donors/bdonor-2/"
+                    },
+                    "bloodbank":{
+                        "href": "/bloodalert/bloodbanks/bbank-2/"
+                    },
+                    "bloodtype":{
+                        "href": "/bloodalert/bloodtypes/btype-2/"
+                    },      
+                    "bloodalert:edit": {
+                        "title": "Edit this blood bank history",
+                        "href": "/bloodalert/bloodbanks/bbank-2/history/history-2/",
+                        "encoding": "json",
+                        "method": "PUT",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "donorId": {
+                                    "title": "Blood Donor",
+                                    "description": "The Blood Donor's Id",
+                                    "type": "string"
+                                },
+                                "bloodTypeId": {
+                                    "title": "Blood Type",
+                                    "description": "The blood type Id",
+                                    "type": "string"
+                                },
+                                "amount": {
+                                    "title": "Amount",
+                                    "description": "The amount of blood",
+                                    "type": "string"
+                                },
+                                "timeStamp": {
+                                    "title": "Time",
+                                    "description": "The timeStamp of blood bank history",
+                                    "type": "string"
+                                },
+                                "tag": {
+                                    "title": "Tag",
+                                    "description": "The tag of the donation history",
+                                    "type": "string",
+                                    "default":"DONATION"
+                                }
+                            },
+                            "required": []
+                        }
+                    },
+                    "bloodalert:delete": {
+                        "title":"Delete this blood bank history",
+                        "href": "/bloodalert/bloodbanks/bbank-2/history/history-2/",
+                        "method": "DELETE"
+                    },
+                    "bloodalert:blood-bank-history-list": {
+                        "title":"List History of this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-2/history/",
+                        "method":"GET"
+                    },
+                    "bloodalert:blood-bank-blood-level": {
+                        "title":"List blood levels of this blood bank",
+                        "href": "/bloodalert/bloodbanks/bbank-1/bloodlevels/",
+                        "method":"GET"
+                    }
+                }
             }
  
         
@@ -417,7 +1007,7 @@ No such blood bank  with specified Blood bloodBankId or historyId
                         "No such blood bank with specified bbank-1"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }
 
 ### Modify Blood Bank History [PUT]
@@ -449,10 +1039,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Wrong request format"
                     "@messages": [
-                        "Be sure to include all required parameters in the correct format "
+                        "Be sure to include required headersall required parameters in the correct format "
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }
             
 + Response 415 (application/vnd.mason+json)
@@ -468,7 +1058,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         "Use a JSON compatible format"
                     ]
                 }
-                "resource_url": "/bloodalert/donors/"
+                "resource-url": "/bloodalert/donors/"
             }
 
 + Response 404 (application/vnd.mason+json)
@@ -484,7 +1074,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         "No such blood bank with id `bbank-1` and historyId `history-1` exists in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }         
 
 ### Delete Blood Bank History [DELETE]
@@ -514,7 +1104,7 @@ Delete a blood bank donation history from the database
                         "No such blood bank with id `bbank-1` and historyId `history-1` exists in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             } 
 
 
@@ -533,13 +1123,137 @@ Gets a list of all blood donors
     Blood donor List loaded sucessfully
     
     + Body
-    
+     
             {
-                
-        
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
+                    }
+                },
+                "items": [
+                    {
+                        "donorId": "bdonor-1",
+                        "firstname": "Anna", 
+                        "familyName": "Bord",
+                        "birthDate": "30-12-1986", 
+                        "gender": "Female",
+                        "bloodTypeId": "btype-1", 
+                        "telephone": "+348416754234",
+                        "city": "Oulu", 
+                        "address": "Linnanmaa", 
+                        "email": "AnB@oulu.fi",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/donors/bdonor-1/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-donors-profile/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-1/"
+                            }                            
+                        }
+                    },
+                    {
+                        "donorId": "bdonor-2",
+                        "firstname": "Marcela", 
+                        "familyName": "Storm",
+                        "birthDate": "20-12-1996", 
+                        "gender": "Female",
+                        "bloodTypeId": "btype-2", 
+                        "telephone": "+348417856964",
+                        "city": "Oulu", 
+                        "address": "Linnanmaa", 
+                        "email": "ms@oulu.fi",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/donors/bdonor-2/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-donors-profile/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-2/"
+                            }                            
+                        }
+                    }
+                ],
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/donors/"
+                    },
+                    "bloodalert:add-blood-donor": {
+                        "title": "Add Blood Donor",
+                        "href": "/bloodalert/donors/",
+                        "encoding": "json",
+                        "method": "POST",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "firstname": {
+                                    "title": "FirstName",
+                                    "description": "The blood donor's firstname",
+                                    "type": "string"
+                                },
+                                "familyname": {
+                                    "title": "Family Name",
+                                    "description": "The blood donor's familyname",
+                                    "type": "string"
+                                },
+                                "birthDate": {
+                                    "title": "Birth Date",
+                                    "description": "The blood donor's birth Date",
+                                    "type": "string"
+                                },
+                                "gender": {
+                                    "title": "Gender",
+                                    "description": "The blood donor's gender",
+                                    "type": "string"
+                                },
+                                "bloodTypeId": {
+                                    "title": "Blood Type",
+                                    "description": "The blood donor's bloodType Id",
+                                    "type": "string"
+                                },
+                                "telephone": {
+                                    "title": "Telephone",
+                                    "description": "The blood donor's telephone",
+                                    "type": "string"
+                                },
+                                "city": {
+                                    "title": "City",
+                                    "description": "The blood donor's city",
+                                    "type": "string"
+                                },
+                                "address": {
+                                    "title": "Address",
+                                    "description": "The blood donor's address",
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "title": "Email",
+                                    "description": "The blood donor's email"
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["firstName","familyName","birthDate","gender","bloodTypeId","telephone","address","email"]
+                        }
+                    },
+                    "bloodalert:blood-banks-all": {
+                        "title": "List all blood banks", 
+                        "href": "/bloodalert/bloodbanks/"
+                    },
+                    
+                    "bloodalert:blood-types-all": {
+                        "title": "List all blood types", 
+                        "href": "/bloodalert/bloodtypes/"
+                    }
+                }
             }
 
-### CREATE a new Blood Donor [POST]
+
+
+### Create a new Blood Donor [POST]
 
 Adds a new Blood Donor to the bloodAlert database
 + Request (application/json)
@@ -570,7 +1284,7 @@ Adds a new Blood Donor to the bloodAlert database
 Blood donor Created sucessfully
     + Headers
 
-            Location: Url to the created Blood bank
+            Location: Url to the created Blood donor
 
 
 + Response 400 (application/vnd.mason+json)
@@ -583,10 +1297,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Wrong request format"
                     "@messages": [
-                        "Be sure to include "
+                        "Be sure to include required body in correct format"
                     ]
                 }
-                "resource_url": "/bloodalert/donors/"
+                "resource-url": "/bloodalert/donors/"
             }
 
 
@@ -603,12 +1317,12 @@ The request body is malformed. Some of the the parameters are not correctly prov
                         "Use a JSON compatible format"
                     ]
                 }
-                "resource_url": "/bloodalert/donors/"
+                "resource-url": "/bloodalert/donors/"
             }
 
 + Response 500  (application/vnd.mason+json)
 
-    The server cannot store the message in the database.
+    The server cannot store the blood donor in the database.
     
     + Body 
 
@@ -616,10 +1330,10 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "Blood donor could not be created"
                     "@messages": [
-                        "Cannot create a blood the blood donor in the database"
+                        "Cannot create the blood donor in the database"
                     ]
                 }
-                "resource_url": "/bloodalert/donors/"
+                "resource-url": "/bloodalert/donors/"
             }
 
 ## Blood Donor [/bloodalert/donors/{donorid}/]
@@ -627,13 +1341,587 @@ A blood donor in the database
 
 + Parameters
     + donorid (string) - the Id of the blood donor in the format bdonor-\d{1,3}
+   
+    
+### Get Blood Donor [GET]
+
+Gets a blood donor information in the database
+
+
++ Request(application/json)
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
++ Response  201 (application/vnd.mason+json)
+
+    Blood donor information loaded sucessfully
+    
+    + Body 
+    
+            {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalert/link-relations/"
+                    }
+                 },
+                "donorId": "bdonor-2",
+                "firstname": "Marcela", 
+                "familyName": "Storm",
+                "birthDate": "20-12-1996", 
+                "gender": "Female",
+                "bloodTypeId": "btype-2", 
+                "telephone": "+348417856964",
+                "city": "Oulu", 
+                "address": "Linnanmaa", 
+                "email": "ms@oulu.fi",
+                "@controls": {
+                    "self": {
+                            "href": "/bloodalert/donors/bdonor-2/"
+                        },
+                    "profile": {
+                        "href": "/profiles/blood-donors-profile/"
+                    },
+                    "bloodtype":{
+                        "href": "/bloodalert/bloodtypes/btype-2/"
+                    },  
+                    "collection": {
+                        "href": "/bloodalert/donors/"
+                    },
+                    "bloodalert:edit": {
+                        "title": "Edit this blood donor",
+                        "href": "/bloodalert/donors/bdonor-2/",
+                        "encoding": "json",
+                        "method": "PUT",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "firstname": {
+                                    "title": "FirstName",
+                                    "description": "The blood donor's firstname",
+                                    "type": "string"
+                                },
+                                "familyname": {
+                                    "title": "Family Name",
+                                    "description": "The blood donor's familyname",
+                                    "type": "string"
+                                },
+                                "birthDate": {
+                                    "title": "Birth Date",
+                                    "description": "The blood donor's birth Date",
+                                    "type": "string"
+                                },
+                                "gender": {
+                                    "title": "Gender",
+                                    "description": "The blood donor's gender",
+                                    "type": "string"
+                                },
+                                "bloodTypeId": {
+                                    "title": "Blood Type",
+                                    "description": "The blood donor's bloodType Id",
+                                    "type": "string"
+                                },
+                                "telephone": {
+                                    "title": "Telephone",
+                                    "description": "The blood donor's telephone",
+                                    "type": "string"
+                                },
+                                "city": {
+                                    "title": "City",
+                                    "description": "The blood donor's city",
+                                    "type": "string"
+                                },
+                                "address": {
+                                    "title": "Address",
+                                    "description": "The blood donor's address",
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "title": "Email",
+                                    "description": "The blood donor's email"
+                                    "type": "string"
+                                }
+                            },
+                            "required": []
+                        }
+                    },
+                    "bloodalert:delete": {
+                        "title":"Delete this blood donor",
+                        "href": "/bloodalert/donors/bdonor-2/",
+                        "method": "DELETE"
+                    },
+                    "bloodalert:blood-donor-history-list": {
+                        "title":"List donation History of this blood donor",
+                        "href": "/bloodalert/donors/bdonor-2/history/",
+                        "method":"GET"
+                    }
+                }
+            }
+    
+ 
+        
+            
++ Response 404 (application/vnd.mason+json)
+No such blood donor with specified Id
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donor"
+                    "@messages": [
+                        "No such blood donor with specified bdonor-2"
+                    ]
+                }
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            }
+
+### Modify Blood donor [PUT]
+Modifies blood donor history 
+
++ Request(application/json)
+    
+    Any of ( or a combination of ) the following of a Blood donor; 
+    
+    + ``firstName`` 
+    + ``familyName``
+    + ``telephone``
+    + ``email``
+    + ``bloodTypeId``
+    + ``birthDate``
+    + ``gender``
+    + ``address``
+    + ``city``
+    
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
+    +   Body
+            
+            {
+                "firstName":"Anas",
+                "telephone":"+358546933723"
+            }
+    
+            
++ Response 204 (application/vnd.mason+json)
+    
+  
+
++ Response 400 (application/vnd.mason+json)
+The request body is malformed. Some of the the parameters are not correctly provided
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "Wrong request format"
+                    "@messages": [
+                        "Be sure to include required headersall required parameters in the correct format "
+                    ]
+                }
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            }
+            
++ Response 415 (application/vnd.mason+json)
+
+    The server cannot understand the format of the response.
+    
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Unsupported media type"
+                    "@messages": [
+                        "Use a JSON compatible format"
+                    ]
+                }
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            }
+
++ Response 404 (application/vnd.mason+json)
+
+    No such blood donor with id `bdonor-2`
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donor"
+                    "@messages": [
+                        "No such blood donor with id bdnor-2"
+                    ]
+                }
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            }         
+
+### Delete Blood donor[DELETE]
+Delete a blood donor
+
++ Request(application/json)
+    
+    + Headers
+    
+            Accept: application/vnd.mason+json
+    
++ Response 204
+
+        
+        
+
++ Response 404 (application/vnd.mason+json)
+
+    No such blood donor with id `bdonor-2`
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donor"
+                    "@messages": [
+                        "No such blood donor with id bdnor-2"
+                    ]
+                }
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            } 
+
     
 # Group Blood Types
 
 All these resources use the [Blood Type Profile](reference/profiles/blood-types-profile).
 
+## Blood Types List [/bloodalert/bloodtypes/]
+
+All Blood Types in the database
+
+### List all Blood Types  [GET]
+Gets a list of all blood types 
+            
++ Response  201 (application/vnd.mason+json)
+
+    Blood type List loaded sucessfully
+    
+    + Body
+     
+            {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
+                    }
+                },
+                "items": [
+                    {
+                        "bloodTypeId": "btype-1",
+                        "name": "0+", 
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodtypes/btype-1/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-types-profile/"
+                            }                           
+                        }
+                    },
+                    {
+                        "bloodTypeId": "btype-2",
+                        "name": "A+", 
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/bloodtypes/btype-1/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-types-profile/"
+                            }                           
+                        }
+                    }
+                ],
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodtypes/"
+                    },
+                    "bloodalert:add-blood-donor": {
+                        "title": "Add Blood Type",
+                        "href": "/bloodalert/blood types/",
+                        "encoding": "json",
+                        "method": "POST",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "title": "Blood Type",
+                                    "description": "The blood type's name",
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name"]
+                        }
+                    },
+                    "bloodalert:blood-banks-all": {
+                        "title": "List all blood banks", 
+                        "href": "/bloodalert/bloodbanks/"
+                    },
+                    
+                    "bloodalert:donors-all": {
+                        "title": "List all blood donors", 
+                        "href": "/bloodalert/donors/"
+                    }
+                }
+            }
+### Create a Blood Type [POST]
+
+Adds a new Blood type to the bloodAlert database
++ Request (application/json)
+
+    + Headers
+    
+            Accept: application/vnd.mason+json
+    + Body
+    
+            {
+                "name": "AB+",
+            }
+
++ Response 201 (application/json)
+Blood type Created sucessfully
+    + Headers
+
+            Location: Url to the created Blood type
 
 
-
++ Response 400 (application/vnd.mason+json)
+The request body is malformed. Some of the the parameters are not correctly provided
 
     
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "Wrong request format"
+                    "@messages": [
+                        "Be sure to include all required request body"
+                    ]
+                }
+                "resource-url": "/bloodAlert/bloodtypes/"
+            }
+
+
++ Response 415 (application/vnd.mason+json)
+
+    The server cannot understand the format of the response.
+    
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Unsupported media type"
+                    "@messages": [
+                        "Use a JSON compatible format"
+                    ]
+                }
+                "resource-url": "/bloodAlert/bloodtypes/"
+            }
+
++ Response 500  (application/vnd.mason+json)
+
+    The server cannot store the blood type in the database.
+    
+    + Body 
+
+            {
+                "@error": {
+                    "@message": "Blood type could not be created"
+                    "@messages": [
+                        "Cannot create a blood type in the database"
+                    ]
+                }
+                "resource-url": "/bloodAlert/bloodtypes/"
+            }
+            
+## Blood Type [/bloodalert/bloodtypes/{bloodTypeId}/]
+A blood type in the database
+
++ Parameters
+    + bloodTypeId (string) - the Id of the blood blood in the format btype-\d{1,3}
+    
+### Get Blood type [GET] 
+
+Gets a blood type information in the database
+
+
++ Request(application/json)
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
++ Response  201 (application/vnd.mason+json)
+
+    Blood type loaded sucessfully
+    
+    + Body 
+    
+            {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalert/link-relations/"
+                    }
+                 },
+                "bloodTypeId": "btype-1",
+                "name": "O+", 
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/bloodtypes/btype-1/"
+                    },
+                    "profile": {
+                        "href": "/profiles/blood-types-profile/"
+                    },
+                    "collection": {
+                        "href": "/bloodalert/bloodtypes/"
+                    },
+                    "bloodalert:edit": {
+                        "title": "Edit this blood type",
+                        "href": "/bloodalert/bloodtypes/bbank-1/",
+                        "encoding": "json",
+                        "method": "PUT",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "title": "Name",
+                                    "description": "The blood type's name",
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name"]
+                        }
+                    },
+                    "bloodalert:delete": {
+                        "title":"Delete this blood blood type",
+                        "href": "/bloodalert/bloodtype/bbank-1/",
+                        "method": "DELETE"
+                    }
+                }
+            }
+    
+ 
++ Response 404 (application/vnd.mason+json)
+No such blood bank with specified Id
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "No such Blood Bank"
+                    "@messages": [
+                        "No such blood bank with specified bbank-1"
+                    ]
+                }
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
+            }
+
+### Modify Blood type [PUT]
+
+Modifies blood type
+
++ Request(application/json)
+    
+    + `name` (string) - the name of the blood type
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
+    +   Body
+            
+            {
+                "name":"O+"
+            }
+            
++ Response 204 (application/vnd.mason+json)
+    
+  
+
++ Response 400 (application/vnd.mason+json)
+The request body is malformed. Some of the the parameters are not correctly provided
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "Wrong request format"
+                    "@messages": [
+                        "Be sure to include required headersall required parameters in the correct format "
+                    ]
+                }
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
+            }
+            
++ Response 415 (application/vnd.mason+json)
+
+    The server cannot understand the format of the response.
+    
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Unsupported media type"
+                    "@messages": [
+                        "Use a JSON compatible format"
+                    ]
+                }
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
+            }
+
++ Response 404 (application/vnd.mason+json)
+
+    No such blood type with id `btype-1`
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "No such Blood type"
+                    "@messages": [
+                        "No such blood type with id btype-1"
+                    ]
+                }
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
+            }         
+
+### Delete Blood type [DELETE]
+Delete a blood type
+
++ Request(application/json)
+    
+    + Headers
+    
+            Accept: application/vnd.mason+json
+    
++ Response 204
+    
+        
+        
+
++ Response 404 (application/vnd.mason+json)
+
+    No such blood type with id `btype-1`
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "No such Blood typoe"
+                    "@messages": [
+                        "No such blood type with id btype-1"
+                    ]
+                }
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
+            }
+
