@@ -30,7 +30,8 @@ There are two options to setup ( create and populate) the databse. We recommend 
     * example 2 **python -m test.db_api_tests_blood_banks**
     * example 3 **python -m test.db_api_tests_blood_donors**
 
-#RESTFul API
+	
+# RESTFul API
 
 The API is a follows the REST achitecture. 
 The full documentation(http://docs.bloodalert.apiary.io/#) of the API can be referenced here(http://docs.bloodalert.apiary.io/#)
