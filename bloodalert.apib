@@ -14,6 +14,15 @@ donated individuals.
 
 This document uses IANA standard link relations (http://www.iana.org/assignments/link-relations/link-relations.xhtml). In addition the following link relations have been defined:
 
+## blood-banks-all [/link-relations/blood-banks-all]
+
+This action list all registered in the system blood banks. Each item is an instance of the type Blood Bank defined in the profile Blood Bank Profile. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
 ## add-blood-bank [/link-relations/add-blood-bank]
 
 Creates a new Blood Bank. Use via POST.
@@ -23,14 +32,6 @@ Creates a new Blood Bank. Use via POST.
 Return the link relation description in HTML format
 + Response 200 (text/html)
 
-## donors-all [/link-relations/donors-all]
-
-This action list all registered in the system blood donors. Each item is an instance of the type Blood Donord defined in the profile Donor Profile. Use via GET.
-
-### GET
-
-Return the link relation description in HTML format
-+ Response 200 (text/html)
 
 ## blood-types-all [/link-relations/blood-types-all]
 
@@ -77,6 +78,14 @@ This action shows blood levels of the current blood bank. Use via GET.
 Return the link relation description in HTML format
 + Response 200 (text/html)
 
+## donors-all [/link-relations/donors-all]
+
+This action list all registered in the system blood donors. Each item is an instance of the type Blood Donord defined in the profile Donor Profile. Use via GET.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
 ## blood-donor-history-list [/link-relations/blood-donor-history-list]
 
 This action list all blood donations of the current blood donor. Each item is an instance of the type History defined in this profile. Can only be accessed through GET.
@@ -95,9 +104,9 @@ Creates a new Blood Donor. Use via POST.
 Return the link relation description in HTML format
 + Response 200 (text/html)
 
-## blood-banks-all [/link-relations/blood-banks-all]
+## blood-donor-donate [/link-relations/blood-donor-donate]
 
-This action list all registered in the system blood banks. Each item is an instance of the type Blood Bank defined in the profile Blood Bank Profile. Use via GET.
+Creates a new Blood Donor donation. Use via POST.
 
 ### GET
 
@@ -123,7 +132,7 @@ This profile inherits:
  * [donors-all](reference/link-relations/donors-all)
  * [blood-types-all](reference/link-relations/blood-types-all)
  * [edit](reference/link-relations/edit)
- * [delete](reference/link-relations/edit)
+ * [delete](reference/link-relations/delete)
  * [blood-bank-history-list](reference/link-relations/blood-bank-history-list)
  * [blood-bank-blood-level](reference/link-relations/blood-bank-blood-level)
  
@@ -166,8 +175,9 @@ This profile inherits:
  * [blood-banks-all](reference/link-relations/blood-banks-all)
  * [blood-types-all](reference/link-relations/blood-types-all)
  * [edit](reference/link-relations/edit)
- * [delete](reference/link-relations/edit)
+ * [delete](reference/link-relations/delete)
  * [blood-donor-history-list](reference/link-relations/blood-donor-history-list)
+ * [blood-donor-donate](reference/link-relations/blood-donor-donate)
  
  Inherited from [IANA RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
  * `profile`: See [profile](https://tools.ietf.org/html/rfc6906). The link contains the location of the resource profile. 
@@ -202,7 +212,6 @@ Profile definition for all Blood Type related resources.
 ### Dependencies
 
 This profile inherits:
- * Some semantic descriptors from http://schema.org/Article
  * Some link  relations from IANA Web linking [RFC5988](http://www.iana.org/assignments/link-relations/link-relations.xhtml)
 
 ### Link relations
@@ -227,7 +236,7 @@ This profile inherits:
 Return Blood Type Profile in HTML format
 + Response 200 (text/html)
 
-## Error Profile [/profiles/error_profile]
+## Error Profile [/profiles/error-profile]
 
 Profile definition for all errors messages in the system
 
@@ -244,6 +253,8 @@ Return the Error Profile in HTML format
 # Group Blood Banks
 
 All these resources use the [Blood Bank Profile](reference/profiles/blood-bank-profile).
+
+In addition all error messages follow the profile defined [Error Profile](reference/profiles/error-profile).
 
 ## Blood Bank List [/bloodalert/bloodbanks]
 All Blood Banks in the database
@@ -414,11 +425,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required body in correct format"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/BloodBanks/"
             }
 
@@ -431,11 +442,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/BloodBanks/"
             }
 
@@ -447,11 +458,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
 
             {
                 "@error": {
-                    "@message": "Blood bank could not be created"
+                    "@message": "Blood bank could not be created",
                     "@messages": [
                         "Cannot create the blood bank in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/BloodBanks/"
             }
 
@@ -459,7 +470,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
 A blood bank information in the database
 
 + Parameters
-    + bloodBankId (string) - the Id of the blood bank in the format bbank-\d{1,3}
+    + bloodBankId (string,`bbank-1`) ... Id of the blood bank in the format bbank-\d{1,3}
                 
 
 ### Get Blood Bank [GET]
@@ -473,7 +484,7 @@ Gets a blood bank information in the database
     
             Accept: application/vnd.mason+json
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood bank information loaded sucessfully
     
@@ -588,11 +599,11 @@ No such blood bank with specified Id
     
             {
                 "@error": {
-                    "@message": "No such Blood Bank"
+                    "@message": "No such Blood Bank",
                     "@messages": [
                         "No such blood bank with specified bbank-1"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
    
@@ -637,11 +648,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required headersall required parameters in the correct format "
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
             
@@ -653,11 +664,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/"
             }
 
@@ -669,11 +680,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "No such Blood bank"
+                    "@message": "No such Blood bank",
                     "@messages": [
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }    
 ### Delete Blood Bank [DELETE]
@@ -698,19 +709,19 @@ Delete a message from the system
     
             {
                 "@error": {
-                    "@message": "No such Blood bank"
+                    "@message": "No such Blood bank",
                     "@messages": [
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
             } 
 
-## Blood Bank Blood levels [/bloodalert/bloddbanks/{bloodBankId}/bloodlevels/]
+## Blood Bank Blood levels [/bloodalert/bloodbanks/{bloodBankId}/bloodlevels/]
 All blood levels (blood type and level of blood) of a particular blood bank
 
 + Parameters
-    + bloodBankId (string) - the Id of the blood bank in the format bbank-\d{1,3}
+    + bloodBankId (string,`bbank-1`) ... Id of the blood bank in the format bbank-\d{1,3}
 
 ### Get Blood Bank blood levels [GET]
 
@@ -720,7 +731,7 @@ All blood levels (blood type and level of blood) of a particular blood bank
         
                 Accept: application/vnd.mason+json
                 
-+ Response 201 (application/vnd.mason+json)
++ Response 200 (application/vnd.mason+json)
 
      Blood bank blood levels loaded sucessfully 
      + Body 
@@ -767,18 +778,18 @@ All blood levels (blood type and level of blood) of a particular blood bank
     
             {
                 "@error": {
-                    "@message": "No such Blood bank"
+                    "@message": "No such Blood bank",
                     "@messages": [
                         " No such blood bank with id `bbank-1` exists in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
             }
             
-## Blood Bank History List [/bloodalert/bloddbanks/{bloodBankId}/history/]
+## Blood Bank History List [/bloodalert/bloodbanks/{bloodBankId}/history/]
 All blood bank blood transaction (donation , others) history
 + Parameters
-    + bloodBankId (string) - the Id of the blood bank in the format bbank-\d{1,3}
+    + bloodBankId (string,`bbank-1`) ... Id of the blood bank in the format bbank-\d{1,3}
     
 
 ### Get Blood Bank History List [GET]
@@ -789,7 +800,7 @@ Get all blood transactions of target blood bank (donation, etc)
     
             Accept: application/vnd.mason+json
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood bank history List loaded sucessfully
     
@@ -859,7 +870,7 @@ Get all blood transactions of target blood bank (donation, etc)
                 
                 "@controls": {
                     "self": {
-                        "href": "/bloodalert/bloddbanks/bbank-2/history/"
+                        "href": "/bloodalert/bloodbanks/bbank-2/history/"
                     },
                     "bloodalert:blood-bank-blood-level": {
                         "title":"List blood levels of this blood bank",
@@ -879,18 +890,18 @@ No such blood bank with specified Id
     
             {
                 "@error": {
-                    "@message": "No such Blood Bank"
+                    "@message": "No such Blood Bank",
                     "@messages": [
                         "No such blood bank with specified bbank-1"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history"
             }
-## Blood Bank History [/bloodalert/bloddbanks/{bloodBankId}/history/{historyId}/]
+## Blood Bank History [/bloodalert/bloodbanks/{bloodBankId}/history/{historyId}/]
 All blood bank blood transaction (donation , others) history
 + Parameters
-    + bloodBankId (string) - the Id of the blood bank in the format bbank-\d{1,3}, example `bbank-1`
-    + historyId (string)   - the Id of the blood Bank history entry in the format history -\d{1,3}, example `history-1`
+    + bloodBankId (string,`bbank-1`) ... Id of the blood bank in the format bbank-\d{1,3}
+    + historyId (string,`history-1`) ... Id of the blood Bank history entry in the format history -\d{1,3}
 
 ### Get Blood Bank History [GET]
 Get a single blood bank history entry of target historyId
@@ -901,7 +912,7 @@ Get a single blood bank history entry of target historyId
     
             Accept: application/vnd.mason+json
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood bank history information loaded sucessfully
     
@@ -1002,11 +1013,11 @@ No such blood bank  with specified Blood bloodBankId or historyId
     
             {
                 "@error": {
-                    "@message": "No such Blood Bank"
+                    "@message": "No such Blood Bank",
                     "@messages": [
                         "No such blood bank with specified bbank-1"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }
 
@@ -1037,11 +1048,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required headersall required parameters in the correct format "
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }
             
@@ -1053,11 +1064,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/"
             }
 
@@ -1069,11 +1080,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "No such Blood bank history"
+                    "@message": "No such Blood bank history",
                     "@messages": [
                         "No such blood bank with id `bbank-1` and historyId `history-1` exists in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }         
 
@@ -1099,11 +1110,11 @@ Delete a blood bank donation history from the database
     
             {
                 "@error": {
-                    "@message": "No such Blood bank history"
+                    "@message": "No such Blood bank history",
                     "@messages": [
                         "No such blood bank with id `bbank-1` and historyId `history-1` exists in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             } 
 
@@ -1112,13 +1123,15 @@ Delete a blood bank donation history from the database
 
 All these resources use the [Blood Donor Profile](reference/profiles/blood-donor-profile).
 
+In addition all error messages follow the profile defined [Error Profile](reference/profiles/error-profile).
+
 ## Blood Donor List [/bloodalert/donors/]
 All Blood Donors in the database
 
 ### List all Blood Donors  [GET]
 Gets a list of all blood donors 
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood donor List loaded sucessfully
     
@@ -1232,7 +1245,7 @@ Gets a list of all blood donors
                                 },
                                 "email": {
                                     "title": "Email",
-                                    "description": "The blood donor's email"
+                                    "description": "The blood donor's email",
                                     "type": "string"
                                 }
                             },
@@ -1295,11 +1308,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required body in correct format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/"
             }
 
@@ -1312,11 +1325,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/"
             }
 
@@ -1328,11 +1341,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
 
             {
                 "@error": {
-                    "@message": "Blood donor could not be created"
+                    "@message": "Blood donor could not be created",
                     "@messages": [
                         "Cannot create the blood donor in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/"
             }
 
@@ -1340,7 +1353,7 @@ The request body is malformed. Some of the the parameters are not correctly prov
 A blood donor in the database
 
 + Parameters
-    + donorid (string) - the Id of the blood donor in the format bdonor-\d{1,3}
+    + donorid (string,`bdonor-1`) ... Id of the blood donor in the format bdonor-\d{1,3}
    
     
 ### Get Blood Donor [GET]
@@ -1354,7 +1367,7 @@ Gets a blood donor information in the database
     
             Accept: application/vnd.mason+json
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood donor information loaded sucessfully
     
@@ -1439,7 +1452,7 @@ Gets a blood donor information in the database
                                 },
                                 "email": {
                                     "title": "Email",
-                                    "description": "The blood donor's email"
+                                    "description": "The blood donor's email",
                                     "type": "string"
                                 }
                             },
@@ -1470,11 +1483,11 @@ No such blood donor with specified Id
     
             {
                 "@error": {
-                    "@message": "No such Blood donor"
+                    "@message": "No such Blood donor",
                     "@messages": [
                         "No such blood donor with specified bdonor-2"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/bdonor-2"
             }
 
@@ -1520,11 +1533,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required headersall required parameters in the correct format "
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/bdonor-2"
             }
             
@@ -1536,11 +1549,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/bdonor-2"
             }
 
@@ -1552,15 +1565,15 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "No such Blood donor"
+                    "@message": "No such Blood donor",
                     "@messages": [
                         "No such blood donor with id bdnor-2"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/bdonor-2"
             }         
 
-### Delete Blood donor[DELETE]
+### Delete Blood donor [DELETE]
 Delete a blood donor
 
 + Request(application/json)
@@ -1572,8 +1585,6 @@ Delete a blood donor
 + Response 204
 
         
-        
-
 + Response 404 (application/vnd.mason+json)
 
     No such blood donor with id `bdonor-2`
@@ -1582,18 +1593,433 @@ Delete a blood donor
     
             {
                 "@error": {
-                    "@message": "No such Blood donor"
+                    "@message": "No such Blood donor",
                     "@messages": [
                         "No such blood donor with id bdnor-2"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/donors/bdonor-2"
             } 
+
+
+## Blood Donor History List [/bloodalert/donors/{donorid}/history/]
+
+All Blood Donar donation history in the database
+
++ Parameters
+    + donorid (string,`bdonor-1`) ... Id of the blood donor in the format bdonor-\d{1,3}
+
+### List All Blood donor donations [GET]
+
+Get a list of all Blood donor donation in the system
+
++ Response 200 (application/vnd.mason+json)
+
+    Blood donor donation  List loaded sucessfully
+    
+    + Body 
+        
+            {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalart/link-relations/"
+                    }
+                },
+                "items": [
+                    {
+                        "historyId":"history-2",
+                        "donorId":"bdonor-2",
+                        "bloodTypeId":"btype-2",
+                        "bloodBankId":"bbank-2",
+                        "amount":300,
+                        "timeStamp":"2016-10-08 13:54:12",
+                        "tag":"DONATION",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/donors/bdonor-2/history/history-2/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-donors-profile/"
+                            },
+                            "donor":{
+                                "href": "/bloodalert/donors/bdonor-2/"
+                            },
+                            "bloodbank":{
+                                "href": "/bloodalert/bloodbanks/bbank-2/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-2/"
+                            }
+                        }
+                    },
+                    {
+                        "historyId":"history-3",
+                        "donorId":"bdonor-2",
+                        "bloodTypeId":"btype-2",
+                        "bloodBankId":"bbank-2",
+                        "amount":300,
+                        "timeStamp":"2016-10-08 13:54:12",
+                        "tag":"DONATION",
+                        "@controls": {
+                            "self": {
+                                "href": "/bloodalert/donors/bdonor-2/history/history-3/"
+                            },
+                            "profile": {
+                                "href": "/profiles/blood-donors-profile/"
+                            },
+                            "donor":{
+                                "href": "/bloodalert/donors/bdonor-2/"
+                            },
+                            "bloodbank":{
+                                "href": "/bloodalert/bloodbanks/bbank-2/"
+                            },
+                            "bloodtype":{
+                                "href": "/bloodalert/bloodtypes/btype-2/"
+                            }               
+                        }
+                    }
+                ],
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/donors/bdonor-2/history/"
+                    },
+                    "bloodalert:blood-donor-donate": {
+                        "title":"Create Blood Donation ",
+                        "href": "/bloodalert/donors/bdonor-2/history/",
+                        "method":"POST",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "bloodTypeId": {
+                                    "title": "Blood Type",
+                                    "description": "The blood donor's bloodTypeId",
+                                    "type": "string"
+                                },
+                                "bloodBankId": {
+                                    "title": "Blood bank",
+                                    "description": "The blood bank of the blood donation",
+                                    "type": "string"
+                                },
+                                "amount": {
+                                    "title": "Amount of Blood donated",
+                                    "description": "The amount of blood donated",
+                                    "type": "string"
+                                },
+                                "timeStamp": {
+                                    "title": "Time of Donation",
+                                    "description": "The timeStamp of blood donated",
+                                    "type": "string"
+                                }
+                                
+                            },
+                            "required": ["bloodTypeId","bloodBankId","amount"]
+                        }
+                    }
+                }
+                
+            }
+
+
+### Create Blood donor donation [POST]
+
+Adds a new Blood donor donation to the bloodAlert database
++ Request (application/json)
+    
+
+    + Headers
+    
+            Accept: application/vnd.mason+json
+    + Body
+    
+            {
+                "bloodTypeId": "btype-1",
+                "bloodBankId": "bbank-1",
+                "amount": "240",
+                "timeStamp": "2016-10-08 13:54:12"
+            }
+
++ Response 201 (application/json)
+Blood Donor donation Created sucessfully
+    + Headers
+
+            Location: Url to the created Blood Donor donation
+
+
++ Response 400 (application/vnd.mason+json)
+The request body is malformed. Some of the the parameters are not correctly provided
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "Wrong request format",
+                    "@messages": [
+                        "Be sure to include required body in correct format"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/"
+            }
+
+
++ Response 415 (application/vnd.mason+json)
+
+    The server cannot understand the format of the response.
+    
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Unsupported media type",
+                    "@messages": [
+                        "Use a JSON compatible format"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/"
+            }
+
++ Response 500  (application/vnd.mason+json)
+
+    The server cannot store the Blood donor donation in the database.
+    
+    + Body 
+
+            {
+                "@error": {
+                    "@message": "Blood donor donation could not be created",
+                    "@messages": [
+                        "Cannot create the blood donor donation in the database"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/"
+            }
+
+## Blood Donation History [/bloodalert/donors/{donorId}/history/{historyId}/]
+All blood donor donation history
++ Parameters
+    + donorId (string,`bdonor-2`) ... Id of the blood donor in the format bdonor-\d{1,3}
+    + historyId (string,`history-2`) ... Id of the blood donation history entry in the format history -\d{1,3}
+
+### Get Blood Donation History [GET]
+Get a single blood donor donation history entry of target historyId
+
++ Request(application/json)
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
++ Response  200 (application/vnd.mason+json)
+
+    Blood bank history information loaded sucessfully
+    
+    + Body
+    
+            {
+                "@namespaces": {
+                    "bloodalert": {
+                        "name": "/bloodalert/link-relations/"
+                    }
+                 },
+                "historyId":"history-2",
+                "donorId":"bdonor-2",
+                "bloodTypeId":"btype-2",
+                "bloodBankId":"bbank-2",
+                "amount":300,
+                "timeStamp":"2016-10-08 13:54:12",
+                "tag":"DONATION",
+                "@controls": {
+                    "self": {
+                        "href": "/bloodalert/donors/bdonor-2/history/history-2/"
+                    },
+                    "profile": {
+                        "href": "/profiles/blood-donors-profile/"
+                    },
+                    "donor":{
+                        "href": "/bloodalert/donors/bdonor-2/"
+                    },
+                    "bloodbank":{
+                        "href": "/bloodalert/bloodbanks/bbank-2/"
+                    },
+                    "bloodtype":{
+                        "href": "/bloodalert/bloodtypes/btype-2/"
+                    },
+                    "bloodalert:edit":{
+                        "title":"Modify Blood Donation ",
+                        "href": "/bloodalert/donors/bdonor-2/history/history-2/",
+                        "method":"PUT",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "bloodTypeId": {
+                                    "title": "Blood Type",
+                                    "description": "The blood donor's bloodTypeId",
+                                    "type": "string"
+                                },
+                                "bloodBankId": {
+                                    "title": "Blood bank",
+                                    "description": "The blood bank of the blood donation",
+                                    "type": "string"
+                                },
+                                "amount": {
+                                    "title": "Amount of Blood donated",
+                                    "description": "The amount of blood donated",
+                                    "type": "string"
+                                },
+                                "timeStamp": {
+                                    "title": "Time of Donation",
+                                    "description": "The timeStamp of blood donated",
+                                    "type": "string"
+                                }
+                            },
+                            "required": []
+                        }
+                    },
+                    "bloodalert:delete":{
+                        "title":"Modify Blood Donation ",
+                        "href": "/bloodalert/donors/bdonor-2/history/history-2/",
+                        "method":"DELETE"
+                    },
+                    "bloodalert:blood-donor-history-list":{
+                        "title":"List donation History of this blood donor",
+                        "href": "/bloodalert/donors/bdonor-2/history/",
+                        "method":"GET"
+                    }
+                }
+            }
+ 
+        
+            
++ Response 404 (application/vnd.mason+json)
+    No such blood donation  with specified  donorId or historyId
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donation",
+                    "@messages": [
+                        "No such blood donation  with specified  donorId or historyId"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            }
+
+### Modify Blood Donation History [PUT]
+Modifies blood donor donation history 
+
++ Request(application/json)
+    
+    Any of ( or a combination of ) the following of a Blood donation history; 
+    
+    + ``bloodBankId`` 
+    + ``amount``
+    + ``timeStamp``
+    
+    
+    +   Headers
+    
+            Accept: application/vnd.mason+json
+            
+    +   Body
+            
+            {
+                "bloodBankId":"bbank-2",
+                "amount":300,
+                "timeStamp":"2016-10-08 13:54:12"
+            }
+    
+            
++ Response 204 (application/vnd.mason+json)
+    
+  
+
++ Response 400 (application/vnd.mason+json)
+The request body is malformed. Some of the the parameters are not correctly provided
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "Wrong request format",
+                    "@messages": [
+                        "Be sure to include required headersall required parameters in the correct format "
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            }
+            
++ Response 415 (application/vnd.mason+json)
+
+    The server cannot understand the format of the response.
+    
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Unsupported media type",
+                    "@messages": [
+                        "Use a JSON compatible format"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            }
+
++ Response 404 (application/vnd.mason+json)
+
+    No such blood donation  with specified  donorId or historyId
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donation",
+                    "@messages": [
+                        "No such blood donation  with specified  donorId or historyId"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            }
+
+### Delete Blood Donation History [DELETE]
+Delete a blood donation history
+
++ Request(application/json)
+    
+    + Headers
+    
+            Accept: application/vnd.mason+json
+    
++ Response 204
+
+        
++ Response 404 (application/vnd.mason+json)
+
+    No such blood donation  with specified  donorId or historyId
+
+    
+    + Body
+    
+            {
+                "@error": {
+                    "@message": "No such Blood donation",
+                    "@messages": [
+                        "No such blood donation  with specified  donorId or historyId"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            }
+
 
     
 # Group Blood Types
 
 All these resources use the [Blood Type Profile](reference/profiles/blood-types-profile).
+
+In addition all error messages follow the profile defined [Error Profile](reference/profiles/error-profile).
 
 ## Blood Types List [/bloodalert/bloodtypes/]
 
@@ -1602,7 +2028,7 @@ All Blood Types in the database
 ### List all Blood Types  [GET]
 Gets a list of all blood types 
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood type List loaded sucessfully
     
@@ -1683,7 +2109,7 @@ Adds a new Blood type to the bloodAlert database
     + Body
     
             {
-                "name": "AB+",
+                "name": "AB+"
             }
 
 + Response 201 (application/json)
@@ -1701,11 +2127,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include all required request body"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/bloodtypes/"
             }
 
@@ -1718,11 +2144,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/bloodtypes/"
             }
 
@@ -1734,11 +2160,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
 
             {
                 "@error": {
-                    "@message": "Blood type could not be created"
+                    "@message": "Blood type could not be created",
                     "@messages": [
                         "Cannot create a blood type in the database"
                     ]
-                }
+                },
                 "resource-url": "/bloodAlert/bloodtypes/"
             }
             
@@ -1746,7 +2172,8 @@ The request body is malformed. Some of the the parameters are not correctly prov
 A blood type in the database
 
 + Parameters
-    + bloodTypeId (string) - the Id of the blood blood in the format btype-\d{1,3}
+    + bloodTypeId (string,`btype-1`) ... Id of the blood type in the format btype-\d{1,3}
+
     
 ### Get Blood type [GET] 
 
@@ -1759,7 +2186,7 @@ Gets a blood type information in the database
     
             Accept: application/vnd.mason+json
             
-+ Response  201 (application/vnd.mason+json)
++ Response  200 (application/vnd.mason+json)
 
     Blood type loaded sucessfully
     
@@ -1785,7 +2212,7 @@ Gets a blood type information in the database
                     },
                     "bloodalert:edit": {
                         "title": "Edit this blood type",
-                        "href": "/bloodalert/bloodtypes/bbank-1/",
+                        "href": "/bloodalert/bloodtypes/btype-1/",
                         "encoding": "json",
                         "method": "PUT",
                         "schema": {
@@ -1802,7 +2229,7 @@ Gets a blood type information in the database
                     },
                     "bloodalert:delete": {
                         "title":"Delete this blood blood type",
-                        "href": "/bloodalert/bloodtype/bbank-1/",
+                        "href": "/bloodalert/bloodtype/btype-1/",
                         "method": "DELETE"
                     }
                 }
@@ -1817,12 +2244,12 @@ No such blood bank with specified Id
     
             {
                 "@error": {
-                    "@message": "No such Blood Bank"
+                    "@message": "No such Blood Type",
                     "@messages": [
-                        "No such blood bank with specified bbank-1"
+                        "No such blood bank with specified btype-1"
                     ]
-                }
-                "resource-url": "/bloodalert/bloodbanks/bbank-1"
+                },
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
             }
 
 ### Modify Blood type [PUT]
@@ -1855,11 +2282,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Wrong request format"
+                    "@message": "Wrong request format",
                     "@messages": [
                         "Be sure to include required headersall required parameters in the correct format "
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodtypes/btype-1"
             }
             
@@ -1871,11 +2298,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "Unsupported media type"
+                    "@message": "Unsupported media type",
                     "@messages": [
                         "Use a JSON compatible format"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodtypes/btype-1"
             }
 
@@ -1887,11 +2314,11 @@ The request body is malformed. Some of the the parameters are not correctly prov
     
             {
                 "@error": {
-                    "@message": "No such Blood type"
+                    "@message": "No such Blood type",
                     "@messages": [
                         "No such blood type with id btype-1"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodtypes/btype-1"
             }         
 
@@ -1917,11 +2344,11 @@ Delete a blood type
     
             {
                 "@error": {
-                    "@message": "No such Blood typoe"
+                    "@message": "No such Blood typoe",
                     "@messages": [
                         "No such blood type with id btype-1"
                     ]
-                }
+                },
                 "resource-url": "/bloodalert/bloodtypes/btype-1"
             }
 

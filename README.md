@@ -21,7 +21,7 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * run the command **.read db/bloodAlert_schema_dump.sql**
 * rum the command **.read db/bloodAlert_data_dump.sql**
 
-# Running Test Cases
+## Running Test Cases
 
 * Ensure that you have python 2.7.x installed and python path added to your environment variables
 * open the command prompt at the root application (codes) folder
@@ -30,6 +30,10 @@ There are two options to setup ( create and populate) the databse. We recommend 
     * example 2 **python -m test.db_api_tests_blood_banks**
     * example 3 **python -m test.db_api_tests_blood_donors**
 
+#RESTFul API
+
+The API is a follows the REST achitecture. 
+The full documentation(http://docs.bloodalert.apiary.io/#) of the API can be referenced here(http://docs.bloodalert.apiary.io/#)
 
 # Change logs
 
