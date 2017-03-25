@@ -177,6 +177,17 @@ class BloodAlertObject(MasonObject):
             "method": "POST",
             "schema": self._blood_bank_schema()
         }
+    def add_control_add_blood_donor(self):
+        """
+        This adds the add-blood-donors control to an object.  
+        """
+        self["@controls"]["bloodalert:add-message"] = {
+            "href": api.url_for(BloodDonors),
+            "title": "Add Blood Bank",
+            "encoding": "json",
+            "method": "POST",
+            "schema": self._blood_donor_schema()
+        }
 
     def add_control_add_blood_type(self):
         """
@@ -211,7 +222,7 @@ class BloodAlertObject(MasonObject):
        """
         Adds the delete control to Blood Bank object.
 
-        : param str bloodBankId:bloodBankId in the bbank-N format, where N is a number
+        : param str donorId: donorId in the bdonor-N format, where N is a number
        """
        
        self["@controls"]["bloodalert:delete"] = {
@@ -219,10 +230,63 @@ class BloodAlertObject(MasonObject):
             "title": "Delete this Blood Donor",
             "method": "DELETE"
         }
+    def add_control_delete_blood_type(self,btypeId):
+        """
+        Adds the delete control to Blood Bank object.
+        
+        : param str btypeId:btypeId in the btype-N format, where N is a number
+        """
+       
+        self["@controls"]["bloodalert:delete"] = {
+            "href": api.url_for(BloodType, bloodTypeId=btypeId),  
+            "title": "Delete this Blood type",
+            "method": "DELETE"
+        }
 
     
+    def add_control_edit_blood_type(self,btypeId):
+        """
+        Adds the edit control to a blood type object. 
 
-    
+        : param str btypeId: blood type id in the btype-N form, where N is a number
+        """
+
+        self["@controls"]["bloodalert:edit"] = {
+            "href": api.url_for(BloodType, bloodTypeId=btypeId),
+            "title": "Edit this Blood Type",
+            "encoding": "json",
+            "method": "PUT",
+            "schema": self._blood_type_schema(edit=True)
+        }
+
+    def add_control_edit_blood_bank(self,bloodBankId):
+        """
+        Adds the edit control to a blood bank object. 
+
+        : param str bloodBankId: blood bank id in the bbank-N form, where N is a number
+        """
+
+        self["@controls"]["bloodalert:edit"] = {
+            "href": api.url_for(BloodBank, bloodBankId=bloodBankId),
+            "title": "Edit this Blood Bank",
+            "encoding": "json",
+            "method": "PUT",
+            "schema": self._blood_bank_schema(edit=True)
+        }
+    def add_control_edit_blood_donor(self,donorId):
+        """
+        Adds the edit control to a blood donor object. 
+
+        : param str donorId: blood donor id in the bdonor-N form, where N is a number
+        """
+
+        self["@controls"]["bloodalert:edit"] = {
+            "href": api.url_for(Blooddonor, donorId=donorId),
+            "title": "Edit this Blood Donor",
+            "encoding": "json",
+            "method": "PUT",
+            "schema": self._blood_donor_schema(edit=True)
+        }
     def _blood_type_schema(self):
         """
         Creates a schema dictionary for Blood Type.
@@ -312,7 +376,80 @@ class BloodAlertObject(MasonObject):
         }
 
         return schema
+    def _blood_donor_schema(self, edit=False):
+        """
+        Creates a schema dictionary for Blood Donor. If we're editing a blood donor
+        some attributes are not required. If we're adding a new blood donor, some attributes are 
+        required . This is controlled by the edit flag.
 
+        : param bool edit: is this schema for an edit 
+        : rtype:: dict
+        """
+        schema = {
+            "type": "object",
+            "properties": {}
+        }
+        
+        props = schema["properties"]
+
+        if not edit:
+            props["required"]=["firstName","familyName",  "birthDate","gender","bloodTypeId",\
+                                 "telephone",  "address","email"]
+        else:
+            props["required"]=[]  
+
+        props["firstname"]={
+            "title": "FirstName",
+            "description": "The blood donor's firstname",
+            "type": "string"
+          }
+
+        props["familyname"]= {
+            "title": "Family Name",
+            "description": "The blood donor's familyname",
+            "type": "string"
+          }
+
+        props["birthDate"]= {
+            "title": "Birth Date",
+            "description": "The blood donor's birth Date",
+            "type": "string"
+          }
+
+        props["gender"]= {
+            "title": "Gender",
+            "description": "The blood donor's gender",
+            "type": "string"
+          }
+          
+        props["bloodTypeId"]= {
+            "title": "Blood Type",
+            "description": "The blood donor's bloodType Id",
+            "type": "string"
+          }
+
+        props["telephone"]= {
+            "title": "Telephone",
+            "description": "The blood donor's telephone",
+            "type": "string"
+          }
+        props["city"]= {
+            "title": "City",
+            "description": "The blood donor's city",
+            "type": "string"
+          }
+          
+        props["address"]= {
+            "title": "Address",
+            "description": "The blood donor's address",
+            "type": "string"
+          }
+        props["email"] ={
+            "title": "Email",
+            "description": "The blood donor's email",
+            "type": "string"
+          }
+        
 #ERROR HANDLERS
 
 def create_error_response(status_code, title, message=None):
@@ -432,6 +569,10 @@ api.add_resource(BloodDonors, "/bloodalert/donors/",
 api.add_resource(BloodDonor, "/bloodalert/donors/<regex('bdonor-\d+'):donorId>/",
                  endpoint="blooddonor")
 
+api.add_resource(BloodTypes, "/bloodalert/bloodtypes/",
+                 endpoint="bloodtypes")
+api.add_resource(BloodDonor, "/bloodalert/bloodtypes/<regex('btype-\d+'):bloodTypeId>/",
+                 endpoint="bloodtype")
 #Redirect profile
 @app.route("/profiles/<profile_name>")
 def redirect_to_profile(profile_name):
