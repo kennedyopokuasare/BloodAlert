@@ -1,10 +1,10 @@
 
 # The Database
 The Blood Alert Database API uses
- SQLite(www.sqlite.org) hence no installation is needed
+ [SQLite](www.sqlite.org) hence no installation is needed
 
 ## Setting up the database
-There are two options to [setup](#thedatabase) ( create and populate) the databse. We recommend option 1 if you are not familiar with SQL
+There are two options to setup ( create and populate) the databse. We recommend option 1 if you are not familiar with SQL
 
 ###  Option 1
 
@@ -32,21 +32,24 @@ There are two options to [setup](#thedatabase) ( create and populate) the databs
 
 
 
-
+* * *
 
 # RESTFul API
 
 The API is a follows the REST achitecture. 
-The full documentation(http://docs.bloodalert.apiary.io/#) of the API can be referenced here(http://docs.bloodalert.apiary.io/#)
+The [full documentation](http://docs.bloodalert.apiary.io/#) of the API can be referenced here(http://docs.bloodalert.apiary.io/#)
 
-The API was implemented using `FLASK microframework`(http://flask.pocoo.org/) which is a python framework.  
-Other dependencies the API uses is the `Flask-RESTful` library
+The API was implemented using **FLASK microframework**(http://flask.pocoo.org/) which is a python framework.  
+Other dependencies the API uses is the **Flask-RESTful** library
 
-To setup and the Aplication, please follow the following steps
+To setup and run the API, please follow the following steps
 
-* Install FlASK microframework (`pip install Flask`)
-* Install Flask-RESTful (`pip install flask-restful`)
-* Follows steps in setting up the database(#thedatabase) descbribed above to setup the database
+* Ensure that you have python 2.7.x installed , and python path added to your environment variables
+* Install FlASK microframework with the command **pip install Flask**
+* Install Flask-RESTful with the command **pip install flask-restful**
+* Follows steps in setting up the database descbribed above to setup the database
+* open the command prompt at the root application (codes) folder
+* run the command **python -m src.resources**
 
 
 # Change logs

@@ -32,7 +32,7 @@ ERROR_PROFILE = "/profiles/error-profile"
 APIARY_PROFILES_URL = "http://docs.bloodalert.apiary.io/#reference/profiles/"
 APIARY_RELS_URL = "http://docs.bloodalert.apiary.io/#reference/link-relations/"
 
-
+NAMESPACE="bloodalert"
 LINK_RELATIONS_URL = "/bloodalart/link-relations/"
 
 #Define the application and the api
@@ -133,6 +133,8 @@ class BloodAlertObject(MasonObject):
 
         super(BloodAlertObject, self).__init__(**kwargs)
         self["@controls"] = {}
+        
+    
 
     def add_control_blood_banks_all(self):
         """
@@ -163,6 +165,15 @@ class BloodAlertObject(MasonObject):
             "href": api.url_for(BloodTypes),
             "title": "List all blood types"
         }
+    def add_control_blood_donor_history_list(self):
+        """
+        Adds the blood-donor-history-list control to an object. 
+        """
+
+        self["@controls"]["bloodalert:blood-donor-history-list"] = {
+            "href": "",
+            "title": "List the donation history of this blood donor"
+        }
 
     def add_control_add_blood_bank(self):
         """
@@ -170,7 +181,7 @@ class BloodAlertObject(MasonObject):
         document object. 
         """
 
-        self["@controls"]["bloodalert:add-message"] = {
+        self["@controls"]["bloodalert:add-blood-bank"] = {
             "href": api.url_for(BloodBanks),
             "title": "Add Blood Bank",
             "encoding": "json",
@@ -179,11 +190,11 @@ class BloodAlertObject(MasonObject):
         }
     def add_control_add_blood_donor(self):
         """
-        This adds the add-blood-donors control to an object.  
+        This adds the add-blood-donor control to an object.  
         """
-        self["@controls"]["bloodalert:add-message"] = {
+        self["@controls"]["bloodalert:add-blood-donor"] = {
             "href": api.url_for(BloodDonors),
-            "title": "Add Blood Bank",
+            "title": "Add Blood Donor",
             "encoding": "json",
             "method": "POST",
             "schema": self._blood_donor_schema()
@@ -191,10 +202,7 @@ class BloodAlertObject(MasonObject):
 
     def add_control_add_blood_type(self):
         """
-        This adds the add-blood-type control to an object. Intended ffor the 
-        document object. Instead of adding a schema dictionary we are pointing
-        to a schema url instead for two reasons: 1) to demonstrate both options;
-        2) the user schema is relatively large.
+        This adds the add-blood-type control to an object. 
         """
 
         self["@controls"]["bloodalert:add-blood-type"] = {
@@ -450,6 +458,7 @@ class BloodAlertObject(MasonObject):
             "type": "string"
           }
         
+        return schema
 #ERROR HANDLERS
 
 def create_error_response(status_code, title, message=None):
@@ -534,10 +543,170 @@ class BloodBankBloodLevels(Resource):
 
 class BloodDonors(Resource):
     """
+    Resource Blood Donors Implementation
     """
+    def get(self):
+        """
+        Gets a list of all blood donors
+
+        INPUT parameters:
+          None
+        
+        
+             
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+        """
+        donors=g.con.get_blood_donors()
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodDonors))
+        output.add_control_add_blood_donor()
+        output.add_control_blood_banks_all()
+        output.add_control_blood_types_all()
+
+       
+        items=output["items"]=[]
+        for donor in donors:
+            
+            item=BloodAlertObject()
+            item.add_control("self",href=api.url_for(BloodDonor,donorId=donor["donorId"]))
+            item.add_control("profile",href=BLOODALERT_BLOOD_DONOR_PROFILE )
+            item.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=donor["bloodTypeId"]))
+            
+            item["donorId"]=donor["donorId"]
+            item["firstname"]=donor["firstname"]
+            item["familyName"]=donor["familyName"]
+            item["birthDate"]=donor["birthDate"]
+            item["gender"]=donor["gender"]
+            item["bloodTypeId"]=donor["bloodTypeId"]
+            item["telephone"]=donor["telephone"]
+            item["city"]=donor["city"]
+            item["address"]=donor["address"]
+            item["email"]=donor["email"]
+
+            items.append(item)
+        
+        return Response(json.dumps(output),200,mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
+    def post(self):
+        """
+        Adds a new Blood Donor to the bloodAlert database
+
+        REQUEST ENTITY BODY:
+         * Media type: JSON:
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+
+        The body should be a JSON document that matches the schema for new Blood Donor        
+
+        RESPONSE STATUS CODE:
+         * Returns 201 if the blood donor has been added correctly.
+           The Location header contains the url of the new blood donor
+         * Returns 400 if the blood donor is not well formed or the entity body is
+           empty.
+         * Returns 415 if the format of the response is not json
+         * Returns 500 if the blood donor could not be added to database.
+        """
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+        request_body = request.get_json(force=True)
+
+        try:
+
+            firstname=request_body["firstname"]
+            familyName=request_body["familyName"]
+            telephone=request_body["telephone"]
+            email=request_body["email"]
+            bloodTypeId=request_body["bloodTypeId"]
+            birthDate=request_body["birthDate"]
+            gender=request_body["gender"]
+
+            #optional attributes
+            address=request_body.get("address","-")
+            city=request_body.get("city",None)
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            newBloodDonorId=g.con.create_blood_donor(firstname,familyName, telephone, email,bloodTypeId, birthDate, gender, address,city)
+        except Exception as ex:
+            return create_error_response(500, "Blood donor could not be created",
+                                         "Cannot create the blood donor in the database - {}".format(ex.message))
+        if not newBloodDonorId:
+            return create_error_response(500, "Blood donor could not be created",
+                                         "Cannot create the blood donor in the database")
+
+        url=api.url_for(BloodDonor,donorId=newBloodDonorId)
+
+        return Response(status= 201,headers={"Location": url})
+        
+
 class BloodDonor(Resource):
     """
+    Blood Donor Resource Implementation
     """
+    def get(self,donorId):
+        """
+        Gets a blood donor information in the database
+
+        INPUT:
+            The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 200 if the list can be generated and it is not empty
+             * Returns 404 if no blood donor meets the requirement
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+        """
+
+        
+        try:
+            donor = g.con.get_blood_donor(donorId)
+        except ValueError as ex:
+            return create_error_response(500, "No such Blood donor",
+                                            "No such blood donor with specified {} - {}".format(donorId, ex.message))
+
+       
+        if donor is None or not donor:
+            return create_error_response(404, "No such Blood donor",
+                                         "No such blood donor with specified - {}".format(donorId)
+                                         )
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodDonor,donorId=donorId))
+        output.add_control("profile",href=BLOODALERT_BLOOD_DONOR_PROFILE )
+        output.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=donor["bloodTypeId"]))
+        output.add_control("collection",href=api.url_for(BloodDonors))
+        output.add_control_delete_blood_donor(donorId)
+        output.add_control_blood_donor_history_list()
+
+        output["donorId"]=donor["donorId"]
+        output["firstname"]=donor["firstname"]
+        output["familyName"]=donor["familyName"]
+        output["birthDate"]=donor["birthDate"]
+        output["gender"]=donor["gender"]
+        output["bloodTypeId"]=donor["bloodTypeId"]
+        output["telephone"]=donor["telephone"]
+        output["city"]=donor["city"]
+        output["address"]=donor["address"]
+        output["email"]=donor["email"]
+
+        return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
+
 class BloodDonorHistoryList(Resource):
     """
     """
@@ -571,7 +740,7 @@ api.add_resource(BloodDonor, "/bloodalert/donors/<regex('bdonor-\d+'):donorId>/"
 
 api.add_resource(BloodTypes, "/bloodalert/bloodtypes/",
                  endpoint="bloodtypes")
-api.add_resource(BloodDonor, "/bloodalert/bloodtypes/<regex('btype-\d+'):bloodTypeId>/",
+api.add_resource(BloodType, "/bloodalert/bloodtypes/<regex('btype-\d+'):bloodTypeId>/",
                  endpoint="bloodtype")
 #Redirect profile
 @app.route("/profiles/<profile_name>")
