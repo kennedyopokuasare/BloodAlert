@@ -50,7 +50,10 @@ To setup and run the API, please follow the following steps
 * Follows steps in setting up the database descbribed above to setup the database
 * open the command prompt at the root application (codes) folder
 * run the command **python -m src.resources**
+    > This will start the FLASK built in web server on the address **http://localhost:5000**
+    > You can now send request to the api using a web browser or a restclient like **postman**, **Restlet Client**
 
+* * *
 
 # Change logs
 

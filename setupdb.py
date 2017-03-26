@@ -9,6 +9,7 @@ Creates and populated the BloodAlert database
 import sqlite3
 
 from src import database
+from src import resources
 
 DB_PATH = 'db/bloodAlert.db'
 ENGINE = database.Engine(DB_PATH)
@@ -21,4 +22,10 @@ ENGINE.create_tables()
 
 print '\tpopulating database'
 ENGINE.populate_tables()
+
+
+
+
+
+
 

@@ -41,7 +41,13 @@ app.debug = True
 # Set the database Engine. In order to modify the database file (e.g. for
 # testing) provide the database path   app.config to modify the
 #database to be used (for instance for testing)
+
+
 app.config.update({"Engine": database.Engine()})
+
+#DB_PATH = 'db/bloodAlert.db'
+#app.config.update({"Engine": database.Engine(DB_PATH)}) # for debugging
+
 #Start the RESTful API.
 api = Api(app)
 
@@ -289,7 +295,7 @@ class BloodAlertObject(MasonObject):
         """
 
         self["@controls"]["bloodalert:edit"] = {
-            "href": api.url_for(Blooddonor, donorId=donorId),
+            "href": api.url_for(BloodDonor, donorId=donorId),
             "title": "Edit this Blood Donor",
             "encoding": "json",
             "method": "PUT",
@@ -692,6 +698,7 @@ class BloodDonor(Resource):
         output.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=donor["bloodTypeId"]))
         output.add_control("collection",href=api.url_for(BloodDonors))
         output.add_control_delete_blood_donor(donorId)
+        output.add_control_edit_blood_donor(donorId)
         output.add_control_blood_donor_history_list()
 
         output["donorId"]=donor["donorId"]
@@ -706,7 +713,94 @@ class BloodDonor(Resource):
         output["email"]=donor["email"]
 
         return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
+    
+    def put(self,donorId):
+        """
+       Modifies a blood donor
 
+        INPUT:
+            The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 204 if the blood donor is modified sucessfully
+             * Returns 400 if the blood donor is not well formed or the entity body is
+                empty.
+             * Returns 415 if the format of the response is not json
+             * Returns 404 if no blood donor meets the requirement
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+       
+        """
+
+        if not g.con.get_blood_donor(donorId):
+            return create_error_response(404, "No such Blood donor",
+                                         "No such blood donor with id bdnor-2 %s" % donorId
+                                        )
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+
+        request_body = request.get_json(force=True)
+
+        try:
+
+            firstname=request_body.get("firstname",None)
+            familyName=request_body.get("familyName",None)
+            telephone=request_body.get("telephone",None)
+            email=request_body.get("email",None)
+            bloodTypeId=request_body.get("bloodTypeId",None)
+            birthDate=request_body.get("birthDate",None)
+            gender=request_body.get("gender",None)           
+            address=request_body.get("address","-")
+            city=request_body.get("city",None)
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            editedBloodDonorId=g.con.modify_blood_donor(donorId, firstname,familyName, telephone, email,bloodTypeId, birthDate, gender, address,city)
+        except Exception as ex:
+            return create_error_response(500, "Blood donor could not be modified",
+                                         "Blood donor with id {} could not be modified - {}".format(donorId, ex.message))
+        if not editedBloodDonorId:
+            return create_error_response(500, "Blood donor could not be modified",
+                                         "Blood donor with id {} could not be modified".format(donorId))
+        else:
+            return "", 204
+    def delete(self,donorId):
+        """
+        Deletes a Blood donor from the Blood Alert database.
+
+       INPUT:
+            The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+        
+        RESPONSE STATUS CODE
+         * Returns 204 if the message was deleted
+         * Returns 404 if the messageid is not associated to any message.
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+
+        
+        """
+
+        if g.con.delete_blood_donor(donorId):
+            return "", 204
+        else:            
+            return create_error_response(404, "No such Blood donor",
+                                         "No such blood donor with id %s" % donorIds
+                                        )
 class BloodDonorHistoryList(Resource):
     """
     """
