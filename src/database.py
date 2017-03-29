@@ -1282,7 +1282,7 @@ class Connection(object):
             match3 = re.match(r'bdonor-(\d{1,3})',str(donorId))
             if match3 is None:
                 raise ValueError("The donorId is malformed")
-            bloodBankId = int(match3.group(1))
+            donorId = int(match3.group(1))
         
         tag=tag.lower()
         
@@ -1308,6 +1308,7 @@ class Connection(object):
         self.con.row_factory = sqlite3.Row
         cur = self.con.cursor()
 
+        
         # Execute SQL Statement
         pvalue = (donorId, bloodTypeId, bloodBankId, amount,
                   timeStamp, tag)

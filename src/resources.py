@@ -173,13 +173,13 @@ class BloodAlertObject(MasonObject):
             "href": api.url_for(BloodTypes),
             "title": "List all blood types"
         }
-    def add_control_blood_donor_history_list(self):
+    def add_control_blood_donor_history_list(self,donorId):
         """
         Adds the blood-donor-history-list control to an object. 
         """
 
         self["@controls"]["bloodalert:blood-donor-history-list"] = {
-            "href": "",
+            "href": api.url_for(BloodDonorHistoryList,donorId=donorId),
             "title": "List the donation history of this blood donor"
         }
 
@@ -220,7 +220,18 @@ class BloodAlertObject(MasonObject):
             "method": "POST",
             "schema": self._blood_type_schema()
         }
+    def add_control_blood_donor_donate(self):
+        """
+        This adds the blood-donor-donate control to an object. 
+        """
 
+        self["@controls"]["bloodalert:blood-donor-donate"] = {
+            "href": api.url_for(BloodTypes),
+            "title": "Add Blood Donation",
+            "encoding": "json",
+            "method": "POST",
+            "schema": self._blood_donor_history_schema()
+        }
     def add_control_delete_blood_bank(self, bloodBankId):
         """
         Adds the delete control to Blood Bank object.
@@ -236,7 +247,7 @@ class BloodAlertObject(MasonObject):
 
     def add_control_delete_blood_donor(self, donorId):
        """
-        Adds the delete control to Blood Bank object.
+        Adds the delete control to Blood Donor object.
 
         : param str donorId: donorId in the bdonor-N format, where N is a number
        """
@@ -244,6 +255,19 @@ class BloodAlertObject(MasonObject):
        self["@controls"]["bloodalert:delete"] = {
             "href": api.url_for(BloodDonor, donorId=donorId),  
             "title": "Delete this Blood Donor",
+            "method": "DELETE"
+        }
+    def add_control_delete_blood_donor_donation(self, donorId,historyId):
+       """
+        Adds the delete control to Blood donor donation object.
+
+        : param str donorId: donorId in the bdonor-N format, where N is a number
+        : param str historyId: blood donor donation id in the history-N form, where N is a number
+       """
+       
+       self["@controls"]["bloodalert:delete"] = {
+            "href": api.url_for(BloodDonorHistory, donorId=donorId,historyId=historyId),  
+            "title": "Delete this Blood Donor donation",
             "method": "DELETE"
         }
     def add_control_delete_blood_type(self,btypeId):
@@ -303,11 +327,25 @@ class BloodAlertObject(MasonObject):
             "method": "PUT",
             "schema": self._blood_donor_schema(edit=True)
         }
+    def add_control_edit_blood_donor_donation(self,donorId,historyId):
+        """
+        Adds the edit control to a blood donor object. 
+
+        : param str donorId: blood donor id in the bdonor-N form, where N is a number
+        : param str historyId: blood donor donation id in the history-N form, where N is a number
+        """
+
+        self["@controls"]["bloodalert:edit"] = {
+            "href": api.url_for(BloodDonorHistory, donorId=donorId,historyId=historyId),
+            "title": "Modify Blood Donation",
+            "encoding": "json",
+            "method": "PUT",
+            "schema": self._blood_donor_history_schema(edit=True)
+        }
     def _blood_type_schema(self):
         """
         Creates a schema dictionary for Blood Type.
-
-        : param bool edit: is this schema for an edit 
+        
         : rtype:: dict
         """
         schema = {
@@ -345,9 +383,9 @@ class BloodAlertObject(MasonObject):
         props = schema["properties"]
 
         if not edit:
-            props["required"]=["name", "city","telephone","email","threshold"]
+            schema["required"]=["name", "city","telephone","email","threshold"]
         else:
-            props["required"]=[]   
+            schema["required"]=[]   
 
         props["name"] = {
             "title": "Name",
@@ -392,6 +430,48 @@ class BloodAlertObject(MasonObject):
         }
 
         return schema
+    
+    def _blood_donor_history_schema(self,edit=False):
+        """
+        Creates a schema dictionary for Blood Donor donation History.         
+        : rtype:: dict
+        """
+        schema = {
+            "type": "object",
+            "properties": {}
+        }
+
+        if not edit:
+
+            schema["required"]=["bloodTypeId", "bloodBankId", "amount"]
+        else:
+            schema["required"]=[]
+
+        props = schema["properties"]
+
+        props["bloodTypeId"]= {
+            "title": "Blood Type",
+            "description": "The blood donor's bloodTypeId",
+            "type": "string"
+          }
+         
+        props["bloodBankId"] ={
+            "title": "Blood bank",
+            "description": "The blood bank of the blood donation",
+            "type": "string"
+          }
+        props["amount"]= {
+            "title": "Amount of Blood donated",
+            "description": "The amount of blood donated",
+            "type": "string"
+          }
+        props["timeStamp"]= {
+            "title": "Time of Donation",
+            "description": "The timeStamp of blood donated",
+            "type": "string"
+          }
+        return schema
+
     def _blood_donor_schema(self, edit=False):
         """
         Creates a schema dictionary for Blood Donor. If we're editing a blood donor
@@ -409,10 +489,10 @@ class BloodAlertObject(MasonObject):
         props = schema["properties"]
 
         if not edit:
-            props["required"]=["firstName","familyName",  "birthDate","gender","bloodTypeId",\
+            schema["required"]=["firstName","familyName",  "birthDate","gender","bloodTypeId",\
                                  "telephone",  "address","email"]
         else:
-            props["required"]=[]  
+            schema["required"]=[]  
 
         props["firstname"]={
             "title": "FirstName",
@@ -806,11 +886,173 @@ class BloodDonor(Resource):
                                         )
 class BloodDonorHistoryList(Resource):
     """
+    Resource Blood Donor History List Implementation
     """
+    def get(self, donorId):
+        """
+        Gets a list of all blood donor history
+
+        INPUT 
+        The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+        
+        
+             
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
+        """
+        donations=g.con.get_blood_donor_histories(donorId)
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodDonorHistoryList,donorId=donorId))
+        output.add_control_blood_donor_donate()
+        
+
+       
+        items=output["items"]=[]
+        for donation in donations:
+            
+            item=BloodAlertObject()
+            item.add_control("self",href=api.url_for(BloodDonorHistory,donorId=donation["donorId"],historyId=donation["historyId"]))
+            item.add_control("profile",href=BLOODALERT_BLOOD_DONOR_PROFILE )
+            item.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=donation["bloodTypeId"]))
+            item.add_control("donor",href=api.url_for(BloodDonor,donorId=donation["donorId"]))
+            item.add_control("bloodbank",href=api.url_for(BloodBank,bloodBankId=donation["bloodBankId"]))
+            
+            item["historyId"]=donation["historyId"]
+            item["donorId"]=donation["donorId"]           
+            item["bloodTypeId"]=donation["bloodTypeId"]
+            item["bloodBankId"]=donation["bloodBankId"]
+            item["amount"]=donation["amount"]
+            item["timeStamp"]=donation["timeStamp"]
+            item["tag"]=donation["tag"]
+
+            items.append(item)
+        
+        return Response(json.dumps(output),200,mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
+    def post(self,donorId):
+        """
+        Adds a new Blood Donor to the bloodAlert database
+
+        INPUT 
+        The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+        
+        REQUEST ENTITY BODY:
+         * Media type: JSON:
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
+
+        The body should be a JSON document that matches the schema for new Blood Donor        
+
+        RESPONSE STATUS CODE:
+         * Returns 201 if the blood donor donation has been added correctly.
+           The Location header contains the url of the new blood donor donation
+         * Returns 400 if the blood donor donation is not well formed or the entity body is
+           empty.
+         * Returns 415 if the format of the response is not json
+         * Returns 500 if the blood donor donation could not be added to database.
+        """
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+        request_body = request.get_json(force=True)
+
+        try:
+
+            amount=request_body["amount"]
+            timeStamp=request_body["timeStamp"]            
+            bloodBankId=request_body["bloodBankId"]
+            bloodTypeId=request_body["bloodTypeId"]            
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:           
+
+            newBloodDonorDonationId=g.con.create_history(bloodTypeId,bloodBankId, amount, timeStamp,donorId)
+        except Exception as ex:
+            return create_error_response(500, "Blood donor donation could not be created",
+                                         "Cannot create the blood donor donation in the database - {}".format(ex.message))
+        if not newBloodDonorDonationId:
+            return create_error_response(500, "Blood donor donation could not be created",
+                                         "Cannot create the blood donor donation in the database")
+
+        url=api.url_for(BloodDonorHistory,donorId=donorId, historyId=newBloodDonorDonationId)
+
+        return Response(status= 201,headers={"Location": url})
 class BloodDonorHistory(Resource):
     """
+    Resource Blood Donor History Implementation
     """
+    def get(self,donorId,historyId):
+        """
+        Gets a donor history
 
+        INPUT 
+        The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+             * historyId: Id of the the blood donation history in the format history-\d{1,3} Example: history-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 200 if the list can be generated and it is not empty
+             * Returns 404 if no blood donor meets the requirement
+             
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
+        """
+        try:
+            donor = g.con.get_blood_donor(donorId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood donor",
+                                            "No such blood donor with specified {} - {}".format(donorId, ex.message))
+
+       
+        if donor is None or not donor:
+            return create_error_response(404, "No such Blood donor",
+                                         "No such blood donor with specified - {}".format(donorId)
+                                         )
+        try:
+            history = g.con.get_history(historyId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood donor donation history",
+                                            "No such blood donor nation history with specified {} - {}".format(historyId, ex.message))
+
+       
+        if history is None or not history:
+            return create_error_response(404, "No such Blood donor donation history",
+                                         "No such blood donor nation history with specified - {}".format(historyId)
+                                         )
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodDonorHistory,donorId=history["donorId"],historyId=history["historyId"]))
+        output.add_control("profile",href=BLOODALERT_BLOOD_DONOR_PROFILE )
+        output.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=history["bloodTypeId"]))
+        output.add_control("donor",href=api.url_for(BloodDonor,donorId=history["donorId"]))
+        output.add_control("bloodbank",href=api.url_for(BloodBank,bloodBankId=history["bloodBankId"]))
+        output.add_control_blood_donor_history_list(donorId)
+        output.add_control_delete_blood_donor_donation(donorId,historyId)
+        output.add_control_edit_blood_donor_donation(donorId,historyId)
+
+        output["historyId"]=history["historyId"]
+        output["donorId"]=history["donorId"]           
+        output["bloodTypeId"]=history["bloodTypeId"]
+        output["bloodBankId"]=history["bloodBankId"]
+        output["amount"]=history["amount"]
+        output["timeStamp"]=history["timeStamp"]
+        output["tag"]=history["tag"]
+
+        return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
 class BloodTypes(Resource):
     """
     Blood Types Resource Implementation
@@ -1053,6 +1295,10 @@ api.add_resource(BloodTypes, "/bloodalert/bloodtypes/",
                  endpoint="bloodtypes")
 api.add_resource(BloodType, "/bloodalert/bloodtypes/<regex('btype-\d+'):bloodTypeId>/",
                  endpoint="bloodtype")
+api.add_resource(BloodDonorHistoryList,"/bloodalert/donors/<regex('bdonor-\d+'):donorId>/history/",endpoint="blooddonorhistorylist")
+
+api.add_resource(BloodDonorHistory,"/bloodalert/donors/<regex('bdonor-\d+'):donorId>/history/<regex('history-\d+'):historyId>/",endpoint="blooddonorhistory")
+
 #Redirect profile
 @app.route("/profiles/<profile_name>")
 def redirect_to_profile(profile_name):
