@@ -22,9 +22,11 @@ import database
 #Constants for hypermedia formats and profiles
 MASON = "application/vnd.mason+json"
 JSON = "application/json"
+
 BLOODALERT_BLOOD_BANK_PROFILE = "/profiles/blood-bank-profile/"
 BLOODALERT_BLOOD_DONOR_PROFILE = "/profiles/blood-donor-profile/"
 BLOODALERT_BLOOD_TYPES_PROFILE = "/profiles/blood-types-profile/"
+
 ERROR_PROFILE = "/profiles/error-profile"
 
 
@@ -270,7 +272,7 @@ class BloodAlertObject(MasonObject):
             "title": "Edit this Blood Type",
             "encoding": "json",
             "method": "PUT",
-            "schema": self._blood_type_schema(edit=True)
+            "schema": self._blood_type_schema()
         }
 
     def add_control_edit_blood_bank(self,bloodBankId):
@@ -564,7 +566,7 @@ class BloodDonors(Resource):
         * Media type: Mason
           https://github.com/JornWildt/Mason
          * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
         """
         donors=g.con.get_blood_donors()
         output=BloodAlertObject()
@@ -605,7 +607,7 @@ class BloodDonors(Resource):
         REQUEST ENTITY BODY:
          * Media type: JSON:
          * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
 
         The body should be a JSON document that matches the schema for new Blood Donor        
 
@@ -675,14 +677,14 @@ class BloodDonor(Resource):
         * Media type: Mason
           https://github.com/JornWildt/Mason
          * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
         """
 
         
         try:
             donor = g.con.get_blood_donor(donorId)
         except ValueError as ex:
-            return create_error_response(500, "No such Blood donor",
+            return create_error_response(404, "No such Blood donor",
                                             "No such blood donor with specified {} - {}".format(donorId, ex.message))
 
        
@@ -728,18 +730,19 @@ class BloodDonor(Resource):
                 empty.
              * Returns 415 if the format of the response is not json
              * Returns 404 if no blood donor meets the requirement
+             * Returns 500 if the blood donor could not be modified
 
         RESPONSE ENTITY BODY:
         * Media type: Mason
           https://github.com/JornWildt/Mason
          * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
        
         """
 
         if not g.con.get_blood_donor(donorId):
             return create_error_response(404, "No such Blood donor",
-                                         "No such blood donor with id bdnor-2 %s" % donorId
+                                         "No such blood donor with id %s" % donorId
                                         )
 
         if JSON != request.headers.get("Content-Type",""):
@@ -783,14 +786,14 @@ class BloodDonor(Resource):
              * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
         
         RESPONSE STATUS CODE
-         * Returns 204 if the message was deleted
-         * Returns 404 if the messageid is not associated to any message.
+         * Returns 204 if the blood donor was deleted
+         * Returns 404 if the donorId is not associated to any blood donor.
 
         RESPONSE ENTITY BODY:
         * Media type: Mason
           https://github.com/JornWildt/Mason
          * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile/list-all-blood-donors
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
 
         
         """
@@ -799,7 +802,7 @@ class BloodDonor(Resource):
             return "", 204
         else:            
             return create_error_response(404, "No such Blood donor",
-                                         "No such blood donor with id %s" % donorIds
+                                         "No such blood donor with id %s" % donorId
                                         )
 class BloodDonorHistoryList(Resource):
     """
@@ -810,12 +813,226 @@ class BloodDonorHistory(Resource):
 
 class BloodTypes(Resource):
     """
+    Blood Types Resource Implementation
     """
+    def get(self):
+        """
+        Gets a list of all blood types
+
+        INPUT parameters:
+          None       
+        
+             
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Type 
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-types-profile
+        """
+
+        bloodTypes=g.con.get_blood_types()
+
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+        output.add_control("self",href=api.url_for(BloodTypes))
+        output.add_control_add_blood_type()
+        output.add_control_donors_all()
+        output.add_control_add_blood_bank()
+        
+        items=output["items"]=[]
+        
+        for bloodType in bloodTypes:
+
+            item=BloodAlertObject()
+            item.add_control("self",href=api.url_for(BloodType,bloodTypeId=bloodType["bloodTypeId"]))
+            item.add_control("profile",href=BLOODALERT_BLOOD_TYPES_PROFILE)
+            
+            item["name"]=bloodType["name"]
+            item["bloodTypeId"]=bloodType["bloodTypeId"]
+
+            items.append(item)
+
+        return Response(json.dumps(output),200,mimetype=MASON+";" + BLOODALERT_BLOOD_TYPES_PROFILE)    
+
+
+    def post(self):
+        """
+        Adds a new Blood Type to the bloodAlert database
+
+        REQUEST ENTITY BODY:
+         * Media type: JSON:
+         * Profile: Blood Type
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-types-profile
+
+        The body should be a JSON document that matches the schema for new Blood Type        
+
+        RESPONSE STATUS CODE:
+         * Returns 201 if the blood type has been added correctly.
+           The Location header contains the url of the new blood type
+         * Returns 400 if the blood type is not well formed or the entity body is
+           empty.
+         * Returns 415 if the format of the response is not json
+         * Returns 500 if the blood type could not be added to database.
+        """
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+        request_body = request.get_json(force=True)
+
+        try:
+            name=request_body["name"]         
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            newBloodTypeId=g.con.create_blood_type(name)
+        except Exception as ex:
+            return create_error_response(500, "Blood Type could not be created",
+                                         "Cannot create the blood type in the database - {}".format(ex.message))
+        if not newBloodTypeId:
+            return create_error_response(500, "Blood type could not be created",
+                                         "Cannot create the blood donor in the database")
+
+        url=api.url_for(BloodType,bloodTypeId=newBloodTypeId)
+
+        return Response(status= 201,headers={"Location": url})
+
+
+
 class BloodType(Resource):
     """
+    Blood Type Resource Implementation
     """
+    def get(self,bloodTypeId):
+        """
+        Gets a blood type information in the database
 
+        INPUT:
+            The query parameters are:
+             * bloodTypeId: Id of the blood type in the format btype-\d{1,3} Example: btype-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 200 if the list can be generated and it is not empty
+             * Returns 404 if no blood type meets the requirement
 
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Type
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-types-profile
+        """
+
+        
+        try:
+            bloodType = g.con.get_blood_type(bloodTypeId)
+        except (ValueError,Exception) as ex:
+            return create_error_response(500, "No such Blood Type",
+                                            "No such blood type with specified {} - {}".format(bloodTypeId, ex.message))
+
+       
+        if bloodType is None or not bloodType:
+            return create_error_response(404, "No such Blood type",
+                                         "No such blood type with specified - {}".format(bloodTypeId)
+                                         )
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodType,bloodTypeId=bloodTypeId))
+        output.add_control("profile",href=BLOODALERT_BLOOD_TYPES_PROFILE )
+        output.add_control("collection",href=api.url_for(BloodTypes))
+        output.add_control_delete_blood_type(bloodTypeId)
+        output.add_control_edit_blood_type(bloodTypeId)
+        
+
+        output["bloodTypeId"]=bloodType["bloodTypeId"]
+        output["name"]=bloodType["name"]
+        
+
+        return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_TYPES_PROFILE)
+
+    def put(self,bloodTypeId):
+        """        
+        Modifies a blood type
+
+        INPUT:
+            The query parameters are:
+             * typeId: Id of the blood type in the format btype-\d{1,3} Example: btype-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 204 if the blood type is modified sucessfully
+             * Returns 400 if the blood type is not well formed or the entity body is
+                empty.
+             * Returns 415 if the format of the response is not json
+             * Returns 404 if no blood type meets the requirement
+             * Returns 500 if the blood type could not be modified
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+        * Profile: Blood type           
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-types-profile
+       
+        """
+
+        if not g.con.get_blood_type(bloodTypeId):
+            return create_error_response(404, "No such Blood type",
+                                         "No such blood type with id  %s" % bloodTypeId
+                                        )
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+
+        request_body = request.get_json(force=True)
+
+        try:
+
+            name=request_body.get("name",None)            
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            editedBloodtypeId=g.con.modify_blood_type(bloodTypeId, name)
+        except Exception as ex:
+            return create_error_response(500, "Blood type could not be modified",
+                                         "Blood type with id {} could not be modified - {}".format(bloodTypeId, ex.message))
+        if not editedBloodtypeId:
+            return create_error_response(500, "Blood type could not be modified",
+                                         "Blood type with id {} could not be modified".format(bloodTypeId))
+        else:
+            return "", 204
+    def delete(self,bloodTypeId):
+        """
+        Deletes a Blood type from the Blood Alert database.
+
+        INPUT:
+                The query parameters are:
+                * bloodTypeId: Id of the blood type in the format btype-\d{1,3} Example: btype-1.
+            
+            RESPONSE STATUS CODE
+            * Returns 204 if the blood Type was deleted
+            * Returns 404 if the bloodTypeId is not associated to any blood type.
+
+            RESPONSE ENTITY BODY:
+            * Media type: Mason
+            https://github.com/JornWildt/Mason
+            * Profile: Blood type
+            http://docs.bloodalert.apiary.io/#reference/profiles/blood-types-profile
+
+        
+        """
+
+        if g.con.delete_blood_type(bloodTypeId):
+            return "", 204
+        else:            
+            return create_error_response(404, "No such Blood type",
+                                         "No such blood type with id %s" % bloodTypeId
+                                        )    
 
 #Define the routes
 api.add_resource(BloodBanks, "/bloodalert/bloodbanks/",
