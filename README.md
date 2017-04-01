@@ -42,46 +42,29 @@ The [full documentation](http://docs.bloodalert.apiary.io/#) of the API can be r
 The API was implemented using **FLASK microframework**(http://flask.pocoo.org/) which is a python framework.  
 Other dependencies the API uses is the **Flask-RESTful** library
 
+## Setting up and running 
 To setup and run the API, please follow the following steps
 
-* Ensure that you have python 2.7.x installed , and python path added to your environment variables
-* Install FlASK microframework with the command **pip install Flask**
-* Install Flask-RESTful with the command **pip install flask-restful**
-* Follows steps in setting up the database descbribed above to setup the database
-* open the command prompt at the root application (codes) folder
-* run the command **python -m src.resources**
-    > This will start the FLASK built in web server on the address **http://localhost:5000**
-    > You can now send request to the api using a web browser or a restclient like **postman**, **Restlet Client**
+1. Ensure that you have python 2.7.x installed , and python path added to your environment variables
+2. Install FlASK microframework with the command **pip install Flask**
+3. Install Flask-RESTful with the command **pip install flask-restful**
+4. Follows steps in setting up the database descbribed above to setup the database
+5. open the command prompt at the root application (codes) folder
+6. run the command **python -m src.resources**
+    * This will start the FLASK built in web server on the address **http://localhost:5000**
+        * This address to use will also be displayed on the command prompt
+    * The base URL to use will be **http://localhost:5000/bloodalert/** . Check the API documentation at **http://docs.bloodalert.apiary.io/#**
+        for the various resources expossed by the API
+    * You can now send request to the api using a web browser or a restclient like **postman**(https://www.getpostman.com), 
+         **Restlet Client** (https://restlet.com/documentation/client/user-guide) or even a web browser
 
-* * *
-
-# Change logs
-
-### Feb 20, 2017
-* Added CRUD for Blood Banks, Blood Types
-* Adapted Engine and Connection class from Exercise to work for our project
-* Create the sql schema for the bloodAlert database
-* Created the database
-
-### Feb 21, 2017
-* Added Test Cases for Blood Type Database API
-* Added setupdb.py , a script to create and populate the database
-* Added Instructions to setup database
-* Added Instructions to run test Cases
-* Created sql script to populate database
-* Populated the **Blood_Donors**, **Blood_Banks** and **History** tables
-* Added Test Cases for Blood_Banks Database API
-
-### Feb 22, 2017
-* Added CRUD for Blood_Donors Table
-### Feb 23, 2017
-* Added test Cases for Blood Donors
-### Feb 24, 2017
-* Added CRUD for History
-### Feb 25, 2017
-* Added Test cases for History
-### Mar 24, 2017
-* Added FLASK-RESTFul implementation
+## Running Test Cases
+To run test cases of the RESTFul API
+* Follow the steps 1-5 in the setting up and running the API instructions detailed above
+* run the command **python -m test.restful_api_tests**
+    * This will run all test cases in test/restful_api_tests.py
+    * To run specific tests run the command **python -m unittest test.restful_api_tests.name_of_specific_test_case_class**
+        * Example **python -m unittest test.restful_api_tests.BloodDonorsTestCase**
 
 
 

@@ -627,8 +627,12 @@ class BloodBank(Resource):
 
 class BloodBankBloodLevels(Resource):
     """
+    Resource Blood Bank Blood Levels implementation 
     """
-
+    
+class BloodBankHistoryList(Resource):
+    """
+    """
 class BloodDonors(Resource):
     """
     Resource Blood Donors Implementation
@@ -781,7 +785,7 @@ class BloodDonor(Resource):
         output.add_control("collection",href=api.url_for(BloodDonors))
         output.add_control_delete_blood_donor(donorId)
         output.add_control_edit_blood_donor(donorId)
-        output.add_control_blood_donor_history_list()
+        output.add_control_blood_donor_history_list(donorId)
 
         output["donorId"]=donor["donorId"]
         output["firstname"]=donor["firstname"]
@@ -1007,7 +1011,7 @@ class BloodDonorHistory(Resource):
         RESPONSE ENTITY BODY:
         * Media type: Mason
           https://github.com/JornWildt/Mason
-         * Profile: Blood Donor
+        * Profile: Blood Donor
            http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
         """
         try:
@@ -1053,6 +1057,103 @@ class BloodDonorHistory(Resource):
         output["tag"]=history["tag"]
 
         return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_DONOR_PROFILE)
+    
+    def put(self,donorId,historyId):
+        """
+       Modifies a blood donor donation history
+
+        INPUT:
+            The query parameters are:
+             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+             * historyId: Id of the the blood donation history in the format history-\d{1,3} Example: history-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 204 if the blood donor donation history is modified sucessfully
+             * Returns 400 if the blood donor donation history is not well formed or the entity body is
+                empty.
+             * Returns 415 if the format of the response is not json
+             * Returns 404 if no blood donor meets the requirement
+             * Returns 500 if the blood donor could not be modified
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
+       
+        """
+
+        try:
+            donor = g.con.get_blood_donor(donorId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood donor",
+                                            "No such blood donor with specified {} - {}".format(donorId, ex.message))
+
+       
+        if donor is None or not donor:
+            return create_error_response(404, "No such Blood donor",
+                                         "No such blood donor with specified - {}".format(donorId)
+                                         )
+        try:
+            history = g.con.get_history(historyId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood donor donation history",
+                                            "No such blood donor nation history with specified {} - {}".format(historyId, ex.message))
+
+       
+        if history is None or not history:
+            return create_error_response(404, "No such Blood donor donation history",
+                                         "No such blood donor nation history with specified - {}".format(historyId)
+                                         )
+        request_body = request.get_json(force=True)
+
+        try:
+
+            bloodBankId=request_body.get("bloodBankId",None)
+            amount=request_body.get("amount",None)
+            timeStamp=request_body.get("timeStamp",None)            
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            editedBloodDonorHistoryId=g.con.modify_history( historyId, bloodBankId=bloodBankId, amount=amount, timeStamp=timeStamp)
+        except Exception as ex:
+            return create_error_response(500, "Blood donor donation history could not be modified",
+                                         "Blood donor donation history with id {} could not be modified - {}".format(historyId, ex.message))
+        if not editedBloodDonorHistoryId:
+            return create_error_response(500, "Blood donor donation history could not be modified",
+                                         "Blood donor donation history with id {} could not be modified".format(historyId))
+        else:
+            return "", 204
+
+    def delete(self,historyId):
+        """
+        Deletes a Blood donor donation history from the Blood Alert database.
+
+       INPUT:
+            The query parameters are:
+             * historyId: Id of the blood donor donation history in the format history-\d{1,3} Example: history-1.
+        
+        RESPONSE STATUS CODE
+         * Returns 204 if the blood donor was deleted
+         * Returns 404 if the donorId is not associated to any blood donor.
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+        * Profile: Blood Donor
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
+
+        """
+
+        if g.con.delete_history(historyId):
+            return "", 204
+        else:            
+            return create_error_response(404, "No such Blood donor donation history",
+                                         "No such blood donor donation history with id %s" % historyId
+                                        )
 class BloodTypes(Resource):
     """
     Blood Types Resource Implementation
@@ -1079,7 +1180,7 @@ class BloodTypes(Resource):
         output.add_control("self",href=api.url_for(BloodTypes))
         output.add_control_add_blood_type()
         output.add_control_donors_all()
-        output.add_control_add_blood_bank()
+        output.add_control_blood_banks_all()
         
         items=output["items"]=[]
         
