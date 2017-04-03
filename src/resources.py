@@ -767,7 +767,7 @@ class BloodDonor(Resource):
         
         try:
             donor = g.con.get_blood_donor(donorId)
-        except ValueError as ex:
+        except (ValueError,Exception) as ex:
             return create_error_response(404, "No such Blood donor",
                                             "No such blood donor with specified {} - {}".format(donorId, ex.message))
 
