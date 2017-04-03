@@ -183,6 +183,16 @@ class BloodAlertObject(MasonObject):
             "title": "List the donation history of this blood donor"
         }
 
+    def add_control_blood_bank_history_list(self,bloodBankId):
+        """
+        Adds the blood-bank-history-list control to an object. 
+        """
+
+        self["@controls"]["bloodalert:blood-bank-history-list"] = {
+            "href": api.url_for(BloodBankHistoryList,bloodBankId=bloodBankId),
+            "title": "List History of this blood bank"
+        }
+
     def add_control_add_blood_bank(self):
         """
         This adds the add-blood-bank control to an object. Intended for the  
@@ -243,6 +253,19 @@ class BloodAlertObject(MasonObject):
             "href": api.url_for(BloodBank, bloodBankId=bloodBankId),  
             "title": "Delete this Blood Bank",
             "method": "DELETE"
+        }
+
+    def add_control_blood_bank_blood_level(self, bloodBankId):
+        """
+        Adds the blood bank blood level control to Blood Bank object.
+
+        : param str bloodBankId:bloodBankId in the bbank-N format, where N is a number
+        """
+
+        self["@controls"]["bloodalert:blood-bank-blood-level"] = {
+            "href": api.url_for(BloodBankBloodLevels, bloodBankId=bloodBankId),  
+            "title": "List Blood levels of this Blood Bank",
+            "method": "GET"
         }
 
     def add_control_delete_blood_donor(self, donorId):
@@ -610,20 +633,167 @@ app.url_map.converters["regex"] = RegexConverter
 
 class BloodBanks(Resource):
     """
-    Resource BloodBanks Implementation 
+    Resource Blood Banks Implementation
     """
     def get(self):
         """
+        Gets a list of all blood banks
+
+        INPUT parameters:
+          None
+        
+        RESPONSE STATUS CODE:
+         * Returns 200 Blood Bank list loaded successfully.
+             
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Bank
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
         """
+        BBanks=g.con.get_blood_banks()
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodBanks))
+        output.add_control_add_blood_bank()
+        output.add_control_donors_all()
+        output.add_control_blood_types_all()
+
        
+        items=output["items"]=[]
+        for bank in BBanks:
+            
+            item=BloodAlertObject()
+            item.add_control("self",href=api.url_for(BloodBank,bloodBankId=bank["bloodBankId"]))
+            item.add_control("profile",href=BLOODALERT_BLOOD_BANK_PROFILE )
+            
+            item["bloodBankId"]=bank["bloodBankId"]
+            item["name"]=bank["name"]
+            item["address"]=bank["address"]
+            item["city"]=bank["city"]
+            item["telephone"]=bank["telephone"]
+            item["email"]=bank["email"]
+            item["latitude"]=bank["latitude"]
+            item["longitude"]=bank["longitude"]
+            item["threshold"]=bank["threshold"]
+
+            items.append(item)
+        
+        return Response(json.dumps(output),200,mimetype=MASON+";" + BLOODALERT_BLOOD_BANK_PROFILE)
+
+
     def post(self):
         """
+        Adds a new Blood Bank to the bloodAlert database
+
+        REQUEST ENTITY BODY:
+         * Media type: JSON:
+         * Profile: Blood Banks
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
+
+        The body should be a JSON document that matches the schema for new Blood Bank        
+
+        RESPONSE STATUS CODE:
+         * Returns 201 if the blood Bank has been added correctly.
+           The Location header contains the url of the new blood Bank
+         * Returns 400 if the blood Bank is not well formed or the entity body is
+           empty.
+         * Returns 415 if the format of the response is not json
+         * Returns 500 if the blood Bank could not be added to database.
         """
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+        request_body = request.get_json(force=True)
+
+        try:
+            name=request_body["name"]
+            address=request_body["address"]
+            city=request_body["city"]
+            telephone=request_body["telephone"]
+            email=request_body["email"]
+            latitude=request_body["latitude"]
+            longitude=request_body["longitude"]
+            threshold=request_body["threshold"]
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            newBloodBankId=g.con.create_blood_bank(name, city, telephone, email, threshold, address, latitude, longitude)
+        except Exception as ex:
+            return create_error_response(500, "Blood bank could not be created",
+                                         "Cannot create the blood bank in the database - {}".format(ex.message))
+        if not newBloodBankId:
+            return create_error_response(500, "Blood bank could not be created",
+                                         "Cannot create the blood bank in the database")
+
+        url=api.url_for(BloodBank,bloodBankId=newBloodBankId)
+
+        return Response(status= 201,headers={"Location": url})
 
 
 class BloodBank(Resource):
     """
+    Blood Bank Resource Implementation
     """
+    def get(self,bloodBankId):
+        """
+        Gets a blood bank information in the database
+
+        INPUT:
+            The query parameters are:
+             * bloodBankId: Id of the blood bank in the format bbank-\d{1,3} Example: bbank-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 200 if blood bank information loaded successfully
+             * Returns 404 if no such blood bank with specified id
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood bank
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
+        """
+
+        
+        try:
+            bank = g.con.get_blood_bank(bloodBankId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood bank",
+                                            "No such blood bank with specified {} - {}".format(bloodBankId, ex.message))
+
+       
+        if bank is None or not bank:
+            return create_error_response(404, "No such Blood bank",
+                                         "No such blood bank with specified - {}".format(bloodBankId)
+                                         )
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodBank,bloodBankId=bloodBankId))
+        output.add_control("profile",href=BLOODALERT_BLOOD_BANK_PROFILE )
+        output.add_control("collection",href=api.url_for(BloodBanks))
+        output.add_control_delete_blood_bank(bloodBankId)
+        output.add_control_edit_blood_bank(bloodBankId)
+        output.add_control_blood_bank_history_list(bloodBankId)
+        output.add_control_blood_bank_blood_level(bloodBankId)
+    
+        output["bloodBankId"]=bank["bloodBankId"]
+        output["name"]=bank["name"]
+        output["address"]=bank["address"]
+        output["city"]=bank["city"]
+        output["telephone"]=bank["telephone"]
+        output["email"]=bank["email"]
+        output["latitude"]=bank["latitude"]
+        output["longitude"]=bank["longitude"]
+        output["threshold"]=bank["threshold"]
+
+        return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_BANK_PROFILE)
+
 
 class BloodBankBloodLevels(Resource):
     """
@@ -1397,7 +1567,7 @@ api.add_resource(BloodTypes, "/bloodalert/bloodtypes/",
 api.add_resource(BloodType, "/bloodalert/bloodtypes/<regex('btype-\d+'):bloodTypeId>/",
                  endpoint="bloodtype")
 api.add_resource(BloodDonorHistoryList,"/bloodalert/donors/<regex('bdonor-\d+'):donorId>/history/",endpoint="blooddonorhistorylist")
-
+api.add_resource(BloodBankHistoryList,"/bloodalert/bloodbanks/<regex('bbank-\d+'):bloodBankId>/history/",endpoint="bloodbankhistorylist")
 api.add_resource(BloodDonorHistory,"/bloodalert/donors/<regex('bdonor-\d+'):donorId>/history/<regex('history-\d+'):historyId>/",endpoint="blooddonorhistory")
 
 #Redirect profile
