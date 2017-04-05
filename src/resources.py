@@ -794,7 +794,93 @@ class BloodBank(Resource):
 
         return Response(json.dumps(output), 200, mimetype=MASON+";" + BLOODALERT_BLOOD_BANK_PROFILE)
 
+    def put(self,bloodBankId):
+        """
+       Modifies a blood bank
 
+        INPUT:
+            The query parameters are:
+             * bloodBankId: Id of the blood bank in the format bbank-\d{1,3} Example: bbank-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 204 if the blood bank is modified sucessfully
+             * Returns 400 if the blood bank is malformed or the entity body is
+                empty.
+             * Returns 415 if the format of the response is not json
+             * Returns 404 if no blood bank with bloodBankId exist on database
+             * Returns 500 if the blood bank could not be modified
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Bank
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
+       
+        """
+
+        if not g.con.get_blood_bank(bloodBankId):
+            return create_error_response(404, "No such Blood bank",
+                                         "No such blood bank with id %s" % bloodBankId
+                                        )
+
+        if JSON != request.headers.get("Content-Type",""):
+            return create_error_response(415, "UnsupportedMediaType",
+                                         "Use a JSON compatible format")
+
+        request_body = request.get_json(force=True)
+
+        try:
+            name=request_body.get("name",None)
+            address=request_body.get("address",None)
+            city=request_body.get("city",None)
+            telephone=request_body.get("telephone",None)
+            email=request_body.get("email",None)
+            latitude=request_body.get("latitude",None)
+            longitude=request_body.get("longitude",None)           
+            threshold=request_body.get("threshold","-")
+
+        except KeyError:
+            
+            return create_error_response(400, "Wrong request format",
+                                         "Be sure to include required body in correct format")
+        try:
+            editedBloodBankId=g.con.modify_blood_bank(bloodBankId, name, address, city, email, telephone, latitude, longitude, threshold)
+        except Exception as ex:
+            return create_error_response(500, "Blood bank could not be modified",
+                                         "Blood bank with id {} could not be modified - {}".format(bloodBankId, ex.message))
+        if not editedBloodBankId:
+            return create_error_response(500, "Blood bank could not be modified",
+                                         "Blood bank with id {} could not be modified".format(bloodBankId))
+        else:
+            return "", 204
+
+    def delete(self,bloodBankId):
+        """
+        Deletes a Blood bank from the Blood Alert database.
+
+       INPUT:
+            The query parameters are:
+             * bloodBankId: Id of the blood bank in the format bbank-\d{1,3} Example: bbank-1.
+        
+        RESPONSE STATUS CODE
+         * Returns 204 if the blood bank was deleted
+         * Returns 404 if the bloodBankId is not associated to any blood bank.
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood Bank
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
+
+        
+        """
+
+        if g.con.delete_blood_bank(bloodBankId):
+            return "", 204
+        else:            
+            return create_error_response(404, "No such Blood bank",
+                                         "No such blood bank with id %s" % bloodBankId
+                                        )
 class BloodBankBloodLevels(Resource):
     """
     Resource Blood Bank Blood Levels implementation 
