@@ -1042,10 +1042,11 @@ class Connection(object):
         stmnt = stmnt + " email=? , " if email is not None else stmnt
         stmnt = stmnt + " city=? , " if city is not None else stmnt
 
-        if basic <> stmnt:
-            stmnt = stmnt + " WHERE donorId=?"
-        else:
+        if basic <> stmnt:          
+            stmnt = stmnt + " WHERE donorId=?"            
+        else:            
             return None
+            
         # try removing the last comma before WWHERE clause in the query
         stmnt = ' '.join(stmnt.rsplit(',', 1))
         #replace_right(stmnt,',',' ',1)

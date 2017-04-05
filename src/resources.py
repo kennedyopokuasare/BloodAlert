@@ -385,6 +385,8 @@ class BloodAlertObject(MasonObject):
             "type": "string"
         }
 
+        schema["required"]=["name"]
+
         return schema
 
     def _blood_bank_schema(self, edit=False):
@@ -972,26 +974,26 @@ class BloodDonor(Resource):
     
     def put(self,donorId):
         """
-       Modifies a blood donor
+            Modifies a blood donor
 
-        INPUT:
-            The query parameters are:
-             * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+            INPUT:
+                The query parameters are:
+                * donorId: Id of the blood donor in the format bdonor-\d{1,3} Example: bdonor-1.
+            
+            RESPONSE STATUS CODE:
+                * Returns 204 if the blood donor is modified sucessfully
+                * Returns 400 if the blood donor is not well formed or the entity body is
+                    empty.
+                * Returns 415 if the format of the response is not json
+                * Returns 404 if no blood donor meets the requirement
+                * Returns 500 if the blood donor could not be modified
+
+            RESPONSE ENTITY BODY:
+            * Media type: Mason
+            https://github.com/JornWildt/Mason
+            * Profile: Blood Donor
+            http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
         
-        RESPONSE STATUS CODE:
-             * Returns 204 if the blood donor is modified sucessfully
-             * Returns 400 if the blood donor is not well formed or the entity body is
-                empty.
-             * Returns 415 if the format of the response is not json
-             * Returns 404 if no blood donor meets the requirement
-             * Returns 500 if the blood donor could not be modified
-
-        RESPONSE ENTITY BODY:
-        * Media type: Mason
-          https://github.com/JornWildt/Mason
-         * Profile: Blood Donor
-           http://docs.bloodalert.apiary.io/#reference/profiles/blood-donor-profile
-       
         """
 
         if not g.con.get_blood_donor(donorId):
@@ -1014,7 +1016,7 @@ class BloodDonor(Resource):
             bloodTypeId=request_body.get("bloodTypeId",None)
             birthDate=request_body.get("birthDate",None)
             gender=request_body.get("gender",None)           
-            address=request_body.get("address","-")
+            address=request_body.get("address",None)
             city=request_body.get("city",None)
 
         except KeyError:
@@ -1025,7 +1027,9 @@ class BloodDonor(Resource):
             editedBloodDonorId=g.con.modify_blood_donor(donorId, firstname,familyName, telephone, email,bloodTypeId, birthDate, gender, address,city)
         except Exception as ex:
             return create_error_response(500, "Blood donor could not be modified",
-                                         "Blood donor with id {} could not be modified - {}".format(donorId, ex.message))
+        
+                                          "Blood donor with id {} could not be modified - {}".format(donorId, ex.message))
+        
         if not editedBloodDonorId:
             return create_error_response(500, "Blood donor could not be modified",
                                          "Blood donor with id {} could not be modified".format(donorId))
