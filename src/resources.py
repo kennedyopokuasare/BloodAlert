@@ -738,6 +738,7 @@ class BloodBanks(Resource):
         return Response(status= 201,headers={"Location": url})
 
 
+
 class BloodBank(Resource):
     """
     Blood Bank Resource Implementation
