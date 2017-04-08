@@ -296,7 +296,32 @@ class Connection(object):
             'threshold': threshold
         }
         return bloodBank
+    def _create_blood_bank_blood_level_object(self,row):
+        '''
+        It takes a :py:class:`sqlite3.Row` and transform it into a dictionary 
+        of a Blood Bank blood levels record.
 
+        :param row: The row obtained from the database.
+        :type row: sqlite3.Row
+        :return: a dictionary containing the following keys:
+
+            * ``bloodTypeName``: name of the Blood Type 
+            * ``bloodTypeId``: id of the Blood Type 
+            * ``amount``: amount of blood of the blood type in the blood bank         
+
+            Note that all values in the returned dictionary are string unless
+            otherwise stated.
+        '''
+        bloodTypeId = 'btype-' + str(row['bloodTypeId'])
+        bloodTypeName=row['name']    
+        amount = row['amount']       
+
+        bloodLevel = {
+            'bloodTypeId': bloodTypeId, 
+            'bloodTypeName':bloodTypeName,
+            'amount': amount            
+        }
+        return bloodLevel
     def _create_blood_donor_object(self, row):
         '''
         It takes a :py:class:`sqlite3.Row` and transform it into a dictionary 
@@ -499,7 +524,50 @@ class Connection(object):
             return None
         # Build the return object
         return self._create_blood_bank_object(row)
+    def get_blood_bank_blood_level(self,bloodBankId):
+        '''
+        Extracts a blood bank blodd levels from the database.
 
+        :param bloodBankId: The id of the Blood Bank. Note that bloodBankId is a
+            string with format ``bbank-\d{1,3}``.
+        :return: A dictionary with the format provided in
+            :py:meth:`_create_blood_bank_object` or None if the Blood Bank with provided 
+            id does not exist.
+        :raises ValueError: when ``bloodBankId`` is not well formed
+
+        '''
+        # Extracts the int which is the id for a Blood bank in the database
+        match = re.match(r'bbank-(\d{1,3})', bloodBankId)
+        if match is None:
+            raise ValueError("The bloodBankId is malformed")
+        bloodBankId = int(match.group(1))
+
+        # Activate foreign key support
+        self.set_foreign_keys_support()
+        # Create the SQL Query
+        query = 'SELECT  Blood_Types.bloodTypeId,Blood_Types.name, SUM(History.amount) as amount \
+                 FROM History INNER JOIN  Blood_Types ON  Blood_Types.bloodTypeId=History.bloodTypeId \
+                 WHERE History.bloodBankId=? \
+                 GROUP BY Blood_Types.bloodTypeId,Blood_Types.name'
+
+        # Cursor and row initialization
+        self.con.row_factory = sqlite3.Row
+        cur = self.con.cursor()
+        # Execute main SQL Statement
+        pvalue = (bloodBankId,)
+        cur.execute(query, pvalue)
+        # Process the response.
+        rows = cur.fetchall()
+        if rows is None:
+            return None
+        # Build the return object        
+        
+        bloodLevels = []
+        for row in rows:
+            bloodLevel = self._create_blood_bank_blood_level_object(row)
+            bloodLevels.append(bloodLevel)
+        return bloodLevels
+        
     def delete_blood_bank(self, bloodBankId):
         '''
         Delete the Blood Bank with id given as parameter.
@@ -648,6 +716,7 @@ class Connection(object):
         # Return the id in
         return 'bbank-' + str(lid) if lid is not None else None
 
+    
     # Blood_Types API
     def get_blood_types(self):
         '''

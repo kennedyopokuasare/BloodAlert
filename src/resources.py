@@ -965,6 +965,59 @@ class BloodBankBloodLevels(Resource):
     """
     Resource Blood Bank Blood Levels implementation 
     """
+    def get(self,bloodBankId):
+        """
+        Get blood levels of a blood bank
+
+        INPUT:
+            The query parameters are:
+             * bloodBankId: Id of the blood bank in the format bbank-\d{1,3} Example: bbank-1.
+        
+        RESPONSE STATUS CODE:
+             * Returns 200 if blood level information loaded successfully
+             * Returns 404 if no such blood bank with specified id
+
+        RESPONSE ENTITY BODY:
+        * Media type: Mason
+          https://github.com/JornWildt/Mason
+         * Profile: Blood bank
+           http://docs.bloodalert.apiary.io/#reference/profiles/blood-bank-profile
+        """
+
+        
+        try:
+            bloodLevels = g.con.get_blood_bank_blood_level(bloodBankId)
+        except ValueError as ex:
+            return create_error_response(404, "No such Blood bank",
+                                            "No such blood bank with specified {} - {}".format(bloodBankId, ex.message))
+
+       
+        if bloodLevels is None or not bloodLevels:
+            return create_error_response(404, "No such Blood bank",
+                                         "No such blood bank with specified - {}".format(bloodBankId)
+                                         )
+        output=BloodAlertObject()
+        output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
+
+        output.add_control("self",href=api.url_for(BloodBankBloodLevels,bloodBankId=bloodBankId))
+        output.add_control("parent",href=api.url_for(BloodBank,bloodBankId=bloodBankId))       
+       
+
+        print bloodLevels
+
+        items=output["items"]=[]
+        for level in bloodLevels:
+            
+            item=BloodAlertObject()
+            
+            item.add_control("profile",href=BLOODALERT_BLOOD_BANK_PROFILE)            
+            item.add_control("bloodType",href=api.url_for(BloodType,bloodTypeId=level["bloodTypeId"]))
+            item["bloodTypeName"]=level["bloodTypeName"]
+            item["amount"]=level["amount"]            
+
+            items.append(item)
+        
+        return Response(json.dumps(output),200,mimetype=MASON+";" + BLOODALERT_BLOOD_BANK_PROFILE)
     
 class BloodBankHistoryList(Resource):
     """
