@@ -42,6 +42,15 @@ This action list of all blood types. Use via GET.
 Return the link relation description in HTML format
 + Response 200 (text/html)
 
+## add-blood-type [/link-relations/add-blood-type]
+
+Creates new blood type. Use via POST.
+
+### GET
+
+Return the link relation description in HTML format
++ Response 200 (text/html)
+
 ## edit [/link-relations/edit]
 
 Edit the current context. Use via PUT.
@@ -478,11 +487,6 @@ A blood bank information in the database
 Gets a blood bank information in the database
 
 
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
             
 + Response  200 (application/vnd.mason+json)
 
@@ -686,7 +690,25 @@ The request body is malformed. Some of the the parameters are not correctly prov
                     ]
                 },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1"
-            }    
+            }  
+            
++ Response 500 (application/vnd.mason+json)
+
+    Blood bank with id `bbank-1` could not be modified
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Blood bank could not be modified",
+                    "@messages": [
+                        " Blood bank with id bbank-1 could not be modified"
+                    ]
+                },
+                "resource-url": "/bloodalert/bloodbanks/bbank-1"
+            }  
+            
+                        
 ### Delete Blood Bank [DELETE]
 Delete a message from the system
 
@@ -725,11 +747,7 @@ All blood levels (blood type and level of blood) of a particular blood bank
 
 ### Get Blood Bank blood levels [GET]
 
-+ Request(application/json)
 
-    +   Headers
-        
-                Accept: application/vnd.mason+json
                 
 + Response 200 (application/vnd.mason+json)
 
@@ -794,11 +812,7 @@ All blood bank blood transaction (donation , others) history
 
 ### Get Blood Bank History List [GET]
 Get all blood transactions of target blood bank (donation, etc)
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
+
             
 + Response  200 (application/vnd.mason+json)
 
@@ -906,11 +920,7 @@ All blood bank blood transaction (donation , others) history
 ### Get Blood Bank History [GET]
 Get a single blood bank history entry of target historyId
 
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
+
             
 + Response  200 (application/vnd.mason+json)
 
@@ -1082,11 +1092,27 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 "@error": {
                     "@message": "No such Blood bank history",
                     "@messages": [
-                        "No such blood bank with id `bbank-1` and historyId `history-1` exists in the database"
+                        "No such blood bank with id bbank-1 and historyId history-1 exists in the database"
                     ]
                 },
                 "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
             }         
+
++ Response 500 (application/vnd.mason+json)
+
+    Blood bank history with id `bbank-1` and historyId `history-1` could bot be modified
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Blood bank history could not be modified",
+                    "@messages": [
+                        "Blood bank history with id `bbank-1` and historyId `history-1` could bot be modified"
+                    ]
+                },
+                "resource-url": "/bloodalert/bloodbanks/bbank-1/history/history-1"
+            }     
 
 ### Delete Blood Bank History [DELETE]
 Delete a blood bank donation history from the database
@@ -1249,7 +1275,7 @@ Gets a list of all blood donors
                                     "type": "string"
                                 }
                             },
-                            "required": ["firstName","familyName","birthDate","gender","bloodTypeId","telephone","address","email"]
+                            "required": ["firstname","familyName","birthDate","gender","bloodTypeId","telephone","address","email"]
                         }
                     },
                     "bloodalert:blood-banks-all": {
@@ -1361,11 +1387,7 @@ A blood donor in the database
 Gets a blood donor information in the database
 
 
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
+
             
 + Response  200 (application/vnd.mason+json)
 
@@ -1492,13 +1514,13 @@ No such blood donor with specified Id
             }
 
 ### Modify Blood donor [PUT]
-Modifies blood donor history 
+Modifies a blood donor 
 
 + Request(application/json)
     
     Any of ( or a combination of ) the following of a Blood donor; 
     
-    + ``firstName`` 
+    + ``firstname`` 
     + ``familyName``
     + ``telephone``
     + ``email``
@@ -1516,7 +1538,7 @@ Modifies blood donor history
     +   Body
             
             {
-                "firstName":"Anas",
+                "firstname":"Anas",
                 "telephone":"+358546933723"
             }
     
@@ -1571,8 +1593,24 @@ The request body is malformed. Some of the the parameters are not correctly prov
                     ]
                 },
                 "resource-url": "/bloodalert/donors/bdonor-2"
-            }         
+            } 
+            
++ Response 500 (application/vnd.mason+json)
 
+    Blood donor with id `bdonor-2` could not be modified
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Blood donor could not be modified",
+                    "@messages": [
+                        "Blood donor with id bdonor-2 could not be modified"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2"
+            }
+            
 ### Delete Blood donor [DELETE]
 Delete a blood donor
 
@@ -1803,11 +1841,7 @@ All blood donor donation history
 ### Get Blood Donation History [GET]
 Get a single blood donor donation history entry of target historyId
 
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
+
             
 + Response  200 (application/vnd.mason+json)
 
@@ -1983,6 +2017,24 @@ The request body is malformed. Some of the the parameters are not correctly prov
                 },
                 "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
             }
+            
++ Response 500 (application/vnd.mason+json)
+
+    Blood donation history with id `history-2` could not be modified
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Blood donation history could not be modified",
+                    "@messages": [
+                        "Blood donation history with id history-` could not be modified"
+                    ]
+                },
+                "resource-url": "/bloodalert/donors/bdonor-2/history/history-2/"
+            } 
+
+
 
 ### Delete Blood Donation History [DELETE]
 Delete a blood donation history
@@ -2070,9 +2122,9 @@ Gets a list of all blood types
                     "self": {
                         "href": "/bloodalert/bloodtypes/"
                     },
-                    "bloodalert:add-blood-donor": {
+                    "bloodalert:add-blood-type": {
                         "title": "Add Blood Type",
-                        "href": "/bloodalert/blood types/",
+                        "href": "/bloodalert/bloodtypes/",
                         "encoding": "json",
                         "method": "POST",
                         "schema": {
@@ -2180,12 +2232,7 @@ A blood type in the database
 Gets a blood type information in the database
 
 
-+ Request(application/json)
-    
-    +   Headers
-    
-            Accept: application/vnd.mason+json
-            
+
 + Response  200 (application/vnd.mason+json)
 
     Blood type loaded sucessfully
@@ -2320,7 +2367,23 @@ The request body is malformed. Some of the the parameters are not correctly prov
                     ]
                 },
                 "resource-url": "/bloodalert/bloodtypes/btype-1"
-            }         
+            } 
+            
++ Response 500 (application/vnd.mason+json)
+
+    Blood type with id `btype-1` could not be modified
+        
+    + Body 
+    
+            {
+                "@error": {
+                    "@message": "Blood type could not be modified",
+                    "@messages": [
+                        "Blood type with id btype-1 could not be modified"
+                    ]
+                },
+                "resource-url": "/bloodalert/bloodtypes/btype-1"
+            } 
 
 ### Delete Blood type [DELETE]
 Delete a blood type
