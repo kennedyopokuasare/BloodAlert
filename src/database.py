@@ -1361,7 +1361,7 @@ class Connection(object):
             bloodBankId = int(match2.group(1))
         
         if donorId:
-            match3 = re.match(r'donor-(\d{1,3})',str(donorId))
+            match3 = re.match(r'bdonor-(\d{1,3})',str(donorId))
             if match3 is None:
                 raise ValueError("The donorId is malformed")
             donorId = int(match3.group(1))
