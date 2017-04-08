@@ -169,7 +169,7 @@ class BloodAlertObject(MasonObject):
         Adds the blood-types-all control to an object. 
         """
 
-        self["@controls"]["bloodalert:blood-type-all"] = {
+        self["@controls"]["bloodalert:blood-types-all"] = {
             "href": api.url_for(BloodTypes),
             "title": "List all blood types"
         }
