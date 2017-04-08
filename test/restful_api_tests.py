@@ -279,8 +279,218 @@ class BloodBanksTestCase(ResourcesAPITestCase):
     
     
 class BloodBankTestCase(ResourcesAPITestCase):
-    """
-    """
+
+    
+    blood_bank_1={
+        "city": "Tampere",               
+        "threshold": 25,     
+        "email": "tampere@oulu.fi"
+    }
+    blood_bank_2={
+        "Tampere": "city",               
+        "25": "threshold",     
+        "tampere@oulu.fi": "email"
+    }
+
+    def setUp(self):        
+        super(BloodBankTestCase, self).setUp()
+        self.url = resources.api.url_for(resources.BloodBank,
+                                         bloodBankId="bbank-1",
+                                         _external=False)
+        self.url_wrong = resources.api.url_for(resources.BloodBank,
+                                               bloodBankId="bbank-789",
+                                               _external=False)
+
+    def test_url(self):
+        """
+        Checks that the URL points to the right resource
+        """        
+        _url = "/bloodalert/bloodbanks/bbank-1/"
+        print "("+self.test_url.__name__+")", self.test_url.__doc__
+        with resources.app.test_request_context(_url):
+            rule = flask.request.url_rule
+            view_point = resources.app.view_functions[rule.endpoint].view_class
+            self.assertEquals(view_point, resources.BloodBank)
+    
+    def test_wrong_url(self):
+        """
+        Checks that GET Blood blood bank return correct status code if given a
+        wrong URL
+        """
+        print "("+self.test_wrong_url.__name__+")", self.test_wrong_url.__doc__
+        resp = self.client.get(self.url_wrong)
+        self.assertEquals(resp.status_code, 404) 
+    def test_get_blood_bank_correct_status_code_headers(self):
+        """
+        Checks that GET Blood bank return correct status code and content type in headers
+        """
+        print "("+self.test_get_blood_bank_correct_status_code_headers.__name__+")", self.test_get_blood_bank_correct_status_code_headers.__doc__        
+        resp = self.client.get(self.url)
+        print "\tAsserting that response has status code 200"
+        self.assertEquals(resp.status_code, 200)
+        print "\tAsserting that response header has Content-Type:{}".format(MASON_JSON)
+        self.assertEquals(resp.headers.get("Content-Type",None),
+                          "{};{}".format(MASON_JSON, BLOODALERT_BLOOD_BANK_PROFILE))    
+    def test_get_blood_bank(self):
+        """
+        Checking that GET Blood Bank return correct status code and hypermedia
+        """
+
+        print "("+self.test_get_blood_bank.__name__+")", self.test_get_blood_bank.__doc__
+        with resources.app.test_client() as client:
+            resp = client.get(self.url)
+            print "\tAsserting that response has status code 200"
+            self.assertEquals(resp.status_code, 200)
+            data = json.loads(resp.data)
+
+            print "\tAsserting that @control has correct link relations"
+            controls = data["@controls"]
+            print "\t\tHas self and self has href={}".format(self.url)
+            self.assertIn("self", controls)
+            self.assertEqual(controls["self"]["href"],self.url)
+
+            print "\t\tHas profile and profile has href={}".format(BLOODALERT_BLOOD_BANK_PROFILE)
+            self.assertIn("profile", controls)            
+            self.assertEqual(controls["profile"]["href"],BLOODALERT_BLOOD_BANK_PROFILE)
+
+            print "\t\tHas collection and collection has href={}".format("/bloodalert/bloodbanks/")
+            self.assertIn("collection", controls)            
+            self.assertEqual(controls["collection"]["href"],"/bloodalert/bloodbanks/")
+            
+            print "\tAsserting that @controls has bloodalert:blood-bank-history-list and in correct format"
+            self.assertIn("bloodalert:blood-bank-history-list", controls)
+            all_history=controls["bloodalert:blood-bank-history-list"]
+            print "\t\t has title"
+            self.assertIn("title", all_history)
+            print "\t\t has href and href={}history/".format(self.url)
+            self.assertIn("href", all_history)
+            self.assertEquals(all_history["href"], self.url+"history/")
+
+            print "\tAsserting that @controls has bloodalert:blood-bank-blood-level and in correct format"
+            self.assertIn("bloodalert:blood-bank-blood-level", controls)
+            all_blood_level=controls["bloodalert:blood-bank-blood-level"]
+            print "\t\t has title"
+            self.assertIn("title", all_blood_level)
+            print "\t\t has href and href={}bloodlevels/".format(self.url)
+            self.assertIn("href", all_blood_level)
+            self.assertEquals(all_blood_level["href"], self.url+"bloodlevels/")
+
+            print "\tAsserting that @controls has bloodalert:delete and in correct format"
+            self.assertIn("bloodalert:delete", controls)
+            delete_ctrl=controls["bloodalert:delete"]
+            print "\t\t has title"
+            self.assertIn("title", delete_ctrl)
+            print "\t\t has href and href={}".format(self.url)
+            self.assertIn("href", delete_ctrl)
+            self.assertEquals(delete_ctrl["href"], self.url)
+            print "\t\t has method and method=DELETE"
+            self.assertEquals(delete_ctrl["method"],"DELETE")
+
+            print "\tAsserting that @controls has bloodalert:edit and in correct format"
+            edit_donor_ctrl=controls["bloodalert:edit"]
+            print "\t\t has title"
+            self.assertIn("title", edit_donor_ctrl)
+            print "\t\t has href and href={}".format(self.url)
+            self.assertIn("href", edit_donor_ctrl)
+            self.assertEquals(edit_donor_ctrl["href"], self.url)
+            print "\t\t has encoding and encoding=json"
+            self.assertIn("encoding", edit_donor_ctrl)
+            self.assertEquals(edit_donor_ctrl["encoding"], "json")
+            print "\t\t has method and method=PUT"
+            self.assertIn("method", edit_donor_ctrl)
+            self.assertEquals(edit_donor_ctrl["method"], "PUT")
+            
+            print "\t\thas schema and schema has all required atttributes type, properties, required"
+
+            schema_data = edit_donor_ctrl["schema"]
+            bloodBankSchema=resources.BloodAlertObject()._blood_bank_schema(edit=True)
+            print "\t\t\tschema has type"
+            self.assertIn("type", schema_data)
+            print "\t\t\tschema has properties and in correct format with all attributes"
+            self.assertIn("properties", schema_data)
+            self.assertEquals(schema_data["properties"], bloodBankSchema["properties"])
+            print "\t\t\tschema has required"
+            self.assertIn("required", schema_data)
+            self.assertEquals(schema_data["required"], bloodBankSchema["required"])
+
+            print "\t\t\t Each schema property entry has required title,description,type"
+
+            numbertypes=["latitude","longitude","threshold"]
+            props = schema_data["properties"]
+            for key, value in props.items():
+                self.assertIn("description", value)
+                self.assertIn("title", value)
+                self.assertIn("type", value)
+                if key in numbertypes:
+                    self.assertEquals("number", value["type"])
+                else:
+                    self.assertEquals("string", value["type"])
+    
+    def test_modify_blood_bank(self):
+        """
+        Modify an exsiting blood bank and check that the blood bank has been modified correctly 
+        """
+        print "("+self.test_modify_blood_bank.__name__+")", self.test_modify_blood_bank.__doc__
+
+        resp = self.client.put(self.url,
+                               data=json.dumps(self.blood_bank_1),
+                               headers={"Content-Type": JSON})
+        print "\tAsserting that correctly modified blood bank returns status code 204"
+        self.assertEquals(resp.status_code, 204)
+
+        print "\tChecking that the blood bank was actually modified"        
+        resp2 = self.client.get(self.url)
+        self.assertEquals(resp2.status_code, 200)
+        data = json.loads(resp2.data)
+        print "\t\tAsserting that city was modified"
+        self.assertEquals(data["city"], self.blood_bank_1["city"])
+        print "\t\tAsserting that threshold was modified"
+        self.assertEquals(data["threshold"], self.blood_bank_1["threshold"])  
+        print "\t\tAsserting that email was modified"
+        self.assertEquals(data["email"], self.blood_bank_1["email"])    
+
+    def test_modify_unexisting_blood_bank(self):
+        """
+        Trying to modify a non existent blood bank
+        """
+        print "("+self.test_modify_unexisting_blood_bank.__name__+")", self.test_modify_unexisting_blood_bank.__doc__
+        resp = self.client.put(self.url_wrong,
+                                data=json.dumps(self.blood_bank_1),
+                                headers={"Content-Type": JSON})
+        print "\tAsserting that response returns status code 404"                       
+        self.assertEquals(resp.status_code, 404)
+
+    def test_modify_wrong_body(self):
+        """
+        Try to modify a blood donor with wrong body
+        """
+        print "("+self.test_modify_wrong_body.__name__+")", self.test_modify_wrong_body.__doc__
+        
+        resp = self.client.put(self.url,
+                               data=json.dumps(self.blood_bank_2),
+                               headers={"Content-Type": JSON})
+        self.assertEquals(resp.status_code, 500)  
+    def test_delete_blood_bank(self):
+        """
+        Checks that Delete Blood bank return correct status code if correctly delete
+        """
+        print "("+self.test_delete_blood_bank.__name__+")", self.test_delete_blood_bank.__doc__
+        resp = self.client.delete(self.url)
+
+        print "\tAsserting that response returns status code 204"
+        self.assertEquals(resp.status_code, 204)
+        print "\tChecking that the blood donor was actually deleted"
+        print "\tAsserting that trying to load the deleted item returns 404"
+        resp2 = self.client.get(self.url)
+        self.assertEquals(resp2.status_code, 404)
+
+    def test_delete_wrong_url(self):
+        """
+        Checking that that Delete Blood bank returns correct status code if given a wrong address
+        """
+        print "("+self.test_delete_wrong_url.__name__+")", self.test_delete_wrong_url.__doc__
+        resp = self.client.delete(self.url_wrong)
+        self.assertEquals(resp.status_code, 404)             
 class BloodTypesTestCase(ResourcesAPITestCase):
     url="/bloodalert/bloodtypes/"
     intial_blood_types_entries=8

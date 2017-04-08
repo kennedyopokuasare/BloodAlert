@@ -917,7 +917,7 @@ class BloodBank(Resource):
             email=request_body.get("email",None)
             latitude=request_body.get("latitude",None)
             longitude=request_body.get("longitude",None)           
-            threshold=request_body.get("threshold","-")
+            threshold=request_body.get("threshold",None)
 
         except KeyError:
             
