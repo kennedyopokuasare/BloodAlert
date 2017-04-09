@@ -747,6 +747,7 @@ All blood levels (blood type and level of blood) of a particular blood bank
 
 ### Get Blood Bank blood levels [GET]
 
+Get blood levels of a blood bank
 
                 
 + Response 200 (application/vnd.mason+json)
@@ -763,16 +764,43 @@ All blood levels (blood type and level of blood) of a particular blood bank
                 
                 "items": [
                     {
-                        "bloodype": "O+",
-                        "amount": 50
+                        "bloodTypeId":"btype-1",
+                        "bloodTypeName": "O+",
+                        "amount": 50,
+                        "@controls": {
+                            "profile": {
+                              "href": "/profiles/blood-banks-profile/"
+                            },
+                            "bloodtype": {
+                              "href": "/bloodalert/bloodtypes/btype-1/"
+                            }
+                          }
                     },
                     {
-                        "bloodype": "A+",
-                        "amount": 150
+                        "bloodTypeId":"btype-2",
+                        "bloodTypeName": "AB",
+                        "amount": 150,
+                        "@controls": {
+                            "profile": {
+                              "href": "/profiles/blood-banks-profile/"
+                            },
+                            "bloodtype": {
+                              "href": "/bloodalert/bloodtypes/btype-2/"
+                            }
+                          }
                     },
                     {
-                        "bloodype": "B+",
-                        "amount": 33
+                        "bloodTypeId":"btype-3",
+                        "bloodTypeName": "A-",
+                        "amount": 33,
+                        "@controls": {
+                            "profile": {
+                              "href": "/profiles/blood-banks-profile/"
+                            },
+                            "bloodtype": {
+                              "href": "/bloodalert/bloodtypes/btype-3/"
+                            }
+                          }
                     }
                 ],
                 

@@ -82,6 +82,8 @@ class ResourcesAPITestCase(unittest.TestCase):
 
 # End of Imported code
 
+
+
 class BloodBanksTestCase(ResourcesAPITestCase):
     blood_bank_1={
         "name": "Oulun Tervestalo Veri Palvelu",
@@ -333,7 +335,7 @@ class BloodBankTestCase(ResourcesAPITestCase):
                           "{};{}".format(MASON_JSON, BLOODALERT_BLOOD_BANK_PROFILE))    
     def test_get_blood_bank(self):
         """
-        Checking that GET Blood Bank return correct status code and hypermedia
+        Checking that GET Blood Bank return correct status code and MASON hypermedia format
         """
 
         print "("+self.test_get_blood_bank.__name__+")", self.test_get_blood_bank.__doc__
@@ -703,7 +705,7 @@ class BloodTypeTestCase(ResourcesAPITestCase):
     
     def test_get_blood_type(self):
         """
-        Checking that GET Blood Type return correct status code and hypermedia
+        Checking that GET Blood Type return correct status code and MASON hypermedia format
         """
 
         print "("+self.test_get_blood_type.__name__+")", self.test_get_blood_type.__doc__
@@ -890,7 +892,7 @@ class BloodDonorTestCase(ResourcesAPITestCase):
                           "{};{}".format(MASON_JSON, BLOODALERT_BLOOD_DONOR_PROFILE))
     def test_get_blood_donor(self):
         """
-        Checking that GET Blood Donor return correct status code and hypermedia
+        Checking that GET Blood Donor return correct status code and MASON hypermedia format
         """
 
         print "("+self.test_get_blood_donor.__name__+")", self.test_get_blood_donor.__doc__
@@ -1231,7 +1233,92 @@ class BloodDonorsTestCase(ResourcesAPITestCase):
             self.assertIn("profile", item["@controls"])
             self.assertEquals(item["@controls"]["profile"]["href"], BLOODALERT_BLOOD_DONOR_PROFILE)
 
+class BloodBankBloodLevelsTestCase(ResourcesAPITestCase):
+    
+    def setUp(self):
         
+        super(BloodBankBloodLevelsTestCase, self).setUp()
+        self.url = resources.api.url_for(resources.BloodBankBloodLevels,
+                                         bloodBankId="bbank-1",
+                                         _external=False)
+        self.url_wrong = resources.api.url_for(resources.BloodBankBloodLevels,
+                                               bloodBankId="bbank-789",
+                                               _external=False)
+
+    def test_url(self):
+        """
+        Checks that the URL points to the right resource
+        """        
+        _url = "/bloodalert/bloodbanks/bbank-1/bloodlevels/"
+        print "("+self.test_url.__name__+")", self.test_url.__doc__
+        with resources.app.test_request_context(_url):
+            rule = flask.request.url_rule
+            view_point = resources.app.view_functions[rule.endpoint].view_class
+            self.assertEquals(view_point, resources.BloodBankBloodLevels)
+    
+    def test_wrong_url(self):
+        """
+        Checks that GET Blood Bank Blood levels return correct status code if given a
+        wrong URL
+        """
+        print "("+self.test_wrong_url.__name__+")", self.test_wrong_url.__doc__
+        resp = self.client.get(self.url_wrong)
+        self.assertEquals(resp.status_code, 404)      
+    def test_get_blood_bank_blood_level_correct_status_code_headers(self):
+        """
+        Checks that GET Blood bank blood level return correct status code and content type in headers
+        """
+        print "("+self.test_get_blood_bank_blood_level_correct_status_code_headers.__name__+")", self.test_get_blood_bank_blood_level_correct_status_code_headers.__doc__        
+        resp = self.client.get(self.url)
+        print "\tAsserting that response has status code 200"
+        self.assertEquals(resp.status_code, 200)
+        print "\tAsserting that response header has Content-Type:{}".format(MASON_JSON)
+        self.assertEquals(resp.headers.get("Content-Type",None),
+                          "{};{}".format(MASON_JSON, BLOODALERT_BLOOD_BANK_PROFILE))
+    def test_get_blood_bank_blood_level(self):
+        """
+        Checking that GET Blood bank blood level return correct status code and MASON hypermedia format
+        """
+
+        print "("+self.test_get_blood_bank_blood_level.__name__+")", self.test_get_blood_bank_blood_level.__doc__
+        
+        resp = self.client.get(self.url)
+        print "\tAsserting that response has status code 200"
+        self.assertEquals(resp.status_code, 200)
+
+        print "\tChecking correctness of hypermedia format"
+        data = json.loads(resp.data)      
+       
+        controls = data["@controls"]
+        print "\tAsserting that @controls has self link relation"
+        self.assertIn("self", controls)
+        self.assertIn("href", controls["self"])
+        self.assertEquals(controls["self"]["href"], self.url)
+
+        print "\tAsserting that @controls has parent and in correct format"
+        self.assertIn("parent", controls)
+        parent=controls["parent"]
+        print "\t\t has title"
+        self.assertIn("title", parent)
+        parent_url=resources.api.url_for(resources.BloodBank,bloodBankId="bbank-1",_external=False)
+        print "\t\t has href and href={}".format(parent_url)
+        self.assertIn("href", parent)
+        self.assertEquals(parent["href"], parent_url)
+
+        
+        
+        print "\tAsserting that response items and in correct format"
+        items = data["items"]       
+        for item in items:
+            self.assertIn("bloodTypeName", item)
+            self.assertIn("amount", item)
+            
+            self.assertIn("@controls", item)         
+            self.assertIn("profile", item["@controls"])
+            self.assertEquals(item["@controls"]["profile"]["href"], BLOODALERT_BLOOD_BANK_PROFILE)
+            self.assertIn("bloodType", item["@controls"])
+            self.assertEquals(item["@controls"]["bloodType"]["href"],resources.api.url_for(resources.BloodType,bloodTypeId=item["bloodTypeId"],_external=False))        
+
 
 
 

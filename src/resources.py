@@ -268,6 +268,18 @@ class BloodAlertObject(MasonObject):
             "title": "List Blood levels of this Blood Bank",
             "method": "GET"
         }
+    def add_control_blood_bank_blood_level_parent(self,bloodBankId):
+        """
+        Adds the blood bank blood level parent control to Blood Bank blood level object.
+
+        : param str bloodBankId:bloodBankId in the bbank-N format, where N is a number
+        """
+
+        self["@controls"]["parent"] = {
+            "href": api.url_for(BloodBank, bloodBankId=bloodBankId),  
+            "title": "The related blood bank",
+            "method": "GET"
+        }
 
     def add_control_delete_blood_donor(self, donorId):
        """
@@ -1000,7 +1012,8 @@ class BloodBankBloodLevels(Resource):
         output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
 
         output.add_control("self",href=api.url_for(BloodBankBloodLevels,bloodBankId=bloodBankId))
-        output.add_control("parent",href=api.url_for(BloodBank,bloodBankId=bloodBankId))       
+        
+        output.add_control_blood_bank_blood_level_parent(bloodBankId)     
        
 
         print bloodLevels
@@ -1013,7 +1026,8 @@ class BloodBankBloodLevels(Resource):
             item.add_control("profile",href=BLOODALERT_BLOOD_BANK_PROFILE)            
             item.add_control("bloodType",href=api.url_for(BloodType,bloodTypeId=level["bloodTypeId"]))
             item["bloodTypeName"]=level["bloodTypeName"]
-            item["amount"]=level["amount"]            
+            item["amount"]=level["amount"] 
+            item["bloodTypeId"]=level["bloodTypeId"]           
 
             items.append(item)
         
