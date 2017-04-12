@@ -1013,10 +1013,7 @@ class BloodBankBloodLevels(Resource):
 
         output.add_control("self",href=api.url_for(BloodBankBloodLevels,bloodBankId=bloodBankId))
         
-        output.add_control_blood_bank_blood_level_parent(bloodBankId)     
-       
-
-        print bloodLevels
+        output.add_control_blood_bank_blood_level_parent(bloodBankId)    
 
         items=output["items"]=[]
         for level in bloodLevels:
@@ -1066,7 +1063,7 @@ class BloodBankHistoryList(Resource):
         for donation in donations:
             
             item=BloodAlertObject()
-            item.add_control("self",href=api.url_for(BloodBankHistoryList,bloodBankId=donation["bloodBankId"],historyId=donation["historyId"]))
+            item.add_control("self",href=api.url_for(BloodBankHistory,bloodBankId=donation["bloodBankId"],historyId=donation["historyId"]))
             item.add_control("profile",href=BLOODALERT_BLOOD_BANK_PROFILE )
             item.add_control("bloodtype",href=api.url_for(BloodType,bloodTypeId=donation["bloodTypeId"]))
             item.add_control("donor",href=api.url_for(BloodDonor,donorId=donation["donorId"]))

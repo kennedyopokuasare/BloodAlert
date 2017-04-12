@@ -1456,12 +1456,12 @@ class Connection(object):
         stmnt = stmnt + " donorId=? , " if donorId is not None else stmnt
         stmnt = stmnt + " bloodTypeId=? , " if bloodTypeId is not None else stmnt
         stmnt = stmnt + " bloodBankId=? , " if bloodBankId is not None else stmnt
-        stmnt = stmnt + " amount=? , " if amount is not None else stmnt
-        stmnt = stmnt + " timeStamp=? , " if timeStamp is not None else stmnt
+        stmnt = stmnt + " amount=? , " if amount is not None else stmnt        
         stmnt = stmnt + " tag=? , " if tag is not None else stmnt
         
        
         if basic <> stmnt:
+            stmnt = stmnt + " timeStamp=? , " if timeStamp is not None else stmnt
             stmnt = stmnt + " WHERE historyId=?"
         else:
             return None
