@@ -1,13 +1,11 @@
 
 # The Database
-The Blood Alert Database API uses
- [SQLite](www.sqlite.org) hence no installation is needed
+The Blood Alert Database API uses [SQLite](www.sqlite.org) hence no installation is needed
 
 ## Setting up the database
-There are two options to setup ( create and populate) the databse. We recommend option 1 if you are not familiar with SQL
+There are two options to setup (create and populate) the database. We recommend **option 1** if you are not familiar with SQL
 
 ###  Option 1
-
 * Ensure that you have **python 2.7.x** installed , and python path added to your environment variables
 * open the command prompt at the root of the application (codes) folder
 * run the command 
@@ -30,7 +28,7 @@ There are two options to setup ( create and populate) the databse. We recommend 
 * run the command using the command partern 
     ```bash 
         python -m test.<name_of_test_file_without_.py_extension>
-* Examples of the commands to run the test cases are 
+* Examples of the commands to run the test cases are; 
     * example 1 **python -m test.db_api_tests_blood_types**
     * example 2 **python -m test.db_api_tests_blood_banks**
     * example 3 **python -m test.db_api_tests_blood_donors**
@@ -57,7 +55,7 @@ To setup and run the API, please follow the following steps
 3. Install Flask-RESTful with the command 
     ```bash
         pip install flask-restful
-4. Follows steps in setting up the database descbribed above to setup the database
+4. Follow the steps in setting up the database descbribed above in **The Database** section, to setup the database
 5. open the command prompt at the root of the application (codes) folder
 6. run the command 
     ```bash
@@ -76,7 +74,3 @@ To run test cases of the RESTFul API
 * To run specific tests run the command **python -m unittest test.restful_api_tests.name_of_specific_test_case_class**
     * Example **python -m unittest test.restful_api_tests.BloodDonorsTestCase**
     * Example **python -m unittest test.restful_api_tests.BloodBanksTestCase**
-
-
-
-
