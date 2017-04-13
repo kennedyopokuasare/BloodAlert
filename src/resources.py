@@ -231,13 +231,13 @@ class BloodAlertObject(MasonObject):
             "method": "POST",
             "schema": self._blood_type_schema()
         }
-    def add_control_blood_donor_donate(self):
+    def add_control_blood_donor_donate(self,donorId):
         """
         This adds the blood-donor-donate control to an object. 
         """
 
         self["@controls"]["bloodalert:blood-donor-donate"] = {
-            "href": api.url_for(BloodTypes),
+            "href": api.url_for(BloodDonorHistoryList,donorId=donorId),
             "title": "Add Blood Donation",
             "encoding": "json",
             "method": "POST",
@@ -529,7 +529,7 @@ class BloodAlertObject(MasonObject):
         props["amount"]= {
             "title": "Amount of Blood donated",
             "description": "The amount of blood donated",
-            "type": "string"
+            "type": "number"
           }
         props["timeStamp"]= {
             "title": "Time of Donation",
@@ -571,7 +571,7 @@ class BloodAlertObject(MasonObject):
         props["amount"]= {
             "title": "Amount of Blood donated",
             "description": "The amount of blood donated",
-            "type": "string"
+            "type": "number"
           }
         props["timeStamp"]= {
             "title": "Time of Donation",
@@ -1139,8 +1139,10 @@ class BloodBankHistory(Resource):
         output.add_control_blood_bank_history_list(bloodBankId)
         output.add_control_blood_bank_blood_level(bloodBankId)
 
+        output["historyId"]=history["historyId"]
         output["donorId"]=history["donorId"]           
         output["bloodTypeId"]=history["bloodTypeId"]
+        output["bloodBankId"]=history["bloodBankId"]
         output["amount"]=history["amount"]
         output["timeStamp"]=history["timeStamp"]
         output["tag"]=history["tag"]
@@ -1149,7 +1151,7 @@ class BloodBankHistory(Resource):
     
     def put(self,bloodBankId,historyId):
         """
-       Modifies a blood bank history
+        Modifies a blood bank history
 
         INPUT:
             The query parameters are:
@@ -1527,7 +1529,7 @@ class BloodDonorHistoryList(Resource):
         output.add_namespace(NAMESPACE,LINK_RELATIONS_URL)
 
         output.add_control("self",href=api.url_for(BloodDonorHistoryList,donorId=donorId))
-        output.add_control_blood_donor_donate()
+        output.add_control_blood_donor_donate(donorId)
         
 
        
