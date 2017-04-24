@@ -118,6 +118,68 @@ class MasonObject(dict):
             self["@controls"] = {}
 
         self["@controls"][ctrl_name] = kwargs
+#ERROR HANDLERS
+
+def create_error_response(status_code, title, message=None):
+    """ 
+    Creates a: py: class:`flask.Response` instance when sending back an
+    HTTP error response
+
+    : param integer status_code: The HTTP status code of the response
+    : param str title: A short description of the problem
+    : param message: A long description of the problem
+    : rtype:: py: class:`flask.Response`
+    """
+
+    resource_url = None
+    #We need to access the context in order to access the request.path
+    ctx = _request_ctx_stack.top
+    if ctx is not None:
+        resource_url = request.path
+    envelope = MasonObject(resource_url=resource_url)
+    envelope.add_error(title, message)
+
+    return Response(json.dumps(envelope), status_code, mimetype=MASON+";"+ERROR_PROFILE)
+
+@app.errorhandler(404)
+def resource_not_found(error):
+    return create_error_response(404, "Resource not found",
+                                 "This resource url does not exit")
+
+@app.errorhandler(500)
+def unknown_error(error):
+    return create_error_response(500, "Error",
+                    "The system has failed. Please, contact the administrator")
+
+@app.before_request
+def connect_db():
+    """
+    Creates a database connection before the request is proccessed.
+
+    The connection is stored in the application context variable flask.g .
+    Hence it is accessible from the request object.
+    """
+
+    g.con = app.config["Engine"].connect()
+
+#HOOKS
+@app.teardown_request
+def close_connection(exc):
+    """ 
+    Closes the database connection
+    Check if the connection is created. It migth be exception appear before
+    the connection is created.
+    """
+
+    if hasattr(g, "con"):
+        g.con.close()
+
+        
+#Add the Regex Converter so we can use regex expressions when we define the
+#routes
+app.url_map.converters["regex"] = RegexConverter
+    
+# End of Imported code
 
 class BloodAlertObject(MasonObject):    
     """
@@ -661,66 +723,7 @@ class BloodAlertObject(MasonObject):
           }
         
         return schema
-#ERROR HANDLERS
 
-def create_error_response(status_code, title, message=None):
-    """ 
-    Creates a: py: class:`flask.Response` instance when sending back an
-    HTTP error response
-
-    : param integer status_code: The HTTP status code of the response
-    : param str title: A short description of the problem
-    : param message: A long description of the problem
-    : rtype:: py: class:`flask.Response`
-    """
-
-    resource_url = None
-    #We need to access the context in order to access the request.path
-    ctx = _request_ctx_stack.top
-    if ctx is not None:
-        resource_url = request.path
-    envelope = MasonObject(resource_url=resource_url)
-    envelope.add_error(title, message)
-
-    return Response(json.dumps(envelope), status_code, mimetype=MASON+";"+ERROR_PROFILE)
-
-@app.errorhandler(404)
-def resource_not_found(error):
-    return create_error_response(404, "Resource not found",
-                                 "This resource url does not exit")
-
-@app.errorhandler(500)
-def unknown_error(error):
-    return create_error_response(500, "Error",
-                    "The system has failed. Please, contact the administrator")
-
-@app.before_request
-def connect_db():
-    """
-    Creates a database connection before the request is proccessed.
-
-    The connection is stored in the application context variable flask.g .
-    Hence it is accessible from the request object.
-    """
-
-    g.con = app.config["Engine"].connect()
-
-#HOOKS
-@app.teardown_request
-def close_connection(exc):
-    """ 
-    Closes the database connection
-    Check if the connection is created. It migth be exception appear before
-    the connection is created.
-    """
-
-    if hasattr(g, "con"):
-        g.con.close()
-
-        
-#Add the Regex Converter so we can use regex expressions when we define the
-#routes
-app.url_map.converters["regex"] = RegexConverter
 
 class BloodBanks(Resource):
     """
@@ -2019,6 +2022,7 @@ api.add_resource(BloodBankHistory,"/bloodalert/bloodbanks/<regex('bbank-\d+'):bl
 
 #Redirect profile
 @app.route("/profiles/<profile_name>")
+@app.route("/profiles/<profile_name>/")
 def redirect_to_profile(profile_name):
     return redirect(APIARY_PROFILES_URL + profile_name)
 
@@ -2026,10 +2030,7 @@ def redirect_to_profile(profile_name):
 def redirect_to_rels(rel_name):
     return redirect(APIARY_RELS_URL + rel_name)
 
-#Send our schema file(s)
-@app.route("/bloodalert/schema/<schema_name>/")
-def send_json_schema(schema_name):
-    return send_from_directory(app.static_folder, "schema/{}.json".format(schema_name))
+
 
 #Start the application
 #DATABASE SHOULD HAVE BEEN POPULATED PREVIOUSLY
