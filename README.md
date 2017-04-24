@@ -37,6 +37,7 @@ There are two options to setup (create and populate) the database. We recommend 
 
 
 
+
 # The RESTFul API
 
 The API is a follows the REST achitecture. 
@@ -72,5 +73,6 @@ To run test cases of the RESTFul API
         python -m test.restful_api_tests
 * The command you just run will run all test cases in **test/restful_api_tests.py**
 * To run specific tests run the command **python -m unittest test.restful_api_tests.name_of_specific_test_case_class**
-    * Example **python -m unittest test.restful_api_tests.BloodDonorsTestCase**
-    * Example **python -m unittest test.restful_api_tests.BloodBanksTestCase**
+    * Example 1 **python -m unittest test.restful_api_tests.BloodDonorsTestCase**
+    * Example 2 **python -m unittest test.restful_api_tests.BloodBanksTestCase**
+    * Example 3 **python -m unittest test.restful_api_tests.BloodBankHistoryTestCase**
