@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6">
+       <h2> Donor Registration Form</h2>
+       <form>
+            <div class="form-group">
+                <label for="username">username</label>
+                <input type="text" class="form-control" id="username" placeholder="user name">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" >
+            </div>  
+            <button type="button" class="btn btn-danger" id="registerbtn" stlye="margin-right:20px" >Register</button>           
+            
+           
+        </form>
+    </div>
+    
+    
+</div>
+
+{% endblock %}
