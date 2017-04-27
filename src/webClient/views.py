@@ -53,6 +53,39 @@ def about():
         message='Your application description page.'
     )
 
+@app.route('/profile/')
+@app.route('/profile')
+def profile():
+    """Renders the profile page."""
+    return render_template(
+        'profile.html',
+        title='Profile',
+        year=datetime.now().year,
+        message='User profile page.'
+    )
+
+@app.route('/history/')
+@app.route('/history')
+def history():
+    """Renders the history page."""
+    return render_template(
+        'history.html',
+        title='History',
+        year=datetime.now().year,
+        message='User history page.'
+    )
+
+@app.route('/donate/')
+@app.route('/donate')
+def donate():
+    """Renders the donate page."""
+    return render_template(
+        'donate.html',
+        title='donate',
+        year=datetime.now().year,
+        message='User donate page.'
+    )
+
 if __name__ == "__main__":
     #Debug true activates automatic code reloading and improved error messages
     app.run(debug=True)

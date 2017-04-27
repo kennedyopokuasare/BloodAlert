@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="col-sm-4 col-md-3 sidebar">
+    <div class="list-group">
+
+        <a href="{{ url_for('profile') }}" class="list-group-item" style="background: darkred; color:white">My Profile</a>
+        <a href="{{ url_for('history') }}" class="list-group-item">My History</a>
+        <a href="{{ url_for('donate') }}" class="list-group-item">Donate</a>
+    </div>
+
+
+{% endblock %}
