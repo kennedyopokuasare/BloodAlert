@@ -1,0 +1,98 @@
+{% extends "donor_layout.html" %}
+{% block donorContent %}
+
+<div id="signupbox" style=" margin-top:50px" class="col-xs-12 col-sm-6 col-md-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <div class="panel-title">Edit Profile</div> 
+            </div>  
+            <div class="panel-body" >
+                <form method="post" action=".">                            
+                        
+                        <div class="form-group required">
+                            <label class="control-label col-md-4  requiredField"> First Name<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="firstName_edit" maxlength="30" name="firstName" placeholder="Your first name" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label col-md-4  requiredField"> Last Name<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="lasttName_edit" maxlength="30" name="lastName" placeholder="Your last name" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label col-md-4  requiredField"> Birthday<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="birthday_edit" maxlength="30" name="birthday" placeholder="Your birthday" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="id_gender"  class="control-label col-md-4  requiredField"> Gender<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 "  style="margin-bottom: 10px">
+                                 <label class="radio-inline"> <input type="radio" name="gender" id="id_gender_male" value="M"  style="margin-bottom: 10px">Male</label>
+                                 <label class="radio-inline"> <input type="radio" name="gender" id="id_gender_female" value="F"  style="margin-bottom: 10px">Female </label>
+                            </div>
+                        </div>
+                        <div class="form-group required" style="margin-bottom: 10px">
+                            <label class="control-label col-md-4  requiredField"> Blood type<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary">A+</button>
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                        <span class="caret"></span><span class="sr-only"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" style="width: 20px;">
+                                        <li><a>O+</a></li>
+                                        <li><a>O-</a></li>
+                                        <li><a>A+</a></li>
+                                        <li><a>A-</a></li>
+                                        <li><a>B+</a></li>
+                                        <li><a>B-</a></li>
+                                        <li><a>AB+</a></li>
+                                        <li><a>AB-</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div><br />
+                        <div class="form-group required">
+                             <label class="control-label col-md-4  requiredField"> Phone number<span class="asteriskField">*</span> </label>
+                             <div class="controls col-md-8 ">
+                                 <input class="input-md textinput textInput form-control" id="phoneNumber" name="number" placeholder="provide your number" style="margin-bottom: 10px" type="text" />
+                            </div> 
+                        </div> 
+                        <div class="form-group required">
+                            <label class="control-label col-md-4  requiredField"> City<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="city_edit" maxlength="30" name="city" placeholder="Your city" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label class="control-label col-md-4"> Address </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md  textinput textInput form-control" id="address_edit" maxlength="30" name="address" placeholder="Your address" style="margin-bottom: 10px" type="text" />
+                            </div>
+                        </div>
+                        <div class="form-group required">
+                            <label for="id_email" class="control-label col-md-4  requiredField"> E-mail<span class="asteriskField">*</span> </label>
+                            <div class="controls col-md-8 ">
+                                <input class="input-md emailinput form-control" id="id_email" name="email" placeholder="Your current email address" style="margin-bottom: 10px" type="email" />
+                            </div>     
+                        </div>
+                        
+                        
+                        <div class="form-group"> 
+                            <div class="aab controls col-md-4 "></div>
+                            <div class="controls col-md-8 ">
+                                <input type="submit" name="Save" value="SAVE" class="btn btn-primary btn btn-info" id="profileEdite_save" />
+                                <input type="button" name="Cancel" value="CANCEL" class="btn btn btn-primary" id="profileEdite_cancel" />
+                            </div>
+                        </div> 
+                
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
