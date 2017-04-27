@@ -3,9 +3,15 @@ Routes and views for the flask application.
 from . import resources
 import src.resources as restful_api
 """
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../..'))
+sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../../..'))
 
 from datetime import datetime
 from flask import render_template,Flask, request
+from src.bloodalert import RESTFul_API
 
 
 
@@ -14,6 +20,7 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/home')
 def home():
+
     """Renders the home page."""
     return render_template(
         'index.html',
@@ -54,5 +61,6 @@ def about():
     )
 
 if __name__ == "__main__":
+    #resources.database.DEFAULT_DB_PATH="../db/bloodAlert.db"
     #Debug true activates automatic code reloading and improved error messages
     app.run(debug=True)
