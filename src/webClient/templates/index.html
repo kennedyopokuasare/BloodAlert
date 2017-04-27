@@ -5,7 +5,7 @@
 <div class="jumbotron">
     <h1>Blood Alert</h1>
     <p class="lead">The client application is a web application, which provides blood donors the functionality of registering as a donor and providing all their information. A registered donor can see his/her profile and modify the profile if needed. In addition, donor can see a list of all blood banks and check the blood levels status of each one of the blood banks, as well as the other information (e.g. address, telephone, etc) of a blood bank, based on which the donor can visit the blood bank and donate blood. Also, donor can check all his/her donation history.</p>
-    <p><a href="#" class="btn btn-danger btn-large">Read More &raquo;</a></p>
+    <p><a href="{{url_for('about')}}" class="btn btn-danger btn-large">Read More &raquo;</a></p>
 </div>
 
 <div class="row">
@@ -18,8 +18,8 @@
 
         <form>
             <div class="form-group">
-                <label for="username">username</label>
-                <input type="text" class="form-control" id="username" placeholder="user name">
+                <label for="email">email</label>
+                <input type="email" class="form-control" id="email" placeholder="Email">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
