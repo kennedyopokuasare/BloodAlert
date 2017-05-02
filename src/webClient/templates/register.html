@@ -3,22 +3,67 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 col-md-offset-3">
+
        <h2> Donor Registration Form</h2>
        <form>
             <div class="form-group">
-                <label for="username">username</label>
-                <input type="text" class="form-control" id="username" placeholder="user name">
+                <label for="firstname">First Name</label>
+                <input type="text" class="form-control" id="firstname" placeholder="Ana">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" >
-            </div>  
-            <button type="button" class="btn btn-danger" id="registerbtn" stlye="margin-right:20px" >Register</button>       
+                <label for="familyName">Family Name</label>
+                <input type="text" class="form-control" id="familyName" placeholder="Bord" >
+            </div> 
+            <div class="form-group">
+                <label for="telephone">Telephone</label>
+                <input type="text" class="form-control" id="telephone" placeholder="+348416754234" >
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" placeholder="AnB@oulu.fi" >
+            </div>
+            <div class="form-group">
+                <label for="bloodTypeId">Blood Type</label>
+                <select class="form-control" id="bloodTypeId">
+                                                            
+                </select>            
+            </div> 
+            <div class="form-group">
+                <label for="birthDate">Birth Date</label>
+                <input type='text' class="form-control" id='birthDate' />
+            </div>
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender">
+                    <option>Female</option>
+                    <option>Male</option>                                        
+                </select>            
+            </div> 
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea class="form-control" id="address" rows="5" ></textarea>          
+            </div> 
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type='text' class="form-control" id='city' />
+            </div>
+            <button type="button" class="btn btn-danger" id="donorRegisterbtn" stlye="margin-right:20px" >Register</button>       
          </form>
     </div>
-    
     
 </div>
 
 {% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+            $(function () {
+                $('#birthDate').datepicker({
+                    format: 'dd-mm-yyyy'
+                });
+            });
+</script>
+{% endblock %}
+
+

@@ -11,7 +11,10 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/' + '../../..'))
 
 from datetime import datetime
 from flask import render_template,Flask, request
-from src.bloodalert import RESTFul_API
+#from src.bloodalert import bloodAlertResourcesApp
+#from src.bloodalert import bloodAlertResourceAPI
+import src.resources as resources
+import json
 
 
 
@@ -92,6 +95,8 @@ def donate():
         year=datetime.now().year,
         message='User donate page.'
     )
+
+
 
 if __name__ == "__main__":
     #resources.database.DEFAULT_DB_PATH="../db/bloodAlert.db"
