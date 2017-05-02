@@ -97,6 +97,17 @@ def donate():
     )
 
 
+@app.route('/profileEdit/')
+@app.route('/profileEdit')
+def profileEdit():
+    """Renders the profileEdit page."""
+    return render_template(
+        'profileEdit.html',
+        title='Edit Profile',
+        year=datetime.now().year,
+        message='Edit profile page.'
+    )
+
 
 if __name__ == "__main__":
     #resources.database.DEFAULT_DB_PATH="../db/bloodAlert.db"

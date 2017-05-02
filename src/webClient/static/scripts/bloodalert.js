@@ -17,7 +17,6 @@ function loadBloodTypes(event) {
                     $('<option></option>').val(item.bloodTypeId).html(item.name)
                 );
             });
-
         }
         console.log(data)
     });
@@ -34,7 +33,6 @@ function handleDonorRegistration(event) {
     var $form = $(this).closest("form");
     console.log("submit")
     $data = serializeFormTemplate($form)
-
 }
 
 function serializeFormTemplate($form) {
