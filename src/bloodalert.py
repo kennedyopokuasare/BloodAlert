@@ -4,18 +4,19 @@ import os
 import resources
 import database 
 
-RESTFul_API=resources.app
-
+bloodAlertResourcesApp=resources.app
+#bloodAlertResourcesAPI=resources.api
+#bloodAlertResources=resources
 
 DB_PATH = os.path.abspath(os.path.dirname(__file__)+ "../db/bloodAlert.db")
 ENGINE = database.Engine(DB_PATH)
 
-RESTFul_API.config.update({"Engine": ENGINE})
+bloodAlertResourcesApp.config.update({"Engine": ENGINE})
 
 from webClient.views import app as client
 
 
-application = DispatcherMiddleware(RESTFul_API, {
+application = DispatcherMiddleware(bloodAlertResourcesApp, {
     '/web': client
 })
 
