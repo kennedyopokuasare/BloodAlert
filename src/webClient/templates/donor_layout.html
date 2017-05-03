@@ -4,9 +4,9 @@
 <div class="row" style="margin-top:15px">
 	<div class="col-sm-3 col-md-3 sidebar">
         <div class="list-group">
-            <a href="{{ url_for('profile') }}" class="list-group-item">My Profile</a>
-            <a href="{{ url_for('history') }}" class="list-group-item" style="background: darkred; color:white">My History</a>
-            <a href="{{ url_for('donate') }}" class="list-group-item">Donate</a>
+            <a id="myProfileMenu" href="{{ url_for('profile') }}" class="list-group-item">My Profile</a>
+            <a id="myHistoryMenu" href="{{ url_for('history') }}" class="list-group-item">My History</a>
+            <a id="donateMenu" href="{{ url_for('donate') }}" class="list-group-item">Donate</a>
             <img src="{{url_for('static', filename='images/image_1.png')}}" style="width: 100%;" />
         </div>
 	</div>

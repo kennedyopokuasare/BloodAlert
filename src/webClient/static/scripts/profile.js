@@ -1,5 +1,9 @@
-
 $(function () {
+    //highlight My profile menu
+    $("#myProfileMenu").css({'background':'darkred', 'color':'white'});
+    $("#myHistoryMenu").css({'background':'white', 'color':'black'});
+    $("#donateMenu").css({'background':'white', 'color':'black'});
+
     $.ajax({
         url: "/bloodalert/donors/bdonor-2",
         dataType: "json"
