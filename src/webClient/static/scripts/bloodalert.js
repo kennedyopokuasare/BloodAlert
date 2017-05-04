@@ -20,7 +20,7 @@ function loadBloodTypes(event) {
                 );
             });
         }
-        console.log(data)
+       
     });
 }
 function setCookie(cname, cvalue, exdays) {
@@ -39,7 +39,7 @@ function getCookie(cname) {
             c = c.substring(1);
         }
         if (c.indexOf(name) == 0) {
-            console.log(c);
+           
             return c.substring(name.length, c.length);
         }
     }
@@ -48,9 +48,9 @@ function getCookie(cname) {
 
 function handleLoginDonorButton(event) {
     var $form = $(this).closest("form");
-    console.log("submit")
+   
     $data = serializeFormTemplate($form)
-    console.log($data)
+   
     return $.ajax({
         url: "/bloodalert/donors/",
         dataType: DEFUALT_DATA_TYPE
@@ -65,13 +65,13 @@ function handleLoginDonorButton(event) {
             }
         }
 
-        console.log(data)
+       
     });
 }
 
 function handleDonorRegistration(event) {
     var $form = $(this).closest("form");
-    console.log("submit")
+    
     $data = serializeFormTemplate($form)
 }
 
@@ -108,16 +108,15 @@ function checkLoggedinDonor() {
 
 
     var cookie = getCookie("BloodAlertLoggedInDonor");
-    console.log("Cookie" + cookie);
+    
     if (cookie != "") {
         hideLoginForm();
-        showLoggoutMenu();
+        redressMenuAfterLogin();
         window.loggedInUser = $.parseJSON(cookie);
     } else {
 
         loginPage = "http://" + window.location.host + "/web/" || "http://" + window.location.host + "/web";
-        console.log(loginPage);
-        console.log(currentpage);
+        
         if (currentpage != loginPage) {
             noAuthPages = getNoAuthPages()
             if (noAuthPages.indexOf(currentpage) == -1)
@@ -132,7 +131,7 @@ function logOutDonor() {
     Cookies.remove('BloodAlertLoggedInDonor', { path: '/' })
     window.loggedInUser = undefined
     delete window.loggedInUser
-    console.log("ok am logged out");
+    
     loginPage = "http://" + window.location.host + "/web/" || "http://" + window.location.host + "/web";
     window.open(loginPage, "_self")
 }
@@ -141,19 +140,18 @@ function hideLoginForm() {
     $("#DonorLoginFormDiv").remove();
     $("#indexBloodLevels").removeClass("col-md-8").addClass("col-md-12");
 }
-function showLoggoutMenu() {
+function redressMenuAfterLogin() {
+    profileUrl="http://" + window.location.host + "/web/profile";
+    $(".navbar-nav").append('<li><a  href="'+profileUrl+'">Profile</a></li>');
     $(".navbar-nav").append('<li><a id="LogOutLink" href="#">Log Out</a></li>');
     $(".navbar-nav > #DonorRegistrationMenu").remove();
 }
 
+
 $(function () {
-    checkLoggedinDonor();
+   checkLoggedinDonor();
     $("#loginDonorButton").click(handleLoginDonorButton);
     $("#donorRegisterbtn").click(handleDonorRegistration);
     $("#LogOutLink").click(logOutDonor);
     loadBloodTypes();
-
-
-
-
 });
