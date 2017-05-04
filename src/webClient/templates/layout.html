@@ -25,8 +25,9 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('home') }}">Home</a></li>
                     <li><a href="{{ url_for('about') }}">About</a></li>
-                    <li><a href="{{ url_for('register') }}">Donor Registration</a></li>
+                    <li id="DonorRegistrationMenu"><a href="{{ url_for('register') }}">Donor Registration</a></li>
                     <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                    
                 </ul>
             </div>
         </div>
@@ -41,6 +42,7 @@
     </div>
 
     <script src="{{url_for('static',filename='scripts/jquery-1.10.2.js')}}"></script>
+    <script src="{{url_for('static',filename='scripts/jquery.cookie.js')}}"></script>
     <script src="{{url_for('static',filename='scripts/bootstrap.js')}}"></script>
     <script src="{{url_for('static',filename='scripts/bootstrap.datepicker.min.js')}}"></script>
     <script src="{{url_for('static',filename='scripts/respond.js')}}"></script>
