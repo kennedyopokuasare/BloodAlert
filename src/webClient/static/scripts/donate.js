@@ -4,13 +4,17 @@ $(function () {
     $("#myHistoryMenu").css({'background':'white', 'color':'black'});
     $("#donateMenu").css({'background':'darkred', 'color':'white'});
 
+    var map = new Array();
+    var bbLocation = new Array();
+    var bbanksCount;
     //get blood banks list
     $.ajax({
         url: "/bloodalert/bloodbanks",
         dataType: "json"
     }).done(function (data, textStatus, jqXHR) {
         //create a list of blood banks
-        for (bbankIndex=0; bbankIndex < data.items.length; bbankIndex++){
+        bbanksCount = data.items.length;
+        for (bbankIndex=0; bbankIndex < bbanksCount; bbankIndex++){
             $(
             '<li class="list-group-item">'+
                 '<div class="row toggle" id="dropdown-bbank-' + bbankIndex + '" data-toggle="bbank-' +  bbankIndex + '">'+
@@ -30,30 +34,28 @@ $(function () {
                                     '<span><i class="glyphicon glyphicon-envelope"></i> ' + data.items[bbankIndex].email +' &nbsp&nbsp&nbsp</span>'+
                                     '<span><i class="glyphicon glyphicon-earphone"></i> ' + data.items[bbankIndex].telephone +'</span><br />'+
                                 '</div>'+
-                                '<div style="width:100%; height:400px; min-width: 300px; min-height: 300px" id="map-' +  bbankIndex + '">'+
+                                '<div id="map-' +  bbankIndex + '" style="width:100%; height:100%; min-width:300px; min-height:300px; margin-top:10px; margin-bottom:10px">'+
                             '</center>'+
                         '</div>'+
                     '</div>'+
                 '</div>'+
             '</li>'
             ).appendTo("#bbanksList");
-        }
     
             //locate blood banks on the maps
-            var myLocation = new google.maps.LatLng(38.885516, -77.09327200000001);
+            bbLocation[bbankIndex] = new google.maps.LatLng(data.items[bbankIndex].latitude, data.items[bbankIndex].longitude);
             var mapOptions = {
-                center: myLocation,
-                zoom: 16
+                center: bbLocation,
+                zoom: 15
             };
             var marker = new google.maps.Marker({
-                position: myLocation,
+                position: bbLocation[bbankIndex],
                 title: "Property Location"
             });
-            var map = new google.maps.Map(document.getElementById("map-0"),
-                mapOptions);
-            marker.setMap(map);
+            map[bbankIndex] = new google.maps.Map(document.getElementById("map-"+bbankIndex), mapOptions);
+            marker.setMap(map[bbankIndex]);
         
-        
+        }
 
         //make the list intractive
         $('[id^=bbank-]').hide();
@@ -61,6 +63,10 @@ $(function () {
             $input = $( this );
             $target = $('#'+$input.attr('data-toggle'));
             $target.slideToggle();
+            for (bbankIndex=0; bbankIndex < bbanksCount; bbankIndex++){
+                google.maps.event.trigger(map[bbankIndex], 'resize');
+                map[bbankIndex].setCenter(bbLocation[bbankIndex]);
+            }
         });
 
     });
