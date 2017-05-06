@@ -30,7 +30,7 @@ $(function () {
                             '<center>'+
                                 '<p><b style="font-size:150% ; margin-bottom:10px">' + data.items[bbankIndex].name + '</b></p>'+
                                 '<div style="margin-bottom:5px"><i class="glyphicon glyphicon-map-marker"></i> ' + data.items[bbankIndex].address +', ' + data.items[bbankIndex].city + '</div>'+
-                                '<div style="margin-bottom:5px">'+
+                                '<div style="margin-bottom:20px">'+
                                     '<span><i class="glyphicon glyphicon-envelope"></i> ' + data.items[bbankIndex].email +' &nbsp&nbsp&nbsp</span>'+
                                     '<span><i class="glyphicon glyphicon-earphone"></i> ' + data.items[bbankIndex].telephone +'</span><br />'+
                                 '</div>'+
