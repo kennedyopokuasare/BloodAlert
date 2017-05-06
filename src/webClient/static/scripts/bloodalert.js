@@ -2,6 +2,7 @@
 bloodTypes = []
 
 DEFUALT_DATA_TYPE = "json"
+APPLICATION_JSON_FORMAT = "application/json"
 
 function loadBloodTypes(event) {
     return $.ajax({
@@ -20,7 +21,7 @@ function loadBloodTypes(event) {
                 );
             });
         }
-       
+
     });
 }
 function setCookie(cname, cvalue, exdays) {
@@ -39,7 +40,7 @@ function getCookie(cname) {
             c = c.substring(1);
         }
         if (c.indexOf(name) == 0) {
-           
+
             return c.substring(name.length, c.length);
         }
     }
@@ -48,9 +49,9 @@ function getCookie(cname) {
 
 function handleLoginDonorButton(event) {
     var $form = $(this).closest("form");
-   
+
     $data = serializeFormTemplate($form)
-   
+
     return $.ajax({
         url: "/bloodalert/donors/",
         dataType: DEFUALT_DATA_TYPE
@@ -65,16 +66,60 @@ function handleLoginDonorButton(event) {
             }
         }
 
-       
+
     });
 }
 
 function handleDonorRegistration(event) {
     var $form = $(this).closest("form");
-    
+
     $data = serializeFormTemplate($form)
+    var requiredMessage = "";
+    for (var key in $data) {
+
+        if ($data.hasOwnProperty(key)) {
+            if ($data[key] == "") {
+                requiredMessage += key + " is required \n"
+            }
+        }
+    }
+    if (requiredMessage != "") {
+        alert(requiredMessage);
+        return;
+    }
+    var donorData=JSON.stringify($data);
+    console.log(donorData);
+    return $.ajax({
+        url: "/bloodalert/donors/",
+        type: "POST",
+        processData: false,
+        contentType: APPLICATION_JSON_FORMAT,
+        data:donorData,
+    }).done(function (data, textStatus, jqXHR) {
+        
+        alert("Donor Created Sucessfully");
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+        console.log("Failure");
+        var responseText = "";
+        console.log(jqXHR);
+        if (jqXHR.responseText != null) {
+            var response = $.parseJSON(jqXHR.responseText);
+            var responseText = response["@error"]["@message"] + "\n";
+            responseText += response["@error"]["@messages"].join("\n");
+
+        } else {
+            responseText = errorThrown | " " + textStatus | " ";
+        }
+        alert(responseText);
+
+    });
+
 }
 
+/* 
+*   the idea serializeFormTemplate method was borrowed 
+*   from the pwp exercies , and adopted to our purpose
+*/
 function serializeFormTemplate($form) {
     var envelope = {};
     // get all the inputs into an array.
@@ -96,6 +141,7 @@ function serializeFormTemplate($form) {
     });
     return envelope;
 }
+
 function getNoAuthPages() {
     noAuthPages = []
     noAuthPages.push("http://" + window.location.host + "/web/contact")
@@ -108,7 +154,7 @@ function checkLoggedinDonor() {
 
 
     var cookie = getCookie("BloodAlertLoggedInDonor");
-    
+
     if (cookie != "") {
         hideLoginForm();
         redressMenuAfterLogin();
@@ -116,7 +162,7 @@ function checkLoggedinDonor() {
     } else {
 
         loginPage = "http://" + window.location.host + "/web/" || "http://" + window.location.host + "/web";
-        
+
         if (currentpage != loginPage) {
             noAuthPages = getNoAuthPages()
             if (noAuthPages.indexOf(currentpage) == -1)
@@ -131,7 +177,7 @@ function logOutDonor() {
     Cookies.remove('BloodAlertLoggedInDonor', { path: '/' })
     window.loggedInUser = undefined
     delete window.loggedInUser
-    
+
     loginPage = "http://" + window.location.host + "/web/" || "http://" + window.location.host + "/web";
     window.open(loginPage, "_self")
 }
@@ -141,15 +187,15 @@ function hideLoginForm() {
     $("#indexBloodLevels").removeClass("col-md-8").addClass("col-md-12");
 }
 function redressMenuAfterLogin() {
-    profileUrl="http://" + window.location.host + "/web/profile";
-    $(".navbar-nav").append('<li><a  href="'+profileUrl+'">Profile</a></li>');
+    profileUrl = "http://" + window.location.host + "/web/profile";
+    $(".navbar-nav").append('<li><a  href="' + profileUrl + '">Profile</a></li>');
     $(".navbar-nav").append('<li><a id="LogOutLink" href="#">Log Out</a></li>');
     $(".navbar-nav > #DonorRegistrationMenu").remove();
 }
 
 
 $(function () {
-   checkLoggedinDonor();
+    checkLoggedinDonor();
     $("#loginDonorButton").click(handleLoginDonorButton);
     $("#donorRegisterbtn").click(handleDonorRegistration);
     $("#LogOutLink").click(logOutDonor);

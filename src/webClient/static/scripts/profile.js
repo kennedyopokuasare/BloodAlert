@@ -4,6 +4,10 @@ $(function () {
     $("#myHistoryMenu").css({'background':'white', 'color':'black'});
     $("#donateMenu").css({'background':'white', 'color':'black'});
 
+    /**
+     * here client code depicts a true hypermedia behavior, 
+     * by using hypermdia links to find URLs
+     */
     donorUrl=window.loggedInUser["@controls"].self.href
     bloodTypeUrl=window.loggedInUser["@controls"].bloodtype.href
     $.ajax({
