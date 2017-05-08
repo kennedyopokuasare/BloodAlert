@@ -11,6 +11,7 @@ function loadDonorHistory(){
         //todo: build list-group-item here and append to list-group
         historyCount = data.items.length;
         for (historyIndex=0; historyIndex < historyCount; historyIndex++){
+            //Todo: use the blood bank Id to get and display the blood bank information 
             $(
             '<li class="list-group-item">'+
                 '<div class="row toggle" id="dropdown-history-' + historyIndex + '" data-toggle="history-' +  historyIndex + '">'+

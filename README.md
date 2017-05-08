@@ -76,3 +76,31 @@ To run test cases of the RESTFul API
     * Example 1 **python -m unittest test.restful_api_tests.BloodDonorsTestCase**
     * Example 2 **python -m unittest test.restful_api_tests.BloodBanksTestCase**
     * Example 3 **python -m unittest test.restful_api_tests.BloodBankHistoryTestCase**
+
+# The Blood Alert Web Client 
+
+The goal of the client application is to bridge the gap between blood banks and their donors and also promote blood donation to blood banks.  The application provides a faster approach to finding a blood bank to donate blood.
+
+The client application is a web application, which provides blood donors the functionality of registering as a donor and providing all their information. A registered donor can see his/her profile and modify the profile if needed. In addition, donor can see a list of all blood banks and check the blood levels status of each one of the blood banks, as well as the other information (e.g. address, telephone, etc) of a blood bank, based on which the donor can visit the blood bank and donate blood. Also, donor can check all his/her donation history.
+
+The client applications use the BloodAlert API, in the implementation of its features. Detailed list of the API features of the client app,  and the specific resources in the API the client uses is as follows;
+
+1. BloodBankList
+    *   Gets a list of all blood banks
+2. BloodBank
+    *   Get the bloodBankId, name, address, city, telephone, latitude, longitude and threshold of a specific blood bank
+3. BloodBank_Blood_Levels
+    *  Get the amount of bloods for all blood types of the target blood bank
+4. DonorList
+    * Add a new Blood donor into the database
+5. Donor
+    *   Get the donorId, firstname, familyName, birthDate, gender, bloodTypeId, telephone,city,address, email, of a blood donor
+    *   Modifies any of (or a combination of ) the following ;firstname, familyName, birthDate, gender, bloodTypeId, telephone,             city,address email, of a blood donor
+6. Donor_history_List
+    *   Get a list of Blood donor donation history in the database
+7. BloodTypeList
+    *   Gets a list of Blood types
+
+The client also uses the Google Maps API to show the location of blood banks
+
+

@@ -1,9 +1,31 @@
 
-bloodTypes = []
+/**
+ * @fileOverview Some general functions for the Blood alert web client 
+ *               It utilises the Blood Alert API and heavily dependent on JQuery
+ * @author <a href="mailto:opokuasarekennedy@gmail.com">Asare</a>
+ * @version 1.0
+ */
 
-DEFUALT_DATA_TYPE = "json"
+/**
+ * Default data type for response in jquery ajax requests
+ * @constant {string}
+ * @default
+ */
+const DEFUALT_DATA_TYPE = "json"
+/**
+ * Default request data type for jquery ajax requests.
+ * This is a plain javascript format
+ * @constant {string}
+ * @default
+ */
 APPLICATION_JSON_FORMAT = "application/json"
-
+/**
+ * This functions Loads all blood types 
+ * Send an ajax request to retrieve a list of all blood types, 
+ * ONSUCCESS=> Construct an HTML select options, and append to 
+ *            the dropdown list identified as #bloodTypeId
+ * ONERROR=>  Nothing happens
+ */
 function loadBloodTypes(event) {
     return $.ajax({
         url: "/bloodalert/bloodtypes",
@@ -24,6 +46,12 @@ function loadBloodTypes(event) {
 
     });
 }
+/**
+ * Save a cookie on the browsers
+ * @param {string} cname - the name of the cookie
+ * @param {string} cvalue - the value of the cookie
+ * @param {number} exdays - the number of days for cookie to expire
+ */
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -31,6 +59,12 @@ function setCookie(cname, cvalue, exdays) {
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+/**
+ * Returns the value of an existing cookie with expecified name
+ * or empty string of cookie was not found
+ * @param {string} cname - the name of the cooke
+ * @returns {string}
+ */
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -46,7 +80,17 @@ function getCookie(cname) {
     }
     return "";
 }
-
+/**
+ * Handles the click of Login button
+ * Sends a ajax get call to Blood Alert API and returns a list of all donors
+ * NOTE: This is implementation is not the best practise of authentication. 
+ *       The Blood Alert API has no authentication implemented yet, so this implementation
+ *        is just a away around.
+ * ONSUCCESS=> look for the donor whose email matches the provided email in the form
+ *             If a match is found, then redirect the page to the donor profile page,
+ *             else do nothing.
+ * ONERROR=>   Do nothing 
+ */
 function handleLoginDonorButton(event) {
     var $form = $(this).closest("form");
 
@@ -69,7 +113,15 @@ function handleLoginDonorButton(event) {
 
     });
 }
-
+/**
+ * Handles Register donor button click
+ * sends ajax post request to the API and saves donor information to database
+ * 
+ * ONSUCCESS=> show alert message
+ * 
+ * ONERROR=> Process application/vnd.mason+json response and show an alert with
+ *           error messages
+ */
 function handleDonorRegistration(event) {
     var $form = $(this).closest("form");
 
@@ -116,10 +168,16 @@ function handleDonorRegistration(event) {
 
 }
 
-/* 
-*   the idea serializeFormTemplate method was borrowed 
-*   from the pwp exercies , and adopted to our purpose
-*/
+/**
+ * Gets the data provided on a form
+ * 
+ * NOTE: the idea serializeFormTemplate method was borrowed from the pwp exercies , 
+ *       and adopted to our purpose
+ * 
+ * @param {Object} $form - The jquery form object
+ * @returns {Object} a javascript object with form field id and value pairs
+ */
+
 function serializeFormTemplate($form) {
     var envelope = {};
     // get all the inputs into an array.
@@ -141,7 +199,10 @@ function serializeFormTemplate($form) {
     });
     return envelope;
 }
-
+/**
+ * Returns a list of public pages
+ * @returns {Array} 
+ */
 function getNoAuthPages() {
     noAuthPages = []
     noAuthPages.push("http://" + window.location.host + "/web/contact")
@@ -149,6 +210,11 @@ function getNoAuthPages() {
     noAuthPages.push("http://" + window.location.host + "/web/about")
     return noAuthPages;
 }
+/**
+ * Check whether current user is logged in
+ * Checks a existing cookie (BloodAlertLoggedInDonor)
+ * if cookie is not found, redirect to login page
+ */
 function checkLoggedinDonor() {
     currentpage = window.location.href;
 
@@ -171,7 +237,11 @@ function checkLoggedinDonor() {
 
     }
 }
-
+/**
+ * Log out the current user
+ * This essentially deletes the cookie with name BloodAlertLoggedInDonor
+ * and redirects to login page
+ */
 function logOutDonor() {
 
     Cookies.remove('BloodAlertLoggedInDonor', { path: '/' })
@@ -181,11 +251,16 @@ function logOutDonor() {
     loginPage = "http://" + window.location.host + "/web/" || "http://" + window.location.host + "/web";
     window.open(loginPage, "_self")
 }
-
+/**
+ * Hides Login form 
+ */
 function hideLoginForm() {
     $("#DonorLoginFormDiv").remove();
     $("#indexBloodLevels").removeClass("col-md-8").addClass("col-md-12");
 }
+/**
+ * Shows the profile, and logout menu and hides the Donor Registration menu
+ */
 function redressMenuAfterLogin() {
     profileUrl = "http://" + window.location.host + "/web/profile";
     $(".navbar-nav").append('<li><a  href="' + profileUrl + '">Profile</a></li>');
@@ -193,11 +268,19 @@ function redressMenuAfterLogin() {
     $(".navbar-nav > #DonorRegistrationMenu").remove();
 }
 
+/**
+ * This method loads when page loads
+ */
 
 $(function () {
+    //check whether current user is logged in
     checkLoggedinDonor();
+    // attach click handler to #loginDonorButton
     $("#loginDonorButton").click(handleLoginDonorButton);
+    // attach click handler to #donorRegisterbtn
     $("#donorRegisterbtn").click(handleDonorRegistration);
+    // attach click handler to #LogOutLink
     $("#LogOutLink").click(logOutDonor);
+    // load blood types
     loadBloodTypes();
 });
