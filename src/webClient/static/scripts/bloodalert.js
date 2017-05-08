@@ -139,16 +139,16 @@ function handleDonorRegistration(event) {
         alert(requiredMessage);
         return;
     }
-    var donorData=JSON.stringify($data);
+    var donorData = JSON.stringify($data);
     console.log(donorData);
     return $.ajax({
         url: "/bloodalert/donors/",
         type: "POST",
         processData: false,
         contentType: APPLICATION_JSON_FORMAT,
-        data:donorData,
+        data: donorData,
     }).done(function (data, textStatus, jqXHR) {
-        
+
         alert("Donor Created Sucessfully");
     }).fail(function (jqXHR, textStatus, errorThrown) {
         console.log("Failure");
@@ -267,12 +267,55 @@ function redressMenuAfterLogin() {
     $(".navbar-nav").append('<li><a id="LogOutLink" href="#">Log Out</a></li>');
     $(".navbar-nav > #DonorRegistrationMenu").remove();
 }
+/**
+ * Shows a heat map of blood levels 
+ */
+function loadBloodLevelsHeatMap() {
 
+}
+
+var map, pointarray, heatmap;
+
+// a shortened version of the data for Google's taxi example
+
+
+
+function initialize() {
+
+    var taxiData = [
+        new google.maps.LatLng(65.057774, 25.471287),
+         new google.maps.LatLng(65.007406, 25.517786),
+         new google.maps.LatLng(65.008998, 25.470176),
+          new google.maps.LatLng(65.009292, 25.473419)
+        // ...
+    ];
+    // the map's options
+    var mapOptions = {
+        zoom: 10,
+        center: new google.maps.LatLng(64.2168632, 27.6588787),
+        mapTypeId: "terrain"
+    };
+
+    // the map and where to place it
+    map = new google.maps.Map(document.getElementById('bloodLevelsMap'), mapOptions);
+
+    var pointArray = new google.maps.MVCArray(taxiData);
+
+    // what data for the heatmap and how to display it
+    heatmap = new google.maps.visualization.HeatmapLayer({
+        data: pointArray,
+        radius: 50
+    });
+
+    // placing the heatmap on the map
+    heatmap.setMap(map);
+}
 /**
  * This method loads when page loads
  */
 
 $(function () {
+    initialize();
     //check whether current user is logged in
     checkLoggedinDonor();
     // attach click handler to #loginDonorButton
