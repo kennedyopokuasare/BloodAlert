@@ -79,6 +79,12 @@ To run test cases of the RESTFul API
 
 # The Blood Alert Web Client 
 
+The web client has a dependency on
+
+* bootstrap(http://getbootstrap.com/)
+* jquery (https://jquery.com/)
+* Google Maps API (https://developers.google.com/maps/web/) , which is loaded over the internet
+
 The goal of the client application is to bridge the gap between blood banks and their donors and also promote blood donation to blood banks.  The application provides a faster approach to finding a blood bank to donate blood.
 
 The client application is a web application, which provides blood donors the functionality of registering as a donor and providing all their information. A registered donor can see his/her profile and modify the profile if needed. In addition, donor can see a list of all blood banks and check the blood levels status of each one of the blood banks, as well as the other information (e.g. address, telephone, etc) of a blood bank, based on which the donor can visit the blood bank and donate blood. Also, donor can check all his/her donation history.
@@ -101,6 +107,24 @@ The client applications use the BloodAlert API, in the implementation of its fea
 7. BloodTypeList
     *   Gets a list of Blood types
 
-The client also uses the Google Maps API to show the location of blood banks
+The client also uses the **Google Maps API** to show the location of blood banks
 
+## Setting up and running 
 
+Running the webclient will also run the RESTFul API
+To setup and run the web client, please follow the following steps
+
+1. Ensure that you have python 2.7.x installed , and python path added to your environment variables
+2. Install FlASK microframework with the command
+    ```bash
+         pip install Flask
+3. Install Flask-RESTful with the command 
+    ```bash
+        pip install flask-restful
+4. Follow the steps in setting up the database descbribed above in **The Database** section, to setup the database
+5. open the command prompt at the root of the application (codes) folder, and browse to **src** folder
+6. run the command 
+    ```bash
+        python bloodalert.py
+7. The command in step 6  will start a web server. You can now open the web client in a browsers
+    with the address **http://localhost:5000/web** 
