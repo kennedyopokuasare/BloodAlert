@@ -315,7 +315,7 @@ function initialize() {
  */
 
 $(function () {
-    initialize();
+    //initialize();
     //check whether current user is logged in
     checkLoggedinDonor();
     // attach click handler to #loginDonorButton

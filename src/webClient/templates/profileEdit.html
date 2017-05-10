@@ -39,19 +39,19 @@
                     <label class="control-label col-md-4  requiredField"> Blood type<span class="asteriskField">*</span> </label>
                     <div class="controls col-md-8 ">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default">A+</button>
+                            <button id="bloodType_edit" type="button" class="btn btn-default">--</button>
                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                 <span class="caret"></span><span class="sr-only"></span>
                             </button>
-                            <ul class="dropdown-menu" role="menu" style="min-width:0px; width:68px; cursor: default">
-                                <li><a><center>O+</center></a></li>
-                                <li><a><center>O-</center></a></li>
-                                <li><a><center>A+</center></a></li>
-                                <li><a><center>A-</center></a></li>
-                                <li><a><center>B+</center></a></li>
-                                <li><a><center>B-</center></a></li>
-                                <li><a><center>AB+</center></a></li>
-                                <li><a><center>AB-</center></a></li>
+                            <ul id="bloodTypeList" class="dropdown-menu" role="menu" style="min-width:0px; width:68px; cursor: default">
+                                <li id="O+"><a><center>O+</center></a></li>
+                                <li id="O-"><a><center>O-</center></a></li>
+                                <li id="A+"><a><center>A+</center></a></li>
+                                <li id="A-"><a><center>A-</center></a></li>
+                                <li id="B+"><a><center>B+</center></a></li>
+                                <li id="B-"><a><center>B-</center></a></li>
+                                <li id="AB+"><a><center>AB+</center></a></li>
+                                <li id="AB-"><a><center>AB-</center></a></li>
                             </ul>
                         </div>
                     </div>
@@ -84,8 +84,8 @@
                 <div class="form-group"> 
                     <div class="aab controls col-md-4 "></div>
                     <div class="controls col-md-8 " style="margin-top: 15px">
-                        <input type="submit" name="Save" value="SAVE" class="btn btn-primary btn btn-danger" id="profileEdite_save" style="margin-right: 10px"/>
-                        <input type="button" name="Cancel" value="CANCEL" class="btn btn btn-default" id="profileEdite_cancel" />
+                        <input type="button" name="Save" value="SAVE" class="btn btn-primary btn btn-danger" id="profileEdite_save" style="margin-right: 10px"/>
+                        <a href="{{ url_for('profile') }}" class="btn btn btn-default" id="profileEdite_cancel">CANCEL</a>
                     </div>
                 </div> 
             </form>
@@ -94,4 +94,7 @@
     </div>
 </div>
 
+{% endblock %}
+{% block scripts %}
+    <script src="{{url_for('static',filename='scripts/profileEdit.js')}}"></script>
 {% endblock %}
