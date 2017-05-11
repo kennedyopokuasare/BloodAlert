@@ -1464,6 +1464,7 @@ class BloodDonor(Resource):
             address=request_body.get("address",None)
             city=request_body.get("city",None)
 
+           
         except KeyError:
             
             return create_error_response(400, "Wrong request format",
