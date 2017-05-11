@@ -50,7 +50,7 @@ def contact():
         'contact.html',
         title='Contact',
         year=datetime.now().year,
-        message='Your contact page.'
+        message='You can contact us 24/7'
     )
 
 @app.route('/about')
@@ -60,7 +60,7 @@ def about():
         'about.html',
         title='About',
         year=datetime.now().year,
-        message='Your application description page.'
+        message='This is a short information about Us'
     )
 
 @app.route('/profile/')

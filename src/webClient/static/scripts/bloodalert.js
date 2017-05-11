@@ -327,79 +327,77 @@ function loadBloodLevels(mapData) {
 
 
 function showHeatMap() {
+    return $.ajax({
+        url: "/bloodalert/bloodbanks/",
+        dataType: DEFUALT_DATA_TYPE
+        }).done(function (data, textStatus, jqXHR) {
+            console.log(data);
+            var locations = [];
+            var bloodBanks=[]
+            for (var i = 0; i < data.items.length; i++) {
+                item = data.items[i];              
+                var location = new google.maps.LatLng(item.latitude, item.longitude);
+                locations.push(location);
+                bloodLevelsUrl = "/bloodalert/bloodbanks/" + item.bloodBankId + "/bloodlevels/";
+                
+                var bloodbank={info:item,bloodLevel:bloodLevelsUrl};
+                bloodBanks.push(bloodbank);
+                
+            }
+            var pointArray = new google.maps.MVCArray(locations);
+            // the map's options
+            var mapOptions = {
+                zoom: 7,
+                fullscreenControl: true,
+                center: new google.maps.LatLng(64.2168632, 27.6588787),
+                mapTypeId: "terrain"
+            };
 
+            // the map and where to place it
+            var map = new google.maps.Map(document.getElementById('bloodLevelsMap'), mapOptions);
 
-    // the map's options
-    var mapOptions = {
-        zoom: 7,
-        fullscreenControl: true,
-        center: new google.maps.LatLng(64.2168632, 27.6588787),
-        mapTypeId: "terrain"
-    };
+            var markers = locations.map(function(location, i) {
+                    return new google.maps.Marker({
+                        position: location,
+                        label: bloodBanks[i].info.name
+                    });
+            });
 
-    // the map and where to place it
-    var map = new google.maps.Map(document.getElementById('bloodLevelsMap'), mapOptions);
+            var markerCluster = new MarkerClusterer(map, markers,
+                {imagePath: window.location.href+ 'static/images/m'});
 
-    var pointArray = new google.maps.MVCArray([]);
-
-    // what data for the heatmap and how to display it
-    var heatmap = new google.maps.visualization.HeatmapLayer({
-        data: pointArray,
-        dissipating: false
-    });
-
-    heatmap.setMap(map);
-    /**
-     * $.ajax({
-       url: "/bloodalert/bloodbanks/",
-       async:false,
-       dataType: DEFUALT_DATA_TYPE
-   }).done(function (data, textStatus, jqXHR) {
-       console.log(data);
-       for (var i = 0; i < data.items.length; i++) {
-           item = data.items[i];
-           console.log(item);
-           location = new google.maps.LatLng(item.latitude, item.longitude);
-           pointArray.push(location);
-
-           bloodLevelsUrl = "/bloodalert/bloodbanks/" + item.bloodBankId + "/bloodlevels/";
-           itemLocation = i;
-           console.log(location);
+            // what data for the heatmap and how to display it
            /**
-            * $.ajax({
-               url: bloodLevelsUrl,
-               dataType: DEFUALT_DATA_TYPE
-           }).done(function (data, textStatus, jqXHR, itemLocation) {
-               var weight = 0;
-               for (var i = 0; i < data.items.length; i++) {
-                   var item = data.items[i];
-                   weight += item.amount;
-               }
-               pointArray.get(itemLocation)["weight"] = Math.pow(2,weight);
-           });
-       }
-   });
-     */   
-   
+            * var heatmap = new google.maps.visualization.HeatmapLayer({
+                data: pointArray,
+                dissipating: false
+            });
+
+            heatmap.setMap(map);
+            */
+            
+
+
+        });
 }
 
 
- 
+
 /**
 * This method loads when page loads
 */
 
-    $(function () {
-        //check whether current user is logged in
-        checkLoggedinDonor();
-        // attach click handler to #loginDonorButton
-        $("#loginDonorButton").click(handleLoginDonorButton);
-        // attach click handler to #donorRegisterbtn
-        $("#donorRegisterbtn").click(handleDonorRegistration);
-        // attach click handler to #LogOutLink
-        $("#LogOutLink").click(logOutDonor);
-        // load blood types
-        loadBloodTypes();
-       // showHeatMap();
-    });
+$(function () {
+    //check whether current user is logged in
+    checkLoggedinDonor();
+    // attach click handler to #loginDonorButton
+    $("#loginDonorButton").click(handleLoginDonorButton);
+    // attach click handler to #donorRegisterbtn
+    $("#donorRegisterbtn").click(handleDonorRegistration);
+    // attach click handler to #LogOutLink
+    $("#LogOutLink").click(logOutDonor);
+    // load blood types
+    loadBloodTypes();
+     showHeatMap();
+});
 
