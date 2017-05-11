@@ -1088,13 +1088,14 @@ class Connection(object):
         
         if birthDate:
             try:
-                birthDate = datetime.strftime(birthDate, "%d-%m-%y")
+                birthDate =datetime.datetime.strptime(birthDate, "%d-%m-%Y")
             except Exception as e:
                 raise ValueError("The birthDate is not in the correct format")
         if gender:
 
             gender=gender.lower()
-            if(gender != 'MALE'.lower() or gender!= 'FEMALE'.lower()):
+            print gender
+            if(gender != 'MALE'.lower() and gender!= 'FEMALE'.lower()):
                 raise ValueError("The gender is not in the correct format")
 
         # Create the SQL statment
