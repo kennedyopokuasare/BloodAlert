@@ -383,6 +383,7 @@ function showHeatMap() {
    
 }
 
+
  
 /**
 * This method loads when page loads
@@ -401,3 +402,4 @@ function showHeatMap() {
         loadBloodTypes();
        // showHeatMap();
     });
+

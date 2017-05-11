@@ -1094,7 +1094,6 @@ class Connection(object):
         if gender:
 
             gender=gender.lower()
-            print gender
             if(gender != 'MALE'.lower() and gender!= 'FEMALE'.lower()):
                 raise ValueError("The gender is not in the correct format")
 
