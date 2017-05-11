@@ -14,9 +14,7 @@ $(function () {
     $.ajax({
         url: donorUrl,
         dataType: "json"
-    }).done(function (data, textStatus, jqXHR) {
-    
-       
+    }).done(function (data, textStatus, jqXHR) {    
         $("#fullNanme").text(data.firstname + " " + data.familyName)
         $("#birthday").text(" " + data.birthDate.slice(8,10) + "-" + data.birthDate.slice(5,7) + "-" +data.birthDate.slice(0,4))
         $("#gender").text(" " + data.gender)
@@ -47,8 +45,6 @@ $(function () {
         }
         $("#phone").text(" " + data.telephone)
         $("#cityAddress").text(" " + data.city + ", " + data.address)
-        $("#email").text(" " + data.email)
-        
-        
+        $("#email").text(" " + data.email)  
     });
 });
