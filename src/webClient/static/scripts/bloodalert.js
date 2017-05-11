@@ -330,55 +330,73 @@ function showHeatMap() {
     return $.ajax({
         url: "/bloodalert/bloodbanks/",
         dataType: DEFUALT_DATA_TYPE
-        }).done(function (data, textStatus, jqXHR) {
-            console.log(data);
-            var locations = [];
-            var bloodBanks=[]
-            for (var i = 0; i < data.items.length; i++) {
-                item = data.items[i];              
-                var location = new google.maps.LatLng(item.latitude, item.longitude);
-                locations.push(location);
-                bloodLevelsUrl = "/bloodalert/bloodbanks/" + item.bloodBankId + "/bloodlevels/";
-                
-                var bloodbank={info:item,bloodLevel:bloodLevelsUrl};
-                bloodBanks.push(bloodbank);
-                
-            }
-            var pointArray = new google.maps.MVCArray(locations);
-            // the map's options
-            var mapOptions = {
-                zoom: 7,
-                fullscreenControl: true,
-                center: new google.maps.LatLng(64.2168632, 27.6588787),
-                mapTypeId: "terrain"
-            };
+    }).done(function (data, textStatus, jqXHR) {
+        var weightedLocations = [];
+        var bloodBanks = [];
+        var locations = [];
+        for (var i = 0; i < data.items.length; i++) {
+            item = data.items[i];
+            var latLongLoc = new google.maps.LatLng(item.latitude, item.longitude);
+            locations.push(latLongLoc);
+            bloodLevelsUrl = "/bloodalert/bloodbanks/" + item.bloodBankId + "/bloodlevels/";
 
-            // the map and where to place it
-            var map = new google.maps.Map(document.getElementById('bloodLevelsMap'), mapOptions);
+            var bloodbank = { info: item, bloodLevel: bloodLevelsUrl };
 
-            var markers = locations.map(function(location, i) {
-                    return new google.maps.Marker({
-                        position: location,
-                        label: bloodBanks[i].info.name
-                    });
+            bloodBanks.push(bloodbank);
+            weightedLocations.push({ location: latLongLoc, weight: Math.pow(bloodbank.totalBlood, 2) })
+        }
+
+        var pointArray = new google.maps.MVCArray(weightedLocations);
+        // the map's options
+        var mapOptions = {
+            zoom: 5,
+            fullscreenControl: true,
+            center: new google.maps.LatLng(65.6529276, 22.3868431),
+            mapTypeId: "terrain"
+        };
+
+        // the map and where to place it
+        var map = new google.maps.Map(document.getElementById('bloodLevelsMap'), mapOptions);
+
+        var markers = locations.map(function (location, i) {
+            return new google.maps.Marker({
+                position: location,
+                label: bloodBanks[i].info.name
             });
-
-            var markerCluster = new MarkerClusterer(map, markers,
-                {imagePath: window.location.href+ 'static/images/m'});
-
-            // what data for the heatmap and how to display it
-           /**
-            * var heatmap = new google.maps.visualization.HeatmapLayer({
-                data: pointArray,
-                dissipating: false
-            });
-
-            heatmap.setMap(map);
-            */
-            
-
-
         });
+
+        var markerCluster = new MarkerClusterer(map, markers,
+            { imagePath: window.location.href + 'static/images/m' });
+
+        map.data.setStyle(function (feature) {
+            var magnitude = feature.getProperty('mag');
+            return {
+                icon: getCircle(magnitude)
+            };
+        });
+        // what data for the heatmap and how to display it
+        var heatmap = new google.maps.visualization.HeatmapLayer({
+            data: pointArray,
+            dissipating: false
+        });
+
+        heatmap.setMap(map);
+
+        for (var i = 0; i < bloodBanks.length; i++) {
+            $.ajax({
+                url: bloodBanks[i].bloodLevelsUrl,
+                dataType: DEFUALT_DATA_TYPE
+            }).done(function (data, textStatus, jqXHR) {
+                var totalBlood = 0;
+                for (var i = 0; i < data.items.length; i++) {
+                    totalBlood += data.items[i].amount;
+                }
+                bloodbank[i]["totalBlood"] = totalBlood;
+                pointArray[i].weight = totalBlood;
+            });
+        }
+
+    });
 }
 
 
@@ -398,6 +416,6 @@ $(function () {
     $("#LogOutLink").click(logOutDonor);
     // load blood types
     loadBloodTypes();
-     showHeatMap();
+    showHeatMap();
 });
 
