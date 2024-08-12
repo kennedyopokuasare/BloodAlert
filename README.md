@@ -1,3 +1,4 @@
+The Blood Alert Web API offers different functionalities for managing blood donation, and to advertise and promote blood donation in blood banks. Blood Alert Web API will facilitate effective communication between a blood donor, and a blood bank, managing blood level information of all blood types in blood banks, tracking blood donation history of donated individuals.
 
 # The Database
 The Blood Alert Database API uses [SQLite](www.sqlite.org) hence no installation is needed
