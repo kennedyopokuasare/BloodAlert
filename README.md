@@ -2,7 +2,7 @@
 This is a fullstack implementation of BloodAlert - a social Campaign application for blood donation and blood banking 
 
 # The Database
-The Blood Alert Database API uses [SQLite](www.sqlite.org) hence no installation is needed
+The Blood Alert Database API uses [SQLite](HTTP://www.sqlite.org) hence no installation is needed
 
 ## Setting up the database
 There are two options to setup (create and populate) the database. We recommend **option 1** if you are not familiar with SQL
